@@ -360,9 +360,21 @@ have been deleted; partially done items state only their remaining scope.
   proof; consent-surface unification is parked post-L1.)
 - **I-07 Privacy export and deletion end to end** · P0 · MEASURE — legal
   sign-off and production-safe test.
-- **I-08 Transactional communication governance** · P1 · NOW — template
-  ownership, localization, fallback, idempotency; no duplicate or contradictory
-  communication.
+- **I-08 Transactional communication governance — residual** · P1 · NOW —
+  audited every `BUSINESS_EVENTS.emailRequested` outbox send-site (14 call
+  sites across order/shipment/refund/appointment/service/journey/return-request
+  flows). All but one already keyed idempotency on stable identifiers alone
+  (order/entity id + status, never wall-clock time), so retries correctly
+  collapse via `createOutboxEvent`'s upsert-by-`idempotencyKey`. Found and
+  fixed the one real gap: `upsertAdminShipment`'s key embedded `Date.now()`,
+  so an EDI/carrier webhook retry for the same order+status silently sent a
+  second "your order shipped" email on every retry — fixed to drop the
+  timestamp, pinned with a regression test. Localization is Hebrew-only
+  app-wide (matches ADR 0014's L1 scope, not a gap). **Remaining scope**: no
+  central template registry exists — each send-site inlines its own copy, so
+  a wording fix requires finding every call site by hand; whether that's worth
+  building is a real design decision, not attempted here. Evidence:
+  `docs/QA_EVIDENCE.md` → `i-08-transactional-communication-governance`.
 - **I-09 Repeat-ownership measurement** · P2 · MEASURE.
 
 ### J — Content, SEO, accessibility, performance

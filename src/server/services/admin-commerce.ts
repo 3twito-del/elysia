@@ -142,7 +142,7 @@ export async function upsertAdminShipment(input: {
       type: BUSINESS_EVENTS.emailRequested,
       aggregateType: "Order",
       aggregateId: order.id,
-      idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:shipment:${order.id}:${shipment.status}:${Date.now()}`,
+      idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:shipment:${order.id}:${shipment.status}`,
       payload: {
         orderId: order.id,
         orderNumber: order.orderNumber,

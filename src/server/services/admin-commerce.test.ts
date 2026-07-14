@@ -60,6 +60,24 @@ describe("admin commerce helpers", () => {
     expect(refundSource).not.toContain("db.payment.updateMany");
     expect(refundSource).not.toContain("db.order.update");
   });
+
+  it("keeps the shipment-notification idempotency key stable across retries (I-08)", () => {
+    // A real bug: this key used to embed Date.now(), so a webhook/EDI retry
+    // for the same order+status produced a fresh key every call, defeating
+    // createOutboxEvent's upsert-by-idempotencyKey dedupe entirely -- every
+    // retry sent a second "your order shipped" email. The key must depend
+    // only on stable identifiers (order id + shipment status), never on wall
+    // clock time or any other per-call-unique value.
+    const source = read("src/server/services/admin-commerce.ts");
+    const shipmentSource = getFunctionSource(source, "upsertAdminShipment");
+    const idempotencyKeyLine = shipmentSource
+      .split("\n")
+      .find((line) => line.includes("idempotencyKey:"));
+
+    expect(idempotencyKeyLine).toBeDefined();
+    expect(idempotencyKeyLine).toContain("shipment:${order.id}:${shipment.status}");
+    expect(idempotencyKeyLine).not.toContain("Date.now()");
+  });
 });
 
 function getFunctionSource(source: string, functionName: string) {

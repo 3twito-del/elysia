@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 56
+Sections: 57
 
 ## Index
 
@@ -35,6 +35,7 @@ Sections: 56
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
 - [j-09-pre-consent-tracking](#evidence-j-09-pre-consent-tracking)
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
@@ -2516,6 +2517,90 @@ The benchmark supports a restrained shortcut rail only. Moving the quick-search
 form above editorial content, adding a merchandising mega-panel, changing hero
 composition, or introducing personalized recommendation controls still requires
 a separate benchmark.
+
+---
+
+<a id="evidence-i-08-transactional-communication-governance"></a>
+
+## Evidence: i-08-transactional-communication-governance
+
+# I-08 Transactional Communication Governance
+
+Date: 2026-07-14.
+
+Scope: this is a cross-cutting audit item ("no duplicate or contradictory
+communication" app-wide), not a single-feature build. The acceptance bar is
+broad; this pass inventories every transactional-email send-site and closes
+the one real gap found, rather than claiming the whole app-wide bar is met.
+
+## Inventory — every `BUSINESS_EVENTS.emailRequested` outbox send-site
+
+| Send-site | Idempotency key | Stable? |
+| --- | --- | --- |
+| `admin-commerce.ts` `upsertAdminShipment` | `emailRequested:shipment:{orderId}:{status}` | Now yes — **was** `...{status}:${Date.now()}` (bug, fixed below) |
+| `admin-commerce.ts` `refundAdminOrder` | `emailRequested:refund:{orderId}` | Yes |
+| `admin-commerce.ts` `updateAdminAppointmentStatus` | `emailRequested:appointment:{id}:{status}` | Yes |
+| `cart-checkout.ts` (order confirmation) | `emailRequested:cart-checkout:{orderId}` | Yes |
+| `crm-journeys.ts` (journey step email) | `journey:{enrollmentId}:{stepOrder}` | Yes |
+| `manual-order.ts` (order confirmation) | `emailRequested:manual-order:{orderId}` | Yes |
+| `manual-order.ts` (status update) | `emailRequested:order-status:{orderId}:{status}` | Yes |
+| `payment-checkout.ts` (payment link) | `emailRequested:payment-link:{orderId}` | Yes |
+| `service.ts` (service-request confirmation) | `emailRequested:service-request:{id}` | Yes |
+| `src/app/account/actions.ts` (return request) | `emailRequested:return-request:{id}` | Yes |
+
+Every key above is built only from stable identifiers (an entity id, plus a
+status where the same entity can legitimately re-trigger on a real state
+change) — never from a per-call-unique value. That's the correct shape:
+`createOutboxEvent` (`src/server/services/outbox.ts`) `upsert`s by
+`idempotencyKey`, so a retried event with the same key updates the same row
+instead of creating a duplicate; a key that changes every call defeats that
+entirely.
+
+Also reviewed and found **not** a gap for this ticket's scope: `cart.ts`'s
+`add_to_cart` analytics event and `admin-commerce-workflow.ts`'s
+`search-reindex-requested` event both embed `Date.now()` — but neither is a
+customer-facing transactional communication. Each real add-to-cart click or
+reindex request is a legitimate distinct occurrence worth its own event, not
+a retry of the same one, so per-call uniqueness there is correct, not a bug.
+
+## Finding — shipment-notification idempotency key was not actually stable (BUG, fixed)
+
+`upsertAdminShipment` (`admin-commerce.ts`) is the one write path that
+processes carrier/EDI shipment-status updates, which can legitimately be
+retried (webhook redelivery, EDI resend) for the same order and the same
+status. Its `idempotencyKey` was:
+
+```ts
+`${BUSINESS_EVENTS.emailRequested}:shipment:${order.id}:${shipment.status}:${Date.now()}`
+```
+
+The trailing `Date.now()` made every call produce a distinct key, so
+`createOutboxEvent`'s upsert never recognized a retry as the same event —
+**every retry of the same shipment-status update sent the customer a second
+"your order shipped" email.** Fixed by dropping the timestamp:
+
+```ts
+`${BUSINESS_EVENTS.emailRequested}:shipment:${order.id}:${shipment.status}`
+```
+
+Now a retry for the same order+status collapses to the same outbox row.
+Pinned with a regression test in `admin-commerce.test.ts` asserting the key
+line excludes `Date.now()` and matches the stable shape.
+
+## Verification
+
+`copy:check` synced (no copy change needed here), `tsc --noEmit` clean,
+`eslint` clean, full unit suite **1662/1662** tests passing (the one new
+regression test), `next build` green.
+
+## I-08 status: RESIDUAL
+
+The full send-site audit is done and the one real bug found is fixed and
+regression-tested. `docs/TASKS.md`'s I-08 row is edited in place, not
+deleted: no central template-ownership registry exists (every send-site
+inlines its own copy inline in the service file that triggers it) — whether
+building one is worth the cost is a real design decision for a future pass,
+not attempted here.
 
 ---
 
