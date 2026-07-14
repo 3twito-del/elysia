@@ -453,6 +453,24 @@ export default async function AdminServicePage({
                             {slaStatusLabel[request.slaStatus] ??
                               request.slaStatus}
                           </Badge>
+                          {request.events.length > 0 ? (
+                            <ol
+                              className="text-muted-foreground mt-1 grid gap-0.5 text-xs"
+                              data-testid="admin-service-request-timeline"
+                            >
+                              {request.events.map((event) => (
+                                <li key={event.id}>
+                                  {event.kind === "STATUS_CHANGED" &&
+                                  event.status
+                                    ? getServiceRequestStatusLabel(
+                                        event.status,
+                                      )
+                                    : "התקבלה"}{" "}
+                                  · {formatHebrewDateTime(event.createdAt)}
+                                </li>
+                              ))}
+                            </ol>
+                          ) : null}
                         </div>
                       </TableCell>
                       <TableCell className="align-top">

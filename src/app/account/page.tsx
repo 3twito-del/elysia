@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   ChevronLeft,
   FileText,
+  Headset,
   Heart,
   LockKeyhole,
   LogOut,
@@ -1114,6 +1115,13 @@ function AccountRecoveryShortcuts({
       icon: LockKeyhole,
       label: "פרטיות ונתונים",
       testId: "account-recovery-privacy-help",
+    },
+    {
+      description: "מעקב אחר סטטוס הפניות שפתחת מול צוות השירות.",
+      href: "/account/service",
+      icon: Headset,
+      label: "פניות השירות שלי",
+      testId: "account-recovery-service-history",
     },
   ];
 

@@ -327,8 +327,6 @@ have been deleted; partially done items state only their remaining scope.
   with the customer; minimized and consented.
 - **H-04 Repair/resize/care intake** · P1 · OWNER+EXTERNAL — one real case
   completes with tracked status.
-- **H-05 Service case timeline** · P1 · NOW — shared high-level state; private
-  internal notes; protected attachments.
 - **H-06 Order-aware return initiation** · P1 · NOW+OWNER — source-specific
   instructions; no unsupported self-service on Shopify mirrors.
 - **H-07 Contact and attachment delivery validation** · P0 · MEASURE+EXTERNAL —
@@ -467,6 +465,23 @@ have been deleted; partially done items state only their remaining scope.
 - **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
   route or provide verified branch data; never imply boutiques that do not
   exist.
+- **K-13 Missing migration for `UserFeedback` + blog-tables (found 2026-07-14)**
+  · P0 · NOW — `prisma migrate diff` between the committed `prisma/migrations/`
+  history and `prisma/schema.prisma` (both predating today's H-05 change)
+  showed drift unrelated to any single feature: the `UserFeedback` model
+  (used live by `submitFeedback` in `src/app/actions.ts`), a `_BlogPostToBlogTag`/
+  `_BlogPostToProduct` many-to-many PK change, and `ServiceSettings` default-value
+  changes have no corresponding migration file. Since production applies
+  migrations via `prisma migrate deploy` (`scripts/vercel-production-migrate.mjs`,
+  additive-only), if these were never applied out-of-band, the `UserFeedback`
+  table likely does not exist in production and every feedback submission is
+  failing there right now. Not confirmed against production directly (a
+  read-only `prisma db execute` probe against the pulled production
+  `DATABASE_URL` failed auth from this environment) — needs an authenticated
+  check of production `information_schema.tables`, then a catch-up migration
+  generated the same way this session's H-05 migration was (hand-verified
+  `prisma migrate diff --from-migrations ... --to-schema-datamodel ...` output,
+  isolating only the intended changes) if the table is confirmed missing.
 
 ### L — QA, measurement, release proof
 

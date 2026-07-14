@@ -70,6 +70,7 @@ const staticPublicRoutes = [
   "/checkout",
   "/account",
   "/account/invoices",
+  "/account/service",
   "/ai",
   "/ai?tab=gifts",
   "/stylist",

@@ -8,6 +8,8 @@ import {
   type FormFieldErrors,
 } from "~/lib/form-validation";
 import { publicServiceRequestInputSchema } from "~/lib/service-validation";
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 import { createPublicServiceRequest } from "~/server/services/service";
 import {
   assertRateLimit,
@@ -61,8 +63,21 @@ export async function createServiceRequestAction(
     };
   }
 
+  const session = await auth();
+  let customerId: string | undefined;
+
+  if (session?.user?.id && !session.user.adminUserId) {
+    const customer = await db.customer.findUnique({
+      select: { id: true },
+      where: { userId: session.user.id },
+    });
+
+    customerId = customer?.id;
+  }
+
   try {
     const request = await createPublicServiceRequest({
+      customerId,
       data: parsed.data,
       files: formData.getAll("attachments").filter(isFile),
     });

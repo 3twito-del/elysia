@@ -5,7 +5,7 @@ former `docs/qa/*.md` file, preserved verbatim as recorded evidence. New QA
 evidence is appended as a new `## Evidence:` section; existing sections are
 historical records and are not rewritten.
 
-Sections: 62
+Sections: 63
 
 ## Index
 
@@ -35,6 +35,7 @@ Sections: 62
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
+- [h-05-service-case-timeline](#evidence-h-05-service-case-timeline)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
 - [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
 - [j-05-technical-seo-validation](#evidence-j-05-technical-seo-validation)
@@ -2565,6 +2566,102 @@ RTL input) is closed and evidenced above. `docs/TASKS.md`'s row is edited to
 residual, not deleted: keyboard-navigation and screen-reader (NVDA/VoiceOver)
 testing genuinely needs a human with real assistive technology and is left as
 open MEASURE scope.
+
+---
+
+<a id="evidence-h-05-service-case-timeline"></a>
+
+## Evidence: h-05-service-case-timeline
+
+# H-05 Service Case Timeline
+
+Date: 2026-07-14.
+
+Scope: the ticket names three capabilities. Two already existed:
+`ServiceRequest.adminNotes` (admin-only, never rendered to a customer) covers
+"private internal notes"; `ServiceRequestAttachment` (fetched only through the
+admin surface, never a public URL pattern) covers "protected attachments".
+The missing piece -- "shared high-level state" -- did not exist at all: there
+was no way for a customer to see the status of a request they had submitted,
+anywhere in the app.
+
+## What shipped
+
+- **Schema** (`prisma/migrations/20260714000000_service_case_timeline`,
+  additive-only per ADR 0008): `ServiceRequest.customerId` (nullable FK to
+  `Customer`, linked only when the submitter is logged in at submission time
+  -- the public contact form stays usable while logged out) and a new
+  `ServiceRequestEvent` table (`kind`: `RECEIVED | STATUS_CHANGED | NOTE |
+  CUSTOMER_MESSAGE`; `visibility`: `CUSTOMER | INTERNAL`, default `CUSTOMER`).
+  Only `RECEIVED` (on creation) and `STATUS_CHANGED` (on an admin status
+  update, and only when the status actually changed) are written today --
+  `NOTE`/`CUSTOMER_MESSAGE` are modeled for a later admin-initiated customer
+  message, not built now.
+  - Generated via `prisma migrate diff --from-migrations prisma/migrations
+    --to-schema-datamodel prisma/schema.prisma --shadow-database-url ...`
+    against a throwaway shadow database, then **hand-filtered** to only the
+    statements this change actually needs. The raw diff also included
+    unrelated pre-existing drift (see K-13, filed separately) -- a
+    `UserFeedback` table, a blog many-to-many PK change, and `ServiceSettings`
+    default-value changes with no migration file anywhere in history. That
+    drift predates this session (confirmed via `git diff --stat
+    prisma/schema.prisma`, which showed only this feature's +36 lines) and is
+    NOT included in this migration.
+- `src/server/services/service-case-timeline.ts` (new):
+  `appendServiceRequestReceivedEvent`, `appendServiceRequestStatusChangedEvent`,
+  `getCustomerServiceRequests(customerId)` (returns only `visibility: CUSTOMER`
+  events, oldest first).
+- `src/server/services/service.ts`: `createPublicServiceRequest` accepts an
+  optional `customerId` and appends a `RECEIVED` event inside the same
+  transaction as the create; `updateAdminServiceRequest` compares status
+  before/after the update and appends a `STATUS_CHANGED` event only on an
+  actual change (not every save).
+- `src/app/service/actions.ts`: resolves the current customer session (same
+  pattern as `submitFeedback` in `src/app/actions.ts`) and passes `customerId`
+  through -- silent when logged out, no UI change to the public form.
+- `src/app/account/service/page.tsx` (new): the customer-facing surface.
+  Auth-gated like `/account/invoices`/`/account/orders/[id]`; lists the
+  customer's own requests newest-first with status badge and the
+  `CUSTOMER`-visible timeline. Linked from a new shortcut card on `/account`
+  (`account-recovery-service-history`).
+- `src/app/admin/service/page.tsx`: each row now shows the auto-generated
+  timeline (received + status-change history) alongside the existing
+  status/priority/SLA badges, so an admin can see the full history at a
+  glance instead of only the current status.
+- `scripts/qa-route-inventory.ts`: registered `/account/service` in
+  `staticPublicRoutes` (a pinned coverage test failed until this was added).
+
+## Verification
+
+- Live-verified against the real local dev database (temporary script, since
+  this repo has no test-database wiring for Vitest): create → RECEIVED event
+  → simulated admin status update → STATUS_CHANGED event → customer-scoped
+  query returns both events in order. Script deleted after the run.
+- New e2e test, `authenticated-account.spec.ts` › "a service request
+  submitted while logged in appears with its timeline on /account/service
+  (H-05)": signs in via `signInCustomerWithFixture`, submits a real request
+  through the live `/service` form, navigates to `/account/service`, and
+  asserts the newest card contains the submitted message and the
+  "הפנייה התקבלה" (request received) timeline entry. Passed twice in a row
+  (`--project=chromium-desktop`) to rule out flakiness; the first attempt used
+  a fixed message string and collided with a request from an earlier local
+  run of the same test, which is why the assertion targets the newest
+  (first, since requests are ordered `createdAt desc`) card with a
+  timestamp-uniqued message rather than filtering by exact text.
+- `pnpm copy:sync`/`copy:check` synced, `tsc --noEmit` clean, `eslint` clean on
+  changed files (repo-wide run shows the same one pre-existing, unrelated
+  warning as every other check this session), full unit suite **1681/1681**
+  passing, `next build` green (confirmed `/account/service` compiles as a
+  dynamic route).
+- Cleaned up all test-created `ServiceRequest`/`ServiceRequestEvent` rows from
+  the dev database after verification.
+
+## Residual
+
+Admin-initiated `NOTE`/`CUSTOMER_MESSAGE` events (an admin manually posting a
+customer-visible update, beyond the auto-generated status-change entry) are
+schema-ready but not built -- a natural fast-follow, not a gap in this
+ticket's stated acceptance text.
 
 ---
 

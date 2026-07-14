@@ -21,6 +21,10 @@ import {
   shouldUseCatalogFixtures,
 } from "~/server/services/catalog-fixtures";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
+import {
+  appendServiceRequestReceivedEvent,
+  appendServiceRequestStatusChangedEvent,
+} from "~/server/services/service-case-timeline";
 import { slaStatus } from "~/server/services/service-sla";
 
 const defaultServiceSettings = {
@@ -183,6 +187,7 @@ export async function getPublicServiceProfile() {
 }
 
 export async function createPublicServiceRequest(input: {
+  customerId?: string;
   data: z.infer<typeof publicServiceRequestInputSchema>;
   files: File[];
 }) {
@@ -207,6 +212,7 @@ export async function createPublicServiceRequest(input: {
     const created = await tx.serviceRequest.create({
       data: {
         topicId: topic?.id,
+        customerId: input.customerId,
         name: parsed.name,
         phone: parsed.phone,
         email: parsed.email,
@@ -240,6 +246,10 @@ export async function createPublicServiceRequest(input: {
         preferredContact: parsed.preferredContact,
         topicSlug: parsed.topicSlug,
       },
+    });
+
+    await appendServiceRequestReceivedEvent(tx, {
+      serviceRequestId: created.id,
     });
 
     await createOutboxEvent(tx, {
@@ -316,7 +326,11 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       orderBy: { createdAt: "desc" },
       skip: getAdminSkip(parsed),
       take: parsed.pageSize,
-      include: { attachments: true, topic: true },
+      include: {
+        attachments: true,
+        events: { orderBy: { createdAt: "asc" } },
+        topic: true,
+      },
     }),
     db.contactTopic.findMany({
       orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
@@ -350,6 +364,12 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       resolvedAt: request.resolvedAt,
       createdAt: request.createdAt,
       updatedAt: request.updatedAt,
+      events: request.events.map((event) => ({
+        createdAt: event.createdAt,
+        id: event.id,
+        kind: event.kind,
+        status: event.status,
+      })),
       triageFacts: getServiceRequestTriageFacts({
         attachmentCount: request.attachments.length,
         orderNumber: request.orderNumber,
@@ -398,7 +418,7 @@ export async function updateAdminServiceRequest(input: {
   return db.$transaction(async (tx) => {
     const current = await tx.serviceRequest.findUniqueOrThrow({
       where: { id: parsed.serviceRequestId },
-      select: { firstRespondedAt: true, resolvedAt: true },
+      select: { firstRespondedAt: true, resolvedAt: true, status: true },
     });
     const isTerminal =
       parsed.status === "RESOLVED" || parsed.status === "CLOSED";
@@ -415,6 +435,13 @@ export async function updateAdminServiceRequest(input: {
         resolvedAt: isTerminal ? (current.resolvedAt ?? new Date()) : null,
       },
     });
+
+    if (current.status !== updated.status) {
+      await appendServiceRequestStatusChangedEvent(tx, {
+        serviceRequestId: updated.id,
+        status: updated.status,
+      });
+    }
 
     await writeServiceAudit(tx, {
       adminUserId: input.adminUserId,

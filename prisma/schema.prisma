@@ -467,6 +467,8 @@ model ServiceRequest {
   id                   String                     @id @default(cuid())
   topicId              String?
   topic                ContactTopic?              @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  customerId           String?
+  customer             Customer?                  @relation(fields: [customerId], references: [id])
   status               ServiceRequestStatus       @default(NEW)
   name                 String
   phone                String
@@ -483,6 +485,7 @@ model ServiceRequest {
   firstRespondedAt     DateTime?
   resolvedAt           DateTime?
   attachments          ServiceRequestAttachment[]
+  events               ServiceRequestEvent[]
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime                   @updatedAt
 
@@ -491,6 +494,7 @@ model ServiceRequest {
   @@index([topicId])
   @@index([email])
   @@index([phone])
+  @@index([customerId])
 }
 
 model ServiceRequestAttachment {
@@ -508,6 +512,37 @@ model ServiceRequestAttachment {
   createdAt        DateTime       @default(now())
 
   @@index([serviceRequestId])
+}
+
+/// H-05 service case timeline: the shared high-level history a customer may
+/// see (visibility CUSTOMER) alongside internal-only entries (visibility
+/// INTERNAL) that never leave the admin surface. NOTE/CUSTOMER_MESSAGE kinds
+/// are modeled now for forward compatibility but not yet written by any
+/// caller -- only RECEIVED (on creation) and STATUS_CHANGED (on an admin
+/// status update) are populated today.
+model ServiceRequestEvent {
+  id               String                        @id @default(cuid())
+  serviceRequestId String
+  request          ServiceRequest                @relation(fields: [serviceRequestId], references: [id], onDelete: Cascade)
+  kind             ServiceRequestEventKind
+  visibility       ServiceRequestEventVisibility @default(CUSTOMER)
+  status           ServiceRequestStatus?
+  message          String?
+  createdAt        DateTime                      @default(now())
+
+  @@index([serviceRequestId, createdAt])
+}
+
+enum ServiceRequestEventKind {
+  RECEIVED
+  STATUS_CHANGED
+  NOTE
+  CUSTOMER_MESSAGE
+}
+
+enum ServiceRequestEventVisibility {
+  CUSTOMER
+  INTERNAL
 }
 
 model InventoryItem {
@@ -2096,6 +2131,7 @@ model Customer {
   journeyEnrollments        JourneyEnrollment[]
   consentRecords            ConsentRecord[]
   loyaltyAccount            LoyaltyAccount?
+  serviceRequests           ServiceRequest[]
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
 }
