@@ -204,10 +204,6 @@ have been deleted; partially done items state only their remaining scope.
 - **D-05 Header taxonomy** · P1 · BENCHMARK — validate placement on desktop
   and mobile; AI stays out of primary navigation without an approved exception.
 - **D-06 Footer density** · P2 · BENCHMARK — no second landing page.
-- **D-07 Intrusive global chrome** · P1 · NOW — cookie/accessibility/sticky
-  layers reviewed together on every core route; no floating element covers a
-  focusable or purchasing control. Baseline evidence exists in the floating
-  chrome collision audit (`docs/QA_EVIDENCE.md`).
 - **D-08 Motion grammar — residual** · P2 · BENCHMARK — token/CSS layer is
   complete (one easing family, tokenized durations, no layout-animating
   transitions); remaining scope is subjective motion-feel changes, which need

@@ -2228,6 +2228,44 @@ sheet overlay behavior are coherent for the audited route set.
 - For checkout or product sticky-bar edits, include a route-specific mobile
   interaction pass in addition to the static contract test.
 
+## Refresh — 2026-07-14 (D-07 closure)
+
+Re-verified after this session's changes (G-11's site-wide CSP + dynamic
+rendering, C-08's admin dashboard, L-04's new mixed-cart checkout UI, I-08's
+outbox fix) — none of these touch floating public chrome, but a fresh check
+was run rather than assumed clean given how much shipped in between.
+
+- `pnpm test -- src/styles/floating-chrome-contract.test.ts` — **PASS: 8
+  tests** (was 7 at the 2026-05-31 baseline; grew with intervening work, all
+  still green).
+- Live Playwright check (`chromium`, real dev server) across `/`, `/checkout`
+  (with a mixed own+supplier cart, to exercise L-04's new source-group/
+  action-panel layout — the checkout page's most complex current state), and
+  `/category/earrings`, at mobile (390px) and desktop (1440px) viewports:
+  measured the actual cookie-banner and accessibility-trigger bounding boxes
+  and computed real pixel overlap area (not just a visual glance). Result:
+  **zero horizontal overflow on any route/viewport; zero pixel overlap
+  between the cookie banner and the accessibility trigger on any
+  route/viewport** (closest: exactly 0px gap — touching, not overlapping —
+  on desktop `/` and `/category/earrings`, confirmed by inspecting the
+  computed `--floating-stack-bottom` CSS variable and both elements'
+  `getBoundingClientRect()` directly, not just an automated pass/fail).
+- One methodology note worth keeping: a first pass of this check used a
+  simple bounding-box comparison with a strict `<` boundary, which
+  misclassified the exact 0px-gap adjacency above as an overlap (a boundary
+  bug in the check itself, not the app) — re-verified with real computed
+  pixel values before concluding. **When automating a geometry/collision
+  check, always print the actual numbers and inspect at least one case
+  directly rather than trusting a boolean pass/fail**, especially near an
+  exact-zero boundary.
+
+## D-07 status: CLOSED
+
+`docs/TASKS.md`'s D-07 row is deleted — re-verified clean on the sampled
+route set after a large batch of intervening changes, same "baseline
+sample, not exhaustive" caveat as the original 2026-05-31 audit still
+applies (see Remaining Risk above).
+
 ---
 
 <a id="evidence-g-11-checkout-security-review"></a>
@@ -4504,7 +4542,7 @@ separate benchmark and data review.
 
 Status: active release evidence ledger.
 
-Last updated: 2026-07-12.
+Last updated: 2026-07-14.
 
 This ledger records the latest production deployment evidence that is safe to
 keep in the repository. It stores deployment URLs, aliases, command names, and
@@ -4522,26 +4560,31 @@ Related documents:
 
 | Field               | Evidence                                                                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Evidence date       | 2026-07-12                                                                                                                                                                               |
+| Evidence date       | 2026-07-14                                                                                                                                                                               |
 | Branch              | `main`                                                                                                                                                                                   |
-| Commit SHA          | `ec62664ee9b1cd7b8372c73b4f9910221fab003f`                                                                                                                                               |
-| Release             | I-342 mandatory admin TOTP MFA + recovery codes (ADR 0005 L1 auth package complete)                                                                                                     |
+| Commit SHA          | `e88b3b64e40b18128d55296c85a291f30f87f30a`                                                                                                                                               |
+| Release             | I-08 shipment-email idempotency fix, stacked same-day on K-05/G-11/J-09/C-08 (see each ticket's own `docs/QA_EVIDENCE.md` section)                                                      |
 | Vercel project      | `ariel-twitos-projects/elysia`                                                                                                                                                           |
-| Deployment URL      | `https://elysia-dhs2zw13e-ariel-twitos-projects.vercel.app`                                                                                                                              |
-| Deployment ID       | `dpl_3L2ohaRr8KdgvtC9T5JA97edJEED`                                                                                                                                                       |
+| Deployment URL      | `https://elysia-mlnl81gjp-ariel-twitos-projects.vercel.app`                                                                                                                              |
+| Deployment ID       | `dpl_7FXyqsp1ZLHBYt2e7wYDmPwXiDFp`                                                                                                                                                       |
 | Target              | Production                                                                                                                                                                               |
-| Status              | Ready                                                                                                                                                                                    |
-| Created             | 2026-07-12 16:09:50 Asia/Jerusalem                                                                                                                                                       |
+| Status              | Ready (redeployed once — the first build at this commit hit a transient `P1002` Postgres advisory-lock timeout during migration, unrelated to the code; `vercel redeploy` succeeded. The live alias never went down: Vercel only re-points it on a successful build.) |
+| Created             | 2026-07-14 09:12:54 Asia/Jerusalem                                                                                                                                                       |
 | Production alias    | `https://elysia-jewellery.com` (confirmed via `vercel inspect`)                                                                                                                          |
 | Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-git-main-ariel-twitos-projects.vercel.app`                                                                            |
 | Smoke command       | `SMOKE_BASE_URL="https://elysia-jewellery.com" pnpm smoke`                                                                                                                               |
-| Smoke result        | 32/35 PASS. 3 pre-existing, unrelated failures: `/` missing `data-testid="home-commerce-shortcuts"` and `/ai?tab=gifts` missing `id="ai-gifts"` — neither string exists anywhere in `src/`, i.e. stale smoke assertions predating this release, not a regression; `/admin` (bare) redirect omits `next=` by proxy.ts's own existing design (default landing page), which the smoke check doesn't account for — `src/proxy.ts` was not touched by this release |
+| Smoke result        | 32/35 PASS — identical to the 2026-07-12 result below, same 3 pre-existing failures (`home-commerce-shortcuts`, `ai-gifts`, bare `/admin` next= omission), confirmed still unrelated to any of today's five releases, not a new regression |
 | Health result       | PASS: `/api/health` returned 200                                                                                                                                                         |
-| Error log scan      | PASS: `vercel logs https://elysia-jewellery.com --since 30m --level error` → `No logs found for ariel-twitos-projects/elysia`                                                            |
-| Error-log window    | PENDING: clean so far, but deployment was ~15 minutes old at scan time — the 60-minute post-alias window has not elapsed                                                                |
-| Admin MFA smoke     | PASS (manual, not in `scripts/smoke.mjs`): full enroll → recovery codes → session, logout → re-verify, and recovery-code login/reuse-rejection walkthrough run against local dev before this release; not re-run against production (would require a real admin session)                                                                                                                    |
+| Error log scan      | PASS: `vercel logs https://elysia-jewellery.com --since 45m --level error` → `No logs found for ariel-twitos-projects/elysia`                                                            |
+| Error-log window    | PENDING: clean so far, deployment was ~45 minutes old at scan time — just short of the 60-minute window                                                                                 |
 | Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only                                                                                                 |
-| Remaining risk      | Does not prove authenticated admin workflows in production (see K-01, open), paid checkout, live supplier fulfillment, provider secrets, or the full 60-minute post-alias error-log window for the current deployment; the 3 pre-existing smoke failures above are untracked debt, not filed as their own backlog item yet |
+| Remaining risk      | Does not prove authenticated admin workflows in production beyond what K-01's e2e suite covers locally, paid checkout, live supplier fulfillment, or provider secrets; the 3 pre-existing smoke failures remain untracked debt, not yet filed as their own backlog item |
+
+Previous evidence (2026-07-12, I-342 mandatory admin TOTP MFA release): commit
+`ec62664ee9b1cd7b8372c73b4f9910221fab003f`, deployment `dpl_3L2ohaRr8KdgvtC9T5JA97edJEED`.
+Admin MFA smoke (manual, not in `scripts/smoke.mjs`): full enroll → recovery
+codes → session, logout → re-verify, and recovery-code login/reuse-rejection
+walkthrough run against local dev before that release.
 
 ## Required Release Evidence Fields
 
