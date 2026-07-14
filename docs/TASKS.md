@@ -491,22 +491,29 @@ have been deleted; partially done items state only their remaining scope.
 - **L-01 Outcome evidence over checklists** · P0 · NOW — every claim links to a
   current artifact, environment, commit, route, state, and residual risk.
 - **L-02 Stable browser evidence collection — residual** · P1 · NOW —
-  measured for the first time: a single project (`chromium-desktop`) of
-  `critical-flows.spec.ts` alone takes **5.1 minutes** (51 passed, 3 skipped).
-  The full grid is 9 projects (3 browsers × 3 viewports); Playwright's native
-  `--shard=i/n` is available and untested here — no npm script wires it yet.
-  **Real reliability gap found**: 13 of 64 tests in that single-project run
-  failed, all tracing to the same already-documented root cause (catalog
-  fixture drift under `E2E_CATALOG_FIXTURES=1` — hard-coded friendly slugs
-  like `hera-bracelet` 404 because fixture mode only serves the generated
-  fixture-catalog set; see `docs/QA_EVIDENCE.md` →
-  `l-04-full-state-matrix`). Spot-checked one failure directly to confirm,
-  rather than assumed. "Repeated runs complete within budget" cannot be
-  claimed true while ~20% of a single project's tests reliably fail for a
-  known, fixable reason — that fix (migrating every hard-coded slug to the
-  live-resolved pattern L-04 already established,
-  `resolveOwnCatalogProductSlug`) is real, scoped work for a future pass, not
-  attempted here given its blast radius across many pre-existing tests.
+  the originally-diagnosed reliability gap is fixed: catalog-fixture drift
+  under `E2E_CATALOG_FIXTURES=1` (hard-coded friendly slugs like
+  `hera-bracelet`/`venus-line-ring`/`muse-pearl-earrings` 404ing because the
+  fixture catalog never defined them) was fixed at the source — all three
+  added as explicit fixture products in `catalog-fixtures.ts` — rather than
+  retrofitting the ~13 affected test call sites. Two clean runs of
+  `critical-flows.spec.ts --project=chromium-desktop` post-fix: **62 passed,
+  3 failed, 3 skipped, ~2.1–2.9 minutes**, zero failures in the fixed class.
+  Along the way: seeded a previously-empty local dev DB (fixed 3 more
+  failures) and corrected two stale e2e assertions (a not-found testid/CTA
+  copy drift and a stale home-hero-title assertion). Full detail:
+  `docs/QA_EVIDENCE.md` → `l-02-stable-browser-evidence-collection`.
+  **Remaining, newly found and genuinely distinct**: (1) a PDP layout test on
+  the supplier product throws "missing layout elements", undiagnosed; (2) the
+  admin "archiving a product" e2e test's row filter is now ambiguous against
+  the C-08 catalog-readiness dashboard (10 matching rows, needs a stricter
+  selector); (3) the admin "refunding an order" e2e test's own setup route
+  returns 500, undiagnosed; (4) `customer-auth-fixtures.ts` needs
+  `hera-bracelet` in the **real** DB too (a separate gap from the in-memory
+  fixture catalog fixed here) — not fabricated, since `prisma/seed.ts`'s
+  `SeedProduct` shape requires real supplier-provenance facts this pass
+  doesn't have; needs an owner decision on representing a first-party seed
+  product. Sharding (`--shard=i/n`) remains available and unexercised.
 - **L-04 Full state matrix** · P0 · NOW (residual) — anonymous/authenticated/
   admin × own/supplier/mixed × device × offline/provider states; every P0
   journey has a deterministic test per applicable state. **Covered (e2e,

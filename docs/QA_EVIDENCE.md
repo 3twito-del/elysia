@@ -6573,7 +6573,7 @@ the ~13 already-affected, pre-existing tests is real, scoped, mechanical
 work, but touches enough existing test call sites that it deserves its own
 careful pass rather than a rushed fix bundled into this measurement.
 
-## L-02 status: RESIDUAL
+## L-02 status (2026-07-14, first pass): RESIDUAL
 
 Not closed. `docs/TASKS.md`'s row is edited in place with the exact
 measurement and the exact gap, not deleted — "repeated runs complete within
@@ -6582,6 +6582,90 @@ tests reliably fail for a known, fixable reason. Sharding itself
 (`--shard=i/n`) is technically available and untested; whether it's
 actually needed depends on whether the full 9-project matrix is normally
 run serially or in parallel in practice, which was not measured here.
+
+## L-02 follow-up (2026-07-14, later pass) — root cause fixed, not a per-test retrofit
+
+Took a different approach than the retrofit this section originally proposed
+(rewriting all ~13 affected call sites to `resolveOwnCatalogProductSlug`).
+Traced the fixture catalog gap instead: `hera-bracelet`, `venus-line-ring`,
+and `muse-pearl-earrings` are referenced by slug/name in five other places
+(the static checkout "recommended products" fallback in
+`cart-checkout-form.tsx` with real prices ₪840/₪1290/₪690, the customer-auth
+e2e fixture, and dead-code availability-mode special cases already sitting in
+both `catalog-fixtures.ts`'s and `prisma/seed.ts`'s `getSeedAvailabilityMode`/
+`getSeedCommerceHighlights` keyed to these exact three slugs) — strong
+evidence these were once real curated products that got orphaned when the
+catalog switched to the generated Silver Israel supplier rows. Fixed at the
+source: added all three as explicit fixture products in
+`src/server/services/catalog-fixtures.ts` (same pattern as the file's
+existing `createFixtureDropshipProduct`), wired through the *existing*
+special-case functions rather than duplicating them, with
+`popularityScore: 0.5` (below the generated products' fixed `1`) so they
+never displace `resolveOwnCatalogProductSlug`'s `.first()` card in a
+default-sorted category grid. Zero test call sites touched.
+
+Two more, unrelated gaps surfaced and were fixed along the way (found via
+direct source inspection, not guessed):
+
+- The local dev Postgres DB (`.env.development.local`) had never been seeded
+  — `materials`/`categories`/`products` were all `0` rows — independently
+  failing 3 admin real-write tests on `db.material.findFirstOrThrow()`.
+  Fixed by running `pnpm db:seed` against it (confirmed a local-only
+  `postgresql://postgres:***@localhost:5432/elysia` URL first, not a
+  pulled/production one).
+- Two e2e assertions had drifted from real shipped copy: the category/product
+  not-found recovery tests queried a stale `category-not-found-state` testid
+  (the real one, confirmed in `src/app/category/[slug]/not-found.tsx` via
+  the shared `src/components/not-found-state.tsx`, is
+  `category-not-found-empty-state`) and both asserted a stale CTA label
+  "חיפוש במבחר" (the real, current label is "לכל התכשיטים"); the home hero
+  title assertion expected "The Elysia Experience" against the real, current
+  hero copy "Timeless Elegance". All three corrected in
+  `tests/e2e/critical-flows.spec.ts` to match verified live markup.
+
+**Verification**: two clean runs of
+`npx playwright test tests/e2e/critical-flows.spec.ts --project=chromium-desktop`
+from a cold environment (no leftover dev-server/build processes — an earlier,
+contaminated run mid-session showed 15 unrelated failures traced to stray
+concurrent `next start` processes from manual debugging, not this fix) each
+landed at **62 passed, 3 failed, 3 skipped, ~2.1–2.9 minutes**. Zero failures
+in the originally-diagnosed catalog-fixture-drift class across both runs.
+
+**Newly found, genuinely distinct residual failures** (pre-existing, not
+touched by this fix, not fabricated-away):
+
+1. `"keeps desktop PDP service details centered with inset icons"` — throws
+   "Missing PDP service detail layout elements" on the supplier PDP
+   (`elysia-supplier-silver-halo-ring`). Not diagnosed further this pass.
+2. `"archiving a product is a real write, recorded in the audit log"` — the
+   test's `page.getByRole("row").filter({ hasText: fixture.productSku })`
+   now resolves to 10 rows instead of 1: the admin page it lands on is the
+   C-08 catalog-quality/readiness dashboard (shipped after this test was
+   written), which renders one row per readiness *blocker* for the same
+   disposable test product, each containing the SKU substring in an "owner"
+   column. The row filter needs a stricter match (e.g. an exact SKU cell or
+   `data-testid`), not attempted this pass.
+3. `"refunding an order is a real write, recorded in the audit log and
+   outbox"` — its own `/api/e2e/...` setup call returns 500; root cause not
+   yet diagnosed (not related to the two fixes above — reproduced identically
+   before and after DB seeding).
+4. `src/server/services/customer-auth-fixtures.ts` has the same `hera-bracelet`
+   dependency but against the **real DB** (used by
+   `authenticated-account.spec.ts`), confirmed via a direct DB query that the
+   freshly-seeded local DB still has no such product. Not fixed here:
+   `prisma/seed.ts`'s `SeedProduct` shape ties every row to a
+   `supplierKey: "silver-israel"` with real supplier provenance fields
+   (`sourceCode`/`sourceHandle`/`sourceUrl`); fabricating that provenance for
+   a first-party curated product would violate the no-invented-facts rule.
+   Needs an owner decision on how to represent a non-supplier, first-party
+   seed product before it can be added correctly.
+
+## L-02 status (2026-07-14, later pass): RESIDUAL, materially improved
+
+The originally-diagnosed root cause (catalog-fixture friendly-slug drift) is
+fixed and verified stable across two independent clean runs. L-02 stays open
+— not deleted — because of the four newly-found items above and because
+sharding (`--shard=i/n`) remains unexercised.
 
 ---
 

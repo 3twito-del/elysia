@@ -26,7 +26,7 @@ const checkoutEmptyTitle = "התחילי מהנמכרים ביותר";
 const checkoutEmptySupportCopy = "שלושה תכשיטים שנבחרים שוב ושוב";
 const checkoutCatalogCta = "התחילי מהנמכרים ביותר";
 const checkoutGiftCta = "מצאי מתנה";
-const homeHeroTitle = "The Elysia Experience";
+const homeHeroTitle = "Timeless Elegance";
 const homeHeroDirection = "ltr";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
 const forbiddenCheckoutStateText = [
@@ -581,11 +581,11 @@ test.describe("critical shopping flows", () => {
 
     await page.goto("/category/not-a-real-category");
 
-    const notFoundState = page.getByTestId("category-not-found-state");
+    const notFoundState = page.getByTestId("category-not-found-empty-state");
 
     await expect(notFoundState).toBeVisible();
     await expect(
-      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
+      notFoundState.getByRole("link", { name: "לכל התכשיטים" }),
     ).toBeVisible();
   });
 
@@ -598,7 +598,7 @@ test.describe("critical shopping flows", () => {
 
     await expect(notFoundState).toBeVisible();
     await expect(
-      notFoundState.getByRole("link", { name: "חיפוש במבחר" }),
+      notFoundState.getByRole("link", { name: "לכל התכשיטים" }),
     ).toBeVisible();
   });
 

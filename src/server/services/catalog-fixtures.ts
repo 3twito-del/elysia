@@ -116,6 +116,9 @@ const fixtureCategories: CatalogCategory[] = seedCategories.map((category) => ({
 const fixtureProducts: CatalogProduct[] = [
   ...getSeedProducts().map(mapSeedProduct),
   createFixtureDropshipProduct(),
+  createFixtureHeraBraceletProduct(),
+  createFixtureVenusLineRingProduct(),
+  createFixtureMusePearlEarringsProduct(),
 ];
 
 export function shouldUseCatalogFixtures() {
@@ -302,6 +305,188 @@ function createFixtureDropshipProduct(): CatalogProduct {
     sizes: ["6"],
     tags: ["כסף", "זירקון", "פריט נבחר"],
     inventory: { "online-service": 1 },
+  };
+}
+
+// These three friendly-slugged products (hera-bracelet, venus-line-ring,
+// muse-pearl-earrings) are referenced by slug/name throughout the app —
+// the static "recommended" fallback in checkout
+// (`cart-checkout-form.tsx`), the customer-auth e2e fixture, and the
+// availability-mode special cases below (`getSeedAvailabilityMode` /
+// `getSeedCommerceHighlights`) — but are not part of the generated
+// `getSeedProducts()` supplier catalog, so they 404 under
+// `E2E_CATALOG_FIXTURES=1` (docs/QA_EVIDENCE.md → l-02, l-04). Defining them
+// here, alongside the dropship fixture product, keeps every existing
+// reference resolvable without touching call sites. `popularityScore` is
+// kept below the generated products' fixed `1` so they never displace the
+// first card in a default-sorted category grid (relied on by
+// `resolveOwnCatalogProductSlug` in the e2e suite).
+function createFixtureHeraBraceletProduct(): CatalogProduct {
+  const slug = "hera-bracelet";
+  const category = categoryBySlug.get("bracelets");
+  const images = getProductCatalogImages({ categorySlug: "bracelets", slug });
+  const variants: CatalogProductVariant[] = [
+    {
+      sku: `${slug}-s`,
+      name: "מידה S",
+      size: "S",
+      metalColor: "זהב",
+      separateCheckoutAvailable: false,
+      price: 840,
+      inventory: { "online-service": 4 },
+      availableQuantity: 4,
+      availableBranchCount: 1,
+    },
+    {
+      sku: `${slug}-m`,
+      name: "מידה M",
+      size: "M",
+      metalColor: "זהב",
+      separateCheckoutAvailable: false,
+      price: 840,
+      inventory: { "online-service": 5 },
+      availableQuantity: 5,
+      availableBranchCount: 1,
+    },
+  ];
+
+  return {
+    slug,
+    sku: slug,
+    requiresSeparateCheckout: false,
+    name: "צמיד Hera",
+    categorySlug: "bracelets",
+    categoryName: category
+      ? getPublicCategoryName(category.slug, category.name)
+      : "צמידים",
+    shortDescription: "צמיד עדין בציפוי זהב, מתאים לענידה יומיומית.",
+    description:
+      "צמיד Hera משלב שרשרת עדינה בציפוי זהב על כסף 925 עם סגירה בטוחה, ומתאים לענידה יומיומית או לשילוב עם צמידים נוספים.",
+    availabilityMode: getSeedAvailabilityMode(slug),
+    commerceHighlights: getSeedCommerceHighlights(slug),
+    deliveryPromise: "משלוח עד הבית לאחר השלמת התשלום.",
+    returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
+    careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
+    warranty: "אחריות 12 חודשים על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
+    price: variants[0]?.price ?? 840,
+    createdAt: fixtureCreatedAt,
+    popularityScore: 0.5,
+    material: "ציפוי זהב על כסף 925",
+    collection: "Everyday Luxury",
+    collections: ["Everyday Luxury"],
+    image: images[0] ?? DEFAULT_CATALOG_IMAGE,
+    images,
+    variants,
+    metalColors: ["זהב"],
+    sizes: ["S", "M"],
+    tags: ["ציפוי זהב", "נמכר ביותר"],
+    inventory: { "online-service": 9 },
+  };
+}
+
+function createFixtureVenusLineRingProduct(): CatalogProduct {
+  const slug = "venus-line-ring";
+  const category = categoryBySlug.get("rings");
+  const images = getProductCatalogImages({ categorySlug: "rings", slug });
+  const sizes = ["52", "54", "56"];
+  const variants: CatalogProductVariant[] = sizes.map((size, index) => ({
+    sku: `${slug}-${size}`,
+    name: `מידה ${size}`,
+    size,
+    metalColor: "זהב",
+    stoneColor: "יהלום",
+    separateCheckoutAvailable: false,
+    price: 1290,
+    inventory: { "online-service": 2 + index },
+    availableQuantity: 2 + index,
+    availableBranchCount: 1,
+  }));
+
+  return {
+    slug,
+    sku: slug,
+    requiresSeparateCheckout: false,
+    name: "טבעת Venus Line",
+    categorySlug: "rings",
+    categoryName: category
+      ? getPublicCategoryName(category.slug, category.name)
+      : "טבעות",
+    shortDescription: "טבעת זהב עם יהלום מרכזי, לאירוסין ולאירועים מיוחדים.",
+    description:
+      "טבעת Venus Line משלבת קו זהב נקי עם יהלום שנבחר בקפידה, ומחייבת שיחת התאמה אישית לפני ההזמנה.",
+    availabilityMode: getSeedAvailabilityMode(slug),
+    commerceHighlights: getSeedCommerceHighlights(slug),
+    deliveryPromise: "משלוח עד הבית לאחר אישור ההתאמה.",
+    returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
+    careInstructions: "מומלץ להימנע ממגע עם בושם וחומרי ניקוי.",
+    warranty: "אחריות 12 חודשים על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
+    price: variants[0]?.price ?? 1290,
+    createdAt: fixtureCreatedAt,
+    popularityScore: 0.5,
+    material: "זהב ויהלום",
+    stone: "יהלום",
+    collection: "Timeless",
+    collections: ["Timeless"],
+    image: images[0] ?? DEFAULT_CATALOG_IMAGE,
+    images,
+    variants,
+    metalColors: ["זהב"],
+    sizes,
+    tags: ["זהב", "יהלום", "חדש"],
+    inventory: { "online-service": 9 },
+  };
+}
+
+function createFixtureMusePearlEarringsProduct(): CatalogProduct {
+  const slug = "muse-pearl-earrings";
+  const category = categoryBySlug.get("earrings");
+  const images = getProductCatalogImages({ categorySlug: "earrings", slug });
+  const variants: CatalogProductVariant[] = [
+    {
+      sku: `${slug}-pair`,
+      name: "זוג",
+      metalColor: "זהב",
+      stoneColor: "פנינה",
+      separateCheckoutAvailable: false,
+      price: 690,
+      inventory: { "online-service": 0 },
+      availableQuantity: 0,
+      availableBranchCount: 0,
+    },
+  ];
+
+  return {
+    slug,
+    sku: slug,
+    requiresSeparateCheckout: false,
+    name: "עגילי Muse Pearl",
+    categorySlug: "earrings",
+    categoryName: category
+      ? getPublicCategoryName(category.slug, category.name)
+      : "עגילים",
+    shortDescription: "עגילי פנינה בציפוי זהב, מוכנים בהתאמה אישית.",
+    description:
+      "עגילי Muse Pearl משלבים פנינה טבעית עם ציפוי זהב על כסף 925, ומוכנים בהזמנה אישית לפי מידה וגוון.",
+    availabilityMode: getSeedAvailabilityMode(slug),
+    commerceHighlights: getSeedCommerceHighlights(slug),
+    deliveryPromise: "משלוח עד הבית לאחר אישור ההכנה האישית.",
+    returnPolicy: "החלפה או החזרה בתיאום אישי לפי מדיניות Elysia.",
+    careInstructions: "מומלץ להימנע ממגע עם בושם, כלור וחומרי ניקוי.",
+    warranty: "אחריות 12 חודשים על פגמי ייצור ושירות ניקוי ראשוני ללא עלות.",
+    price: variants[0]?.price ?? 690,
+    createdAt: fixtureCreatedAt,
+    popularityScore: 0.5,
+    material: "ציפוי זהב על כסף 925",
+    stone: "פנינה",
+    collection: "Pearls",
+    collections: ["Pearls"],
+    image: images[0] ?? DEFAULT_CATALOG_IMAGE,
+    images,
+    variants,
+    metalColors: ["זהב"],
+    sizes: [],
+    tags: ["פנינה", "מתנה", "הזמנה אישית"],
+    inventory: { "online-service": 0 },
   };
 }
 
