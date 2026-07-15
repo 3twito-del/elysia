@@ -234,8 +234,27 @@ have been deleted; partially done items state only their remaining scope.
   (`src/server/adapters/search-evaluation.ts`); remaining scope:
   transliteration/morphology corpus depth, semantic/AI path evaluation, and
   runs against the real catalog.
-- **E-03 Merchandiser-aware ranking** · P1 · NOW — blend relevance,
-  availability, collection priority; exact intent wins; ranking inspectable.
+- **E-03 Merchandiser-aware ranking — residual** · P1 · NOW — the Typesense
+  path already blended `_text_match` relevance with `popularityScore`
+  (`buildTypesenseSort`); the **local/degraded path had none** — a real
+  text query under `E2E_CATALOG_FIXTURES=1` or a Typesense outage returned
+  filter-order results with zero relevance ranking, only category-interleave
+  for the no-query browse case. Fixed: `computeLocalRelevanceScore`
+  (`src/server/adapters/search.ts`, exported for direct inspection/testing —
+  the "ranking inspectable" requirement) blends exact/prefix/contains
+  name-match tiers (exact intent wins), a facet-match tier, a
+  description-only tier, and a real availability boost (a sold-out
+  ready-to-order item ranks below an otherwise-identical in-stock one; a
+  made-to-order/consultation item is correctly *not* penalized as
+  unavailable — caught by a failing test before it shipped). Verified: 8 new
+  unit tests plus the existing degraded-Typesense and search e2e tests
+  re-run clean. **Collection priority deliberately not attempted**: there is
+  no real manual-rank data model for collections yet — that's C-05, blocked
+  on A-05 — and `CatalogProduct.collections` only carries names, not
+  priority metadata, through the current mapping pipeline. Fabricating a
+  proxy signal here (e.g. `Collection.isFeatured`) would risk conflicting
+  with whatever C-05 eventually builds; left as genuinely deferred, not
+  silently dropped.
 - **E-04 Filter and sort validation** · P1 · MEASURE — labels, counts, URL
   persistence, mobile sheet, keyboard/SR semantics against a realistic catalog.
 - **E-05 Collection-led discovery** · P2 · BENCHMARK — restrained collection

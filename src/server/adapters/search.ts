@@ -8,6 +8,7 @@ import {
   type SearchMode,
   type SemanticSearchIntent,
 } from "~/lib/semantic-search-intent";
+import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatInlinePrice } from "~/lib/format";
 import { resolveSemanticSearchIntent } from "~/server/ai/search-intent";
 import {
@@ -610,7 +611,80 @@ function sortLocalHits(hits: CatalogProduct[], input: ProductSearchInput) {
     return interleaveProductsByCategory(sorted);
   }
 
-  return sorted;
+  const normalizedQuery = input.query?.trim().toLowerCase() ?? "";
+
+  return sorted.sort(
+    (a, b) =>
+      computeLocalRelevanceScore(b, normalizedQuery) -
+        computeLocalRelevanceScore(a, normalizedQuery) ||
+      (b.popularityScore ?? 0) - (a.popularityScore ?? 0) ||
+      getProductCreatedAtTime(b) - getProductCreatedAtTime(a),
+  );
+}
+
+// E-03 (docs/TASKS.md): blends text-match strength (exact intent wins) with
+// real availability for the local/degraded search path (Typesense down or
+// E2E_CATALOG_FIXTURES). Every hit reaching this function already matched
+// the query somewhere (`matchesCatalogSearch` in catalog.ts), so the score
+// only decides ordering, not inclusion. Deliberately does not blend
+// "collection priority" -- there is no real manual-rank data model for
+// that yet (C-05, blocked on A-05); fabricating one here would conflict
+// with whatever C-05 eventually builds.
+export const LOCAL_RELEVANCE_WEIGHTS = {
+  nameExact: 100,
+  nameStartsWith: 60,
+  nameContains: 40,
+  facetMatch: 15,
+  descriptionMatch: 5,
+  available: 10,
+} as const;
+
+export function computeLocalRelevanceScore(
+  product: CatalogProduct,
+  normalizedQuery: string,
+) {
+  let score = 0;
+
+  if (normalizedQuery) {
+    const name = product.name.toLowerCase();
+
+    if (name === normalizedQuery) {
+      score += LOCAL_RELEVANCE_WEIGHTS.nameExact;
+    } else if (name.startsWith(normalizedQuery)) {
+      score += LOCAL_RELEVANCE_WEIGHTS.nameStartsWith;
+    } else if (name.includes(normalizedQuery)) {
+      score += LOCAL_RELEVANCE_WEIGHTS.nameContains;
+    } else if (
+      [product.material, product.stone, product.collection, ...product.tags]
+        .filter((value): value is string => Boolean(value))
+        .some((value) => value.toLowerCase().includes(normalizedQuery))
+    ) {
+      score += LOCAL_RELEVANCE_WEIGHTS.facetMatch;
+    } else if (
+      [product.shortDescription, product.description].some((value) =>
+        value.toLowerCase().includes(normalizedQuery),
+      )
+    ) {
+      score += LOCAL_RELEVANCE_WEIGHTS.descriptionMatch;
+    }
+  }
+
+  const availableQuantity = Object.values(product.inventory).reduce(
+    (sum, quantity) => sum + quantity,
+    0,
+  );
+  // Only a genuine sold-out ready-to-order item is "unavailable" here --
+  // made-to-order/consultation items are legitimately purchasable through a
+  // different path and should not be penalized as if they were out of stock.
+  const isSoldOut =
+    getPublicProductCommerceStatus({
+      availabilityMode: product.availabilityMode,
+      availableQuantity,
+    }).serviceReason === "availability";
+
+  if (!isSoldOut) score += LOCAL_RELEVANCE_WEIGHTS.available;
+
+  return score;
 }
 
 function sortSemanticHits(

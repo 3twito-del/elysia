@@ -33,6 +33,7 @@ Sections: 64
 - [checkout-quantity-mobile-summary-benchmark](#evidence-checkout-quantity-mobile-summary-benchmark)
 - [checkout-validation-payment-confidence-benchmark](#evidence-checkout-validation-payment-confidence-benchmark)
 - [customer-auth-e2e-fixture](#evidence-customer-auth-e2e-fixture)
+- [e-03-merchandiser-aware-ranking](#evidence-e-03-merchandiser-aware-ranking)
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
@@ -7142,3 +7143,81 @@ construction rather than by a conditional check that could regress:
 
 No code change made — nothing to fix. `docs/TASKS.md`'s H-06 row is deleted
 per its own "completed items are deleted" convention.
+
+---
+
+<a id="evidence-e-03-merchandiser-aware-ranking"></a>
+
+## Evidence: e-03-merchandiser-aware-ranking
+
+# E-03 Merchandiser-Aware Ranking — Local Search Relevance
+
+Date: 2026-07-15.
+
+Scope: "blend relevance, availability, collection priority; exact intent
+wins; ranking inspectable."
+
+## Finding
+
+The Typesense-backed search path already blended relevance: `buildTypesenseSort`
+(`src/server/adapters/search.ts`) sorts by `_text_match:desc,popularityScore:desc`
+for a real query, `popularityScore:desc,createdAt:desc` for a plain browse.
+The **local/degraded path had no ranking at all** for the query case:
+`sortLocalHits`'s default branch returned `filterCatalogProducts`'s hits in
+whatever order the underlying `findMany`/fixture array produced them —
+correct results, but arbitrary order. This path is not a rare corner case:
+it serves `E2E_CATALOG_FIXTURES=1` (this repo's whole e2e suite) and any
+production Typesense outage (the exact scenario L-04's "returns real catalog
+results on search while Typesense is unreachable" test already covers for
+*presence* of results, not their order).
+
+## Fix
+
+`computeLocalRelevanceScore` (exported, `src/server/adapters/search.ts`):
+every hit reaching this function already matched the query somewhere
+(`matchesCatalogSearch` in `catalog.ts` filters before this runs), so the
+score only decides order, not inclusion.
+
+- Name-match tiers, highest to lowest: exact (`LOCAL_RELEVANCE_WEIGHTS.nameExact`,
+  100 — "exact intent wins"), starts-with (60), contains (40), a
+  material/stone/collection/tag facet match (15), a description-only match
+  (5).
+- An availability boost (10) for anything **not** genuinely sold out.
+  Deliberately keyed on `getPublicProductCommerceStatus(...).serviceReason
+  !== "availability"` rather than `canAddToCart` — a first attempt using
+  `canAddToCart` incorrectly penalized made-to-order/consultation products
+  (which are legitimately purchasable through a different flow, not out of
+  stock) as if they were unavailable; a test written against the intended
+  behavior caught this before it shipped (see Verification).
+- `popularityScore` then `createdAt` as final tiebreakers, matching the
+  existing Typesense/browse conventions elsewhere in the same file.
+
+**Collection priority not attempted** — see the `docs/TASKS.md` E-03 row for
+why: no real manual-rank data model exists yet (C-05, blocked on A-05), and
+`CatalogProduct.collections` is names-only through the current mapping
+pipeline. Not fabricated.
+
+**"Ranking inspectable"**: `computeLocalRelevanceScore` and
+`LOCAL_RELEVANCE_WEIGHTS` are exported specifically so the formula is a
+directly-callable, directly-testable, documented pure function rather than
+inlined comparator logic — the same standard `buildTypesenseSort` already
+met for the Typesense path.
+
+## Verification
+
+- 8 new unit tests (`src/server/adapters/search-local-relevance.test.ts`):
+  exact beats partial, case-insensitive exact match, prefix beats contains,
+  name-match beats facet-match, facet-match beats description-only match,
+  available beats sold-out, made-to-order is *not* penalized (the bug this
+  test caught), and a bare empty-query/out-of-stock product scores zero.
+- Re-ran the existing e2e coverage this touches:
+  `pnpm exec playwright test tests/e2e/critical-flows.spec.ts -g "finds a
+  product from search|returns real catalog results on search while
+  Typesense is unreachable|shows recoverable no-results" --project=chromium-desktop`
+  → **3 passed**.
+- `copy:sync`/`copy:check` synced, `tsc --noEmit` clean, `eslint` clean, full
+  unit suite **1698/1698** passing (340 files).
+
+## Residual
+
+Collection priority: MEASURE/OWNER, gated on C-05/A-05 as documented above.
