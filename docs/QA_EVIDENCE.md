@@ -7648,6 +7648,55 @@ with a fresh Playwright check directly against `elysia-jewellery.com`
 after that deploy went Ready (zero CSP errors; documented in the G-11
 entry above).
 
+## Third finding — a stuck migration lock, root-caused and fixed
+
+While pushing later commits in this same refresh session, two subsequent
+production deploys failed on:
+
+```
+Error: P1002
+The database server was reached but timed out.
+Context: Timed out trying to acquire a postgres advisory lock
+(SELECT pg_advisory_lock(72707369)). Timeout: 10000ms.
+```
+
+Investigated rather than assumed transient. A direct read-only query
+against production (`pg_locks` joined to `pg_stat_activity`) found the lock
+genuinely held, `granted: true`, by an **idle** backend
+(`application_name: "pgbouncer"`) alive for 20 minutes with nothing
+running — a stuck lock, not live contention. `DATABASE_URL` resolves to
+Neon's pooled endpoint (hostname contains `-pooler`); `DATABASE_URL_UNPOOLED`
+existed as an env var slot but was empty, and `schema.prisma` had no
+`directUrl` — so every `prisma migrate deploy` was forced onto the pooled
+connection for its session-scoped advisory lock, which is a documented
+incompatibility with PgBouncer transaction pooling (locks can outlive the
+client that took them because PgBouncer recycles backends without clearing
+session state).
+
+**Fix**:
+
+1. `pg_terminate_backend()` on the stuck backend via a direct (unpooled)
+   connection — confirmed 0 remaining advisory locks immediately after.
+2. Added `directUrl = env("DATABASE_URL_UNPOOLED")` to the Prisma
+   datasource — the standard, documented Prisma+Neon pattern for this exact
+   failure mode. Runtime queries keep using the pooled `url`, unaffected.
+3. Derived the real unpooled connection string from the pooled one per
+   Neon's own naming convention (identical host, minus `-pooler`) — verified
+   reachable with a real read-only query before use, not assumed.
+4. Provisioned `DATABASE_URL_UNPOOLED` in Vercel production env, and
+   documented the local/`.env.example` equivalent (same single Postgres
+   instance locally, no pooling distinction to make).
+
+**Verification**: pushed the fix (commit `af1b636`) and watched the next
+production deploy's build log directly — the migration step (`101
+migrations found` → `Seeding chart of accounts`) completed in **under half
+a second**, vs. the prior two attempts each blocking for the full 10-second
+timeout and failing. Confirmed the new deployment
+(`dpl_Gf5w1fAJi1NyRNY3ZgajMvx1YqQ8`) is live on the `elysia-jewellery.com`
+alias, smoke-tested clean (`/`, `/api/health`), and the log still shows
+`Next.js 16.2.6 (webpack)` — confirming the G-11 fix stayed intact through
+this change.
+
 ---
 
 <a id="evidence-j-10-verification-expiration-rollback"></a>

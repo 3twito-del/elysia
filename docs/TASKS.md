@@ -753,8 +753,10 @@ have been deleted; partially done items state only their remaining scope.
   provisioned the real unpooled connection string in Vercel production env
   (derived from the pooled URL per Neon's own naming convention — same host
   minus `-pooler` — then verified reachable before use), and documented the
-  local/`.env.example` equivalent. Verification (deploy after this fix)
-  pending as of this commit. Full detail:
+  local/`.env.example` equivalent. **Verified**: the next production deploy's
+  build log showed the migration step complete in under half a second (vs.
+  two prior attempts each blocking the full 10-second timeout and failing);
+  confirmed live on the `elysia-jewellery.com` alias. Full detail:
   `docs/QA_EVIDENCE.md` → `l-05-deployment-evidence-2026-07-15`.
 - **L-06 Real transaction canaries** · P0 · EXTERNAL — low-value own and
   supplier transactions with refund/void, cleanup, and alerting.
