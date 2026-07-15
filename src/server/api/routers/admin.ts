@@ -36,6 +36,8 @@ import {
   updateAdminInventoryInputSchema,
   updateAdminProductCommerce,
   updateAdminProductCommerceInputSchema,
+  updateAdminProductMediaAsset,
+  updateAdminProductMediaInputSchema,
   updateAdminProductStatus,
   updateAdminProductStatusInputSchema,
   upsertAdminShipment,
@@ -176,6 +178,12 @@ export const adminRouter = createTRPCRouter({
     .input(updateAdminProductCommerceInputSchema)
     .mutation(({ ctx, input }) =>
       updateAdminProductCommerce({ data: input, adminUserId: ctx.admin.id }),
+    ),
+
+  updateProductMedia: adminProcedure("CATALOG_WRITE")
+    .input(updateAdminProductMediaInputSchema)
+    .mutation(({ ctx, input }) =>
+      updateAdminProductMediaAsset({ data: input, adminUserId: ctx.admin.id }),
     ),
 
   updateInventory: adminProcedure("INVENTORY_WRITE")

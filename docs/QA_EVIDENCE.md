@@ -96,6 +96,7 @@ Sections: 64
 - [wave-0-owner-evidence-register](#evidence-wave-0-owner-evidence-register)
 - [webpack-build-browserslist-warning-fix](#evidence-webpack-build-browserslist-warning-fix)
 - [release-scorecard-l1-l2-merge](#evidence-release-scorecard-l1-l2-merge)
+- [h-03-b-07-media-governance-admin-ui](#evidence-h-03-b-07-media-governance-admin-ui)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
@@ -7982,3 +7983,98 @@ known concrete gap when the docs were updated, now closed in code.
   `gates.L2` keys anywhere in the output.
 - Full `pnpm check` (copy:check, lint, typecheck, 1707 unit tests) —
   green, one pre-existing unrelated ESLint warning untouched.
+
+<a id="evidence-h-03-b-07-media-governance-admin-ui"></a>
+
+## Evidence: h-03-b-07-media-governance-admin-ui
+
+# H-03 Product-Aware Advisor Handoff + B-07 Media Governance Admin UI
+
+Date: 2026-07-15.
+
+Scope: two NOW-tagged items the owner approved building right after the
+OWNER-list sweep — both genuinely unblocked, neither dependent on the
+demo-catalog/no-real-supplier constraint flagged elsewhere this session.
+
+## H-03 — a real, previously-undiagnosed bug, not a missing feature
+
+Traced the full click-through path from PDP to `/service` before writing
+any code. Found: `commerce-labels.ts` already computes *why* a customer is
+routed to service (`serviceReason`: `made-to-order` / `consultation` /
+`availability`); `product-purchase-panel.tsx` already builds that into
+`createProductServiceHref({ productReference, reason })`, which put it in
+a URL `reason=` query param — and `src/app/service/page.tsx` **never reads
+a `reason` param at all** (only `topic`/`message`/`orderNumber`/
+`productReference`). The context was computed, encoded in the URL, and
+silently dropped on arrival. A second instance of the identical bug:
+`page.tsx`'s always-visible "שאלה לפני הזמנה" link passed a free-text
+default message through the same dead `reason` param.
+
+Fix: `createProductServiceHref` now writes into the already-supported
+`topic`/`message` params instead of the dead `reason` param — pre-filled,
+editable, removable before submission, matching the existing
+`productReference` field's pattern (H-03's own acceptance bar: "minimized
+and consented"). `consultation` maps to the existing `sizing` topic (its
+real seeded description — "ייעוץ מידה, התאמה או בחירת מתנה" — already
+covers this); `made-to-order`/`availability` get a message-only prefill
+since no existing `ContactTopic` fits either honestly, and forcing a wrong
+bucket would have been worse than leaving the default.
+
+Verification:
+- 5 new unit tests, `product-purchase-utils.test.ts` — all three reason
+  values, `ready` (no forced context on a normal available product), and
+  an explicit-message override.
+- The existing e2e test (`routes made-to-order products to service...`)
+  extended to assert the *message textarea* actually contains the context
+  after navigation, not just that the URL has the right query string —
+  proves the fix works end to end, not just at the unit level.
+- `pnpm exec tsc --noEmit` clean; no other caller of `createProductServiceHref`
+  or `/service`'s `reason` param existed (checked before assuming safe).
+
+## B-07 — the admin UI residual, shipped
+
+`ProductMedia`'s governance fields (`provenance`, `licenseStatus`,
+`licenseExpiresAt`, `isGenerated`, `approvedAt`/`approvedBy` —
+`prisma/migrations/20260714030000_product_media_asset_governance`) could
+only be set by direct DB/script access. Added a "מדיה" panel per product
+row in `/admin/catalog`, one form per media asset, following the exact
+existing pattern of `AdminProductCommerceForm`'s fact/policy verification
+checkboxes: unchecking "אושר לפרסום" explicitly clears `approvedAt`/
+`approvedBy` rather than leaving a stale approval in place.
+
+New: `updateAdminProductMediaInputSchema` (`src/lib/admin-validation.ts`),
+`updateAdminProductMediaAsset` (`src/server/services/admin-commerce.ts`,
+transactional, writes an `AuditLog` row with action
+`product_media_governance_updated`), `admin.updateProductMedia` tRPC
+mutation (`CATALOG_WRITE`), `AdminProductMediaGovernancePanel`/
+`AdminProductMediaAssetForm` (`admin-catalog-actions.tsx`). Extended
+`listAdminCatalog` (`admin-operations.ts`) to select and return the full
+per-asset governance fields, not just `url`/`alt`/`role`/`isPrimary`.
+
+Verification, not assumption:
+- Unit tests: the Zod schema (valid/invalid provenance/license enum
+  values, empty-string-vs-real license-expiry-date handling) and a
+  source-text invariant test confirming the mutation stays inside
+  `db.$transaction` and the approve-toggle genuinely clears both fields
+  when unchecked, matching this file's existing testing convention for
+  DB-less service-layer checks.
+- **Real e2e test, not just typecheck**: creates a disposable product +
+  a real `ProductMedia` row, signs in as admin, opens the "מדיה" panel in
+  an actual browser, sets provenance/license/approval through the real
+  form, submits, and asserts (a) the DB row was actually updated with the
+  submitted values, (b) a real `AuditLog` row exists with the right
+  action/entity/entityId. Confirmed: `mapPrismaProductToCatalogReadiness`
+  already reads these exact field names (`scripts/lib/catalog-readiness-prisma.ts`),
+  so this admin UI feeds the real catalog-readiness engine directly, not a
+  disconnected form.
+- **Found and fixed a second, unrelated pre-existing bug while writing the
+  e2e test**: the catalog-quality rollup table's "sample products" column
+  can contain the same SKU substring as the products-table row being
+  targeted, making the existing plain `page.getByRole("row").filter({
+  hasText: sku })` locator ambiguous. This wasn't caused by this change —
+  the pre-existing "archiving a product" e2e test hit the identical
+  failure when re-run. Fixed both by adding a `data-testid` to the
+  products table and scoping through it.
+- `pnpm exec playwright test -g "archiving a product|approving a media
+  asset"` — both green. Full `pnpm check` — green, one pre-existing
+  unrelated ESLint warning untouched.

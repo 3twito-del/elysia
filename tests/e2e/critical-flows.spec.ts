@@ -424,10 +424,16 @@ test.describe("critical shopping flows", () => {
     const serviceHref = await serviceCta.getAttribute("href");
 
     expect(serviceHref).toMatch(/\/service\?/);
+    // H-03: the reason for leaving the PDP travels with the customer as a
+    // pre-filled, editable message — not silently dropped on arrival.
+    expect(serviceHref).toContain("message=");
     await page.goto(serviceHref!, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/service\?/);
     await expect(page.locator('input[name="productReference"]')).toHaveValue(
       new RegExp(madeToOrderProductName),
+    );
+    await expect(page.locator('textarea[name="message"]')).toHaveValue(
+      /הזמנה אישית/,
     );
   });
 
@@ -1724,7 +1730,13 @@ test.describe("access control surfaces", () => {
       await signInAdminWithFixture(page);
       await page.goto(`/admin/catalog?query=${fixture.productSku}`);
 
-      const row = page.getByRole("row").filter({ hasText: fixture.productSku });
+      // Scoped to the products table specifically — the catalog-quality
+      // rollup table above it also lists sample product SKUs per finding,
+      // which otherwise collides with a plain page-wide row filter.
+      const row = page
+        .getByTestId("admin-catalog-products-table")
+        .getByRole("row")
+        .filter({ hasText: fixture.productSku });
 
       await expect(row).toBeVisible();
 
@@ -1753,6 +1765,71 @@ test.describe("access control surfaces", () => {
       });
 
       expect(updatedProduct.status).toBe("ARCHIVED");
+    } finally {
+      await deleteDisposableAdminProduct(fixture.productId);
+    }
+  });
+
+  test("approving a media asset's governance is a real write, recorded in the audit log (B-07)", async ({
+    page,
+  }) => {
+    const fixture = await createDisposableAdminProduct({ status: "ACTIVE" });
+    const media = await getTestDb().productMedia.create({
+      data: {
+        productId: fixture.productId,
+        kind: "IMAGE",
+        url: "https://res.cloudinary.com/elysia/image/upload/e2e-disposable.jpg",
+        alt: "E2E disposable media asset",
+        isPrimary: true,
+      },
+    });
+
+    try {
+      await signInAdminWithFixture(page);
+      await page.goto(`/admin/catalog?query=${fixture.productSku}`);
+
+      const row = page
+        .getByTestId("admin-catalog-products-table")
+        .getByRole("row")
+        .filter({ hasText: fixture.productSku });
+
+      await expect(row).toBeVisible();
+      await row.getByText(/^מדיה/).click();
+
+      const mediaForm = row.locator("form").filter({ hasText: "שמירת נכס" });
+
+      await mediaForm.getByLabel("מקור הנכס").selectOption("OWNER_UPLOAD");
+      await mediaForm.getByLabel("סטטוס רישיון").selectOption("OWNED");
+      await mediaForm.getByLabel("אושר לפרסום").check();
+
+      const before = new Date();
+
+      await mediaForm.getByRole("button", { name: "שמירת נכס" }).click();
+      await expect(page.getByText("פרטי הממשל נשמרו.")).toBeVisible();
+
+      const updatedMedia = await getTestDb().productMedia.findUniqueOrThrow({
+        where: { id: media.id },
+      });
+
+      expect(updatedMedia.provenance).toBe("OWNER_UPLOAD");
+      expect(updatedMedia.licenseStatus).toBe("OWNED");
+      expect(updatedMedia.approvedAt).not.toBeNull();
+      expect(updatedMedia.approvedBy).not.toBeNull();
+
+      const auditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "product_media_governance_updated",
+          entity: "ProductMedia",
+          entityId: media.id,
+          createdAt: { gte: before },
+        },
+      });
+
+      expect(
+        auditRow,
+        "expected a product_media_governance_updated AuditLog row for this asset",
+      ).not.toBeNull();
     } finally {
       await deleteDisposableAdminProduct(fixture.productId);
     }

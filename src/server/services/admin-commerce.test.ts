@@ -43,6 +43,7 @@ describe("admin commerce helpers", () => {
       "updateAdminAppointmentStatus",
       "createAdminProduct",
       "updateAdminProductCommerce",
+      "updateAdminProductMediaAsset",
       "updateAdminProductStatus",
       "updateAdminInventory",
       "createAdminCoupon",
@@ -77,6 +78,22 @@ describe("admin commerce helpers", () => {
     expect(idempotencyKeyLine).toBeDefined();
     expect(idempotencyKeyLine).toContain("shipment:${order.id}:${shipment.status}");
     expect(idempotencyKeyLine).not.toContain("Date.now()");
+  });
+
+  it("clears a media asset's approval rather than leaving it stale (B-07)", () => {
+    // Unchecking "approve" in the admin UI must revoke a prior approval, not
+    // silently leave a stale approvedAt/approvedBy from before the toggle.
+    const source = read("src/server/services/admin-commerce.ts");
+    const mediaSource = getFunctionSource(
+      source,
+      "updateAdminProductMediaAsset",
+    );
+
+    expect(mediaSource).toContain("approvedAt: parsed.approve ? new Date() : null");
+    expect(mediaSource).toContain(
+      "approvedBy: parsed.approve ? input.adminUserId : null",
+    );
+    expect(mediaSource).toContain("writeAdminAudit");
   });
 });
 

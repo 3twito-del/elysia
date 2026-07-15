@@ -4,12 +4,73 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  createProductServiceHref,
   getAddToCartFailureMessage,
   getPurchaseConfidenceItems,
   getVariantButtonLabel,
   getVariantStatusLabel,
   isVariantSelectableForCart,
 } from "./product-purchase-utils";
+
+it("carries the made-to-order reason into a pre-filled, editable message", () => {
+  const href = createProductServiceHref({
+    productReference: "Venus Line Ring",
+    reason: "made-to-order",
+  });
+  const params = new URL(href, "https://example.com").searchParams;
+
+  expect(params.get("productReference")).toBe("Venus Line Ring");
+  expect(params.get("message")).toContain("Venus Line Ring");
+  expect(params.get("message")).toContain("הזמנה אישית");
+  // No dedicated topic exists for made-to-order — don't force a wrong bucket.
+  expect(params.get("topic")).toBeNull();
+});
+
+it("routes a consultation reason to the sizing topic with context", () => {
+  const href = createProductServiceHref({
+    productReference: "Muse Pearl Earrings",
+    reason: "consultation",
+  });
+  const params = new URL(href, "https://example.com").searchParams;
+
+  expect(params.get("topic")).toBe("sizing");
+  expect(params.get("message")).toContain("ייעוץ");
+});
+
+it("carries an availability reason into a pre-filled message", () => {
+  const href = createProductServiceHref({
+    productReference: "Hera Bracelet",
+    reason: "availability",
+  });
+  const params = new URL(href, "https://example.com").searchParams;
+
+  expect(params.get("message")).toContain("זמינות");
+  expect(params.get("topic")).toBeNull();
+});
+
+it("adds no message or topic for a ready-to-order reason", () => {
+  const href = createProductServiceHref({
+    productReference: "Halo Ring",
+    reason: "ready",
+  });
+  const params = new URL(href, "https://example.com").searchParams;
+
+  expect(params.get("message")).toBeNull();
+  expect(params.get("topic")).toBeNull();
+});
+
+it("lets an explicit message override the reason-derived one", () => {
+  const href = createProductServiceHref({
+    message: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
+    productReference: "Halo Ring (SKU-1)",
+  });
+  const params = new URL(href, "https://example.com").searchParams;
+
+  expect(params.get("message")).toBe(
+    "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
+  );
+  expect(params.get("topic")).toBeNull();
+});
 
 it("maps add-to-cart failures to customer-safe recovery copy", () => {
   expect(

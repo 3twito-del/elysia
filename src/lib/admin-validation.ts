@@ -204,6 +204,42 @@ export const updateAdminInventoryInputSchema = z.object({
   safetyStock: nonnegativeInteger("יש להזין מלאי ביטחון תקין.").default(0),
 });
 
+const mediaProvenanceValues = [
+  "SUPPLIER_FEED",
+  "OWNER_UPLOAD",
+  "AI_GENERATED",
+  "STOCK_LICENSED",
+  "UNKNOWN",
+] as const;
+
+const mediaLicenseStatusValues = [
+  "OWNED",
+  "SUPPLIER_GRANTED",
+  "LICENSED",
+  "NEEDS_REVIEW",
+  "UNKNOWN",
+] as const;
+
+const optionalDateInput = z.preprocess(
+  (value) =>
+    typeof value === "string" && value.trim().length === 0 ? undefined : value,
+  z.coerce.date().optional(),
+);
+
+// B-07 residual: per-asset media governance fields (prisma/migrations/
+// 20260714030000_product_media_asset_governance). `approve` is a one-way
+// admin action, not a raw field passthrough — checking it stamps
+// approvedAt/approvedBy; unchecking it explicitly clears both, the same
+// pattern as verifyFacts/verifyPolicies above.
+export const updateAdminProductMediaInputSchema = z.object({
+  mediaId: requiredId("חסר נכס מדיה לעדכון."),
+  provenance: z.enum(mediaProvenanceValues),
+  licenseStatus: z.enum(mediaLicenseStatusValues),
+  licenseExpiresAt: optionalDateInput,
+  isGenerated: z.boolean().default(false),
+  approve: z.boolean().default(false),
+});
+
 export const createAdminCouponClientInputSchema = z
   .object({
     code: z.string().trim().min(3, "יש להזין קוד קופון.").max(64),

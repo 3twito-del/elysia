@@ -7,6 +7,7 @@ import {
   refundAdminOrderInputSchema,
   updateAdminProductCommerceInputSchema,
   updateAdminInventoryInputSchema,
+  updateAdminProductMediaInputSchema,
   upsertAdminShipmentInputSchema,
 } from "./admin-validation";
 import { getZodFieldErrors } from "./form-validation";
@@ -190,5 +191,58 @@ describe("admin validation", () => {
     });
 
     expect(parsed.success).toBe(true);
+  });
+
+  it("validates media governance updates and rejects an unknown provenance/license value", () => {
+    const valid = updateAdminProductMediaInputSchema.safeParse({
+      mediaId: "media_1",
+      provenance: "SUPPLIER_FEED",
+      licenseStatus: "SUPPLIER_GRANTED",
+    });
+
+    expect(valid.success).toBe(true);
+    if (valid.success) {
+      expect(valid.data.isGenerated).toBe(false);
+      expect(valid.data.approve).toBe(false);
+    }
+
+    const invalid = updateAdminProductMediaInputSchema.safeParse({
+      mediaId: "media_1",
+      provenance: "NOT_A_REAL_VALUE",
+      licenseStatus: "SUPPLIER_GRANTED",
+    });
+
+    expect(invalid.success).toBe(false);
+  });
+
+  it("treats an empty license-expiry string as absent rather than an invalid date", () => {
+    const parsed = updateAdminProductMediaInputSchema.safeParse({
+      mediaId: "media_1",
+      provenance: "OWNER_UPLOAD",
+      licenseStatus: "OWNED",
+      licenseExpiresAt: "",
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.licenseExpiresAt).toBeUndefined();
+    }
+  });
+
+  it("parses a real license-expiry date", () => {
+    const parsed = updateAdminProductMediaInputSchema.safeParse({
+      mediaId: "media_1",
+      provenance: "STOCK_LICENSED",
+      licenseStatus: "LICENSED",
+      licenseExpiresAt: "2027-01-15",
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.licenseExpiresAt).toBeInstanceOf(Date);
+      expect(parsed.data.licenseExpiresAt?.toISOString().slice(0, 10)).toBe(
+        "2027-01-15",
+      );
+    }
   });
 });

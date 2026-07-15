@@ -130,8 +130,8 @@ export default async function ProductPage({
       : undefined;
   const productSale = getProductPageSale(product);
   const productSupportHref = createProductServiceHref({
+    message: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
     productReference: `${publicProductName} (${product.sku})`,
-    reason: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
   });
   const structuredData = buildProductStructuredData({
     brandName: "Elysia",

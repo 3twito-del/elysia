@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import type { ProductStatus } from "@prisma/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Plus, Save } from "lucide-react";
 
@@ -25,12 +26,14 @@ import {
   getZodFieldErrors,
   type FormFieldErrors,
 } from "~/lib/form-validation";
+import { formatOptionalHebrewDateTime } from "~/lib/format";
 import { api, type RouterOutputs } from "~/trpc/react";
 
 type AdminCatalog = RouterOutputs["admin"]["catalog"];
 type Product = AdminCatalog["products"][number];
 type Variant = Pick<Product["variants"][number], "id" | "name" | "sku">;
 type Coupon = AdminCatalog["coupons"][number];
+type MediaAsset = Product["media"][number];
 
 export function AdminProductStatusAction({
   publishBlockers,
@@ -300,6 +303,173 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
         </Button>
       </form>
     </details>
+  );
+}
+
+const mediaProvenanceLabels: Record<MediaAsset["provenance"], string> = {
+  SUPPLIER_FEED: "פיד ספק",
+  OWNER_UPLOAD: "העלאה של Elysia",
+  AI_GENERATED: "נוצר ב-AI",
+  STOCK_LICENSED: "תמונת סטוק ברישיון",
+  UNKNOWN: "לא ידוע",
+};
+
+const mediaLicenseStatusLabels: Record<MediaAsset["licenseStatus"], string> = {
+  OWNED: "בבעלות Elysia",
+  SUPPLIER_GRANTED: "הרשאת ספק",
+  LICENSED: "ברישיון",
+  NEEDS_REVIEW: "דורש בדיקה",
+  UNKNOWN: "לא ידוע",
+};
+
+// B-07 residual: per-asset media governance (provenance/license/generated/
+// approval) previously settable only by direct DB or script access.
+export function AdminProductMediaGovernancePanel({
+  media,
+}: {
+  media: MediaAsset[];
+}) {
+  if (media.length === 0) return null;
+
+  return (
+    <details className="mt-2 text-sm">
+      <summary className="text-muted-foreground cursor-pointer underline-offset-4 hover:underline">
+        מדיה ({media.length})
+      </summary>
+      <div className="mt-3 grid min-w-72 gap-3">
+        {media.map((asset) => (
+          <AdminProductMediaAssetForm asset={asset} key={asset.id} />
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function AdminProductMediaAssetForm({ asset }: { asset: MediaAsset }) {
+  const utils = api.useUtils();
+  const router = useRouter();
+  const [feedback, setFeedback] = useState<AdminMutationFeedback>();
+  const mutation = api.admin.updateProductMedia.useMutation({
+    onError: (error) => setFeedback({ message: error.message, tone: "error" }),
+    onMutate: () => setFeedback(undefined),
+    onSuccess: async () => {
+      await utils.admin.catalog.invalidate();
+      router.refresh();
+      setFeedback({ message: "פרטי הממשל נשמרו.", tone: "success" });
+    },
+  });
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+
+    mutation.mutate({
+      mediaId: asset.id,
+      isGenerated: form.has("isGenerated"),
+      approve: form.has("approve"),
+      licenseExpiresAt: getOptionalFormString(form, "licenseExpiresAt"),
+      licenseStatus: getFormString(
+        form,
+        "licenseStatus",
+      ) as MediaAsset["licenseStatus"],
+      provenance: getFormString(
+        form,
+        "provenance",
+      ) as MediaAsset["provenance"],
+    });
+  }
+
+  return (
+    <form
+      className="glass-inset grid gap-2 rounded-md border p-3"
+      onSubmit={handleSubmit}
+    >
+      <div className="flex items-center gap-2">
+        <span className="bg-muted relative size-10 shrink-0 overflow-hidden rounded border">
+          <Image alt="" className="object-cover" fill sizes="40px" src={asset.url} />
+        </span>
+        <span className="text-muted-foreground min-w-0 truncate text-xs">
+          {asset.role ?? asset.alt}
+        </span>
+      </div>
+      <fieldset className="grid gap-2" disabled={mutation.isPending}>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <select
+            aria-label="מקור הנכס"
+            autoComplete="off"
+            className="glass-control h-10 rounded-md border px-2 text-xs"
+            defaultValue={asset.provenance}
+            name="provenance"
+          >
+            {Object.entries(mediaProvenanceLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label="סטטוס רישיון"
+            autoComplete="off"
+            className="glass-control h-10 rounded-md border px-2 text-xs"
+            defaultValue={asset.licenseStatus}
+            name="licenseStatus"
+          >
+            {Object.entries(mediaLicenseStatusLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Input
+          aria-label="תפוגת רישיון"
+          defaultValue={
+            asset.licenseExpiresAt
+              ? asset.licenseExpiresAt.toISOString().slice(0, 10)
+              : ""
+          }
+          name="licenseExpiresAt"
+          type="date"
+        />
+        <Label
+          className="flex items-start gap-2 text-xs leading-5"
+          htmlFor={`isGenerated-${asset.id}`}
+        >
+          <input
+            className="mt-0.5 size-4"
+            defaultChecked={asset.isGenerated}
+            id={`isGenerated-${asset.id}`}
+            name="isGenerated"
+            type="checkbox"
+          />
+          נוצר ב-AI (לא צילום אמיתי של המוצר)
+        </Label>
+        <Label
+          className="flex items-start gap-2 text-xs leading-5"
+          htmlFor={`approve-${asset.id}`}
+        >
+          <input
+            className="mt-0.5 size-4"
+            defaultChecked={Boolean(asset.approvedAt)}
+            id={`approve-${asset.id}`}
+            name="approve"
+            type="checkbox"
+          />
+          אושר לפרסום
+        </Label>
+        {asset.approvedAt ? (
+          <p className="text-muted-foreground text-xs">
+            אושר {formatOptionalHebrewDateTime(asset.approvedAt)}
+            {asset.approvedBy ? ` על ידי ${asset.approvedBy}` : ""}
+          </p>
+        ) : null}
+      </fieldset>
+      <AdminMutationStatus feedback={feedback} />
+      <Button disabled={mutation.isPending} size="sm" type="submit" variant="outline">
+        <Save aria-hidden="true" className="size-4" />
+        שמירת נכס
+      </Button>
+    </form>
   );
 }
 

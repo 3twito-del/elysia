@@ -9,6 +9,7 @@ import {
   updateAdminCouponStatusInputSchema,
   updateAdminInventoryInputSchema,
   updateAdminProductCommerceInputSchema,
+  updateAdminProductMediaInputSchema,
   updateAdminProductStatusInputSchema,
   upsertAdminShipmentInputSchema,
 } from "~/lib/admin-validation";
@@ -42,6 +43,7 @@ export {
   updateAdminCouponStatusInputSchema,
   updateAdminInventoryInputSchema,
   updateAdminProductCommerceInputSchema,
+  updateAdminProductMediaInputSchema,
   updateAdminProductStatusInputSchema,
   upsertAdminShipmentInputSchema,
 } from "~/lib/admin-validation";
@@ -569,6 +571,65 @@ export async function updateAdminProductCommerce(input: {
   });
 
   return { id: product.id, slug: product.slug };
+}
+
+// B-07 residual: the manifest and catalog-readiness enforcement engine
+// shipped 2026-07-14 without an admin surface — provenance/license fields
+// could only be set by direct DB/script access. This is that surface.
+export async function updateAdminProductMediaAsset(input: {
+  data: z.infer<typeof updateAdminProductMediaInputSchema>;
+  adminUserId: string;
+}) {
+  const parsed = updateAdminProductMediaInputSchema.parse(input.data);
+
+  const result = await db.$transaction(async (tx) => {
+    const existing = await tx.productMedia.findUniqueOrThrow({
+      where: { id: parsed.mediaId },
+      include: { product: { include: { category: true } } },
+    });
+
+    const updated = await tx.productMedia.update({
+      where: { id: parsed.mediaId },
+      data: {
+        provenance: parsed.provenance,
+        licenseStatus: parsed.licenseStatus,
+        licenseExpiresAt: parsed.licenseExpiresAt ?? null,
+        isGenerated: parsed.isGenerated,
+        // Unchecking "approve" explicitly revokes a stale approval rather
+        // than leaving it in place — the same all-or-nothing pattern as
+        // verifyFacts/verifyPolicies above.
+        approvedAt: parsed.approve ? new Date() : null,
+        approvedBy: parsed.approve ? input.adminUserId : null,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "product_media_governance_updated",
+      entity: "ProductMedia",
+      entityId: updated.id,
+      metadata: {
+        productId: existing.productId,
+        provenance: parsed.provenance,
+        licenseStatus: parsed.licenseStatus,
+        isGenerated: parsed.isGenerated,
+        approved: parsed.approve,
+      },
+    });
+
+    return {
+      id: updated.id,
+      categorySlug: existing.product.category.slug,
+      productSlug: existing.product.slug,
+    };
+  });
+
+  revalidateCatalogMutation({
+    productSlugs: [result.productSlug],
+    categorySlugs: [result.categorySlug],
+  });
+
+  return { id: result.id };
 }
 
 export async function updateAdminProductStatus(input: {

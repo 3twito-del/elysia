@@ -191,7 +191,7 @@ demo catalog's media as a defect to fix.
   defined measurements; reproducible scale claims. Owner-confirmed: only
   possible once real products are sold (needs real physical stock to
   photograph).
-- **B-07 Asset governance — residual** · P1 · NOW — the manifest and
+- **B-07 Asset governance — closed 2026-07-15** · P1 — the manifest and
   enforcement engine are shipped: `ProductMedia` carries `provenance`
   (`SUPPLIER_FEED`/`OWNER_UPLOAD`/`AI_GENERATED`/`STOCK_LICENSED`/`UNKNOWN`),
   `licenseStatus` (`OWNED`/`SUPPLIER_GRANTED`/`LICENSED`/`NEEDS_REVIEW`/
@@ -206,11 +206,22 @@ demo catalog's media as a defect to fix.
   (`ProductMedia.alt`, the `productId` relation). Verified: 4 new unit tests
   (`scripts/catalog-readiness.test.ts`, 13/13 passing) plus a live query
   through real seeded DB rows via `mapPrismaProductToCatalogReadiness`
-  confirming the DB→engine wiring. **Remaining scope**: no admin UI surface
-  yet to set these fields per-asset (they default to `UNKNOWN`/`false` and
-  can currently only be set by direct DB/script access); populating real
-  provenance/license facts for the existing catalog is owner-dependent, same
-  as the rest of I-341's asset debt.
+  confirming the DB→engine wiring. **Admin UI shipped 2026-07-15**: a
+  "מדיה" panel per product in `/admin/catalog` (one form per media asset —
+  provenance, license status, license expiry, generated flag, and a
+  one-way "approved for publication" toggle that stamps/clears
+  `approvedAt`/`approvedBy`, same pattern as the existing fact/policy
+  verification checkboxes) — `AdminProductMediaGovernancePanel`
+  (`src/app/admin/_components/admin-catalog-actions.tsx`), new
+  `admin.updateProductMedia` tRPC mutation
+  (`CATALOG_WRITE`, writes an `AuditLog` row). Verified: unit tests for the
+  Zod schema and the transaction/audit-log invariants, plus a real e2e test
+  creating a disposable product + media asset, approving it through the
+  actual browser UI, and asserting the real DB row and `AuditLog` entry —
+  not just that the form renders. Populating real provenance/license facts
+  for the existing (demo) catalog remains owner-dependent, same as the rest
+  of I-341's asset debt — this closes the missing admin *surface*, not the
+  underlying data-entry work.
 
 ### C — Product truth, catalog, and merchandising data
 
@@ -502,8 +513,23 @@ demo catalog's media as a defect to fix.
   public claim cites one. Unblocks H-03 to proceed.
 - **H-02 Appointments as a real journey** · P1 · OWNER+EXTERNAL —
   mystery-shopper booking completes end to end.
-- **H-03 Product-aware advisor handoff** · P1 · NOW after H-01 — context moves
-  with the customer; minimized and consented.
+- **H-03 Product-aware advisor handoff — closed 2026-07-15** · P1 — found a
+  real gap while implementing, not assumed: the PDP already computed *why*
+  a customer was routed to `/service` (`serviceReason`:
+  made-to-order/consultation/availability), built it into a URL `reason`
+  param, and `/service` never read that param at all — the context was
+  silently dropped on arrival. A second, separate instance of the same bug:
+  the always-visible "שאלה לפני הזמנה" link passed a free-text reason
+  through the same dead param. Fixed by routing the reason into the
+  already-supported `topic`/`message` params instead (pre-filled, editable,
+  removable before submission — matches the existing `productReference`
+  pattern, satisfies "minimized and consented"); consultation maps to the
+  existing "sizing" topic (its real description already covers
+  consultation), made-to-order/availability get a message-only prefill
+  since no dedicated topic fits either honestly. Verified: 5 new unit
+  tests (`product-purchase-utils.test.ts`), and the existing
+  made-to-order e2e test extended to assert the message field actually
+  carries the context, not just the URL — real, not assumed.
 - **H-04 Repair/resize/care intake** · P1 · OWNER+EXTERNAL — one real case
   completes with tracked status.
 - **H-07 Contact and attachment delivery validation** · P0 · MEASURE+EXTERNAL —

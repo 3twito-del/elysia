@@ -5,6 +5,7 @@ import { PackageCheck, Search, ShieldAlert } from "lucide-react";
 import {
   AdminProductCreateForm,
   AdminProductCommerceForm,
+  AdminProductMediaGovernancePanel,
   AdminProductStatusAction,
 } from "../_components/admin-catalog-actions";
 import { AdminShell } from "../_components/admin-shell";
@@ -345,7 +346,7 @@ export default async function AdminCatalogPage({
           </CardHeader>
           <CardContent>
             <AdminTableScrollHint />
-            <Table className="min-w-[920px]">
+            <Table className="min-w-[920px]" data-testid="admin-catalog-products-table">
               <TableHeader>
                 <TableRow>
                   <TableHead>מוצר</TableHead>
@@ -415,6 +416,7 @@ export default async function AdminCatalogPage({
                           status={product.status}
                         />
                         <AdminProductCommerceForm product={product} />
+                        <AdminProductMediaGovernancePanel media={product.media} />
                       </TableCell>
                     </TableRow>
                   ))

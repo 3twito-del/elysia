@@ -21,14 +21,57 @@ export type ProductBeforeOrderSummaryItem = {
   value: string;
 };
 
+export type ProductServiceReason = ReturnType<
+  typeof getPublicProductCommerceStatus
+>["serviceReason"];
+
+// Which existing /service ContactTopic (prisma/seed.ts) best matches each
+// reason. Left unmapped where no topic fits honestly — "made-to-order" and
+// "availability" don't have a dedicated topic, so the topic selector keeps
+// its normal default rather than being forced into a wrong bucket.
+const serviceReasonTopicSlug: Partial<Record<ProductServiceReason, string>> =
+  {
+    consultation: "sizing",
+  };
+
+const serviceReasonMessagePrefill: Partial<
+  Record<ProductServiceReason, (productReference: string) => string>
+> = {
+  "made-to-order": (productReference) =>
+    `לגבי ${productReference}: מדובר בפריט בהזמנה אישית, ואשמח ליצור קשר להשלמת ההזמנה.`,
+  consultation: (productReference) =>
+    `לגבי ${productReference}: אשמח לתאם ייעוץ לפני ההזמנה.`,
+  availability: (productReference) =>
+    `לגבי ${productReference}: אשמח לבדוק זמינות במלאי.`,
+};
+
+/**
+ * Carries the customer's reason for leaving the PDP (made-to-order,
+ * consultation, out of stock, or a plain pre-purchase question) into the
+ * service form as a pre-filled, editable topic/message — visible and
+ * removable before submission, never silently attached (H-03: context
+ * moves with the customer, minimized and consented).
+ */
 export function createProductServiceHref(input: {
+  message?: string;
   productReference: string;
-  reason: string;
+  reason?: ProductServiceReason;
 }) {
   const params = new URLSearchParams({
     productReference: input.productReference,
-    reason: input.reason,
   });
+
+  const topicSlug = input.reason
+    ? serviceReasonTopicSlug[input.reason]
+    : undefined;
+  if (topicSlug) params.set("topic", topicSlug);
+
+  const message =
+    input.message ??
+    (input.reason
+      ? serviceReasonMessagePrefill[input.reason]?.(input.productReference)
+      : undefined);
+  if (message) params.set("message", message);
 
   return `/service?${params.toString()}`;
 }
