@@ -154,7 +154,9 @@ have been deleted; partially done items state only their remaining scope.
   "a personal message" — concrete shape (from whom, what channel, current
   vs. needs building) still needs its own follow-up, not assumed.
 - **A-07 Campaign and editorial cadence** · P2 · OWNER — storytelling changes
-  because a real campaign exists, not for layout novelty.
+  because a real campaign exists, not for layout novelty. **Blocked**: no
+  real campaign exists yet — same demo-catalog/no-real-business constraint
+  as the rest of this pass.
 - **A-08 Blind distinctiveness validation** · P0 (final claim) · MEASURE —
   unbranded recognition study; failures return to A-01/A-02.
 
@@ -216,7 +218,9 @@ demo catalog's media as a defect to fix.
   required data per class; known code debt: country-of-manufacture and
   manufacturer/importer are TODO-backed fallbacks in the PDP; Shopify sync can
   still use `legalPlaceholder` for material. Acceptance: no published PDP
-  renders a placeholder or inferred fact.
+  renders a placeholder or inferred fact. **Blocked**: real per-product
+  specs need real products (G-01, EXTERNAL, no real supplier connection
+  yet) — same demo-catalog constraint.
 - **C-02 Governed attributes over free-form facts** · P1 · NOW after C-01
   policy — typed attributes, controlled vocabularies, effective dates; shared
   facts update centrally.
@@ -232,7 +236,8 @@ demo catalog's media as a defect to fix.
   product, manual rank, launch status, availability-aware fallback.
 - **C-07 Supplier provenance language** · P1 · BENCHMARK+OWNER — what source/
   fulfillment/warranty facts are public; premium tone without implying Elysia
-  manufacture. (I-334)
+  manufacture. (I-334) **Blocked**: needs real supplier facts, same
+  demo-catalog/no-real-supplier constraint.
 ### D — Homepage and global experience
 
 - **D-01 Reduce homepage length and competing intent** · P1 · BENCHMARK — rank
@@ -263,7 +268,8 @@ demo catalog's media as a defect to fix.
 ### E — Discovery: search, categories, gifts
 
 - **E-01 Taxonomy audit** · P1 · MEASURE+OWNER — customer-language evidence for
-  every navigation and filter term.
+  every navigation and filter term. **Blocked**: needs real customer/search
+  traffic to measure against — pre-launch, nothing to measure yet.
 - **E-02 Semantic search evaluation — residual** · P1 · NOW+MEASURE — the
   deterministic-path harness and labeled Hebrew corpus exist
   (`src/server/adapters/search-evaluation.ts`). Deepened the corpus
@@ -607,7 +613,9 @@ demo catalog's media as a defect to fix.
   not an engineering one. (Language/SEO architecture decision itself is
   parked: Hebrew-only at L1.)
 - **J-06 Hebrew search-content model** · P1 · OWNER+MEASURE — content answers a
-  task and leads to products; no SEO filler.
+  task and leads to products; no SEO filler. **Blocked**: content needs
+  real products to lead to and real search queries to answer — same
+  pre-launch/demo-catalog constraint.
 - **J-07 Editorial legal-page usability** · P2 · BENCHMARK — print style and
   last-updated are already shipped; a 2026-07-10 benchmark pass found zero of
   15 Tier A sites support mobile in-page ToC or plain-language summaries
@@ -617,7 +625,9 @@ demo catalog's media as a defect to fix.
   accordion grouping) would need its own benchmark pass. (I-330)
 - **J-08 Legal identity and policy review** · P0 · OWNER+EXTERNAL — counsel
   approval; footer/checkout expose only applicable facts. (ADR 0014: no
-  verified legal identity, no L1.)
+  verified legal identity, no launch.) Same item as the §5 OWNER-P0 legal
+  identity/lawyer-engagement blockers — see there for current status (no
+  entity yet, lawyer engagement not yet started).
 - **J-10 Content governance — residual, scoped to product facts/policy** ·
   P1 · NOW — "every public claim" site-wide (legal pages, homepage copy,
   FAQ, etc.) has no single existing data model to extend, unlike B-07's
