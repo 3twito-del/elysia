@@ -802,6 +802,24 @@ have been deleted; partially done items state only their remaining scope.
 The two-gate launch model (ADR 0013) governs sequencing: L1 (referral
 storefront, zero Elysia-processed money) then L2 (own commerce,
 `OWN_COMMERCE_ENABLED`). Acceptance criteria live in `docs/DECISIONS.md`.
+
+**Open conflict, unresolved (2026-07-15) — not silently reconciled:** ADR
+0013's entire L1 gate is built on ADR 0009's World-A default ("on the first
+public day Elysia processes zero customer money," because the supplier was
+assumed to be MOR and dropship checkout click-outs to the supplier's own
+Shopify checkout). The owner has now confirmed **World B** — Elysia itself
+is merchant of record for dropship, meaning Elysia must charge, invoice, and
+own refund/chargeback liability for dropship sales, which is the entire L1
+capsule (ADR 0011: supplier-only). That directly contradicts "zero
+Elysia-processed money on day one." This was not resolved unilaterally —
+real options exist (rebuild L1 as a real-money gate with CardCom/invoicing
+required before any public launch; keep a temporary referral-only posture
+for a defined transition period while World-B integration is built, if that
+can be made legally honest; some other sequencing) and the choice has real
+legal/compliance consequences (ADR 0009 point 3: storefront truth must match
+legal truth). Needs explicit owner direction before `docs/DECISIONS.md`
+ADR 0013 or this section's gate list is rewritten.
+
 Named blockers that no engineering task can close:
 
 - **EXTERNAL-P0 — CardCom sandbox + official integration documentation**
@@ -813,8 +831,14 @@ Named blockers that no engineering task can close:
 - **EXTERNAL-P0 — Lawyer engagement for the L1 package** (ADR 0014): referral
   terms, seller-identity wording, privacy (incl. Amendment 13), cookies,
   accessibility statement, refund split.
-- **OWNER-P0 — Supplier commercial agreement + store ownership answer**
-  (ADR 0009): World A vs B; commission terms. No agreement, no dropship launch.
+- **OWNER-P0 — Supplier wholesale/COGS agreement** (ADR 0009, updated
+  2026-07-15): store-ownership question answered — **World B, Elysia is
+  merchant of record for dropship**. Still open: wholesale pricing terms,
+  payment terms to the supplier, refund/return cost allocation at the
+  supplier leg, written-agreement status. No agreement, no dropship launch.
+  This also invalidates ADR 0013's L1 premise ("zero Elysia-processed
+  money on day one") — see the new L1/L2 sequencing conflict flagged below,
+  unresolved pending owner input.
 - **OWNER-P0 — Verified legal identity** (ADR 0014): entity, registration
   number, contacts across all legal surfaces. No verified identity, no L1.
 - **OWNER-P0 — Fact A / Fact B infrastructure answers** (ADR 0008): Postgres

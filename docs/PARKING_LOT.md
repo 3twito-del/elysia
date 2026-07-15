@@ -69,9 +69,11 @@ its trigger — the event that pulls it out of the lot. Frozen from the
 - **`OutboxEvent` unhandled-type behavior** — types without handlers should
   dead-letter visibly rather than skip silently; folded into the event-class
   registry work.
-- **World B contingency** — if the Shopify store turns out Elysia-owned, the
-  ADR 0009 §6 obligations activate as L1 blockers (financial ingestion,
-  invoicing, reconciliation). Trigger: owner's store-ownership answer.
+- ~~World B contingency~~ — **triggered 2026-07-15**: owner confirmed
+  store ownership is World B. No longer a parking-lot item; ADR 0009 §6
+  obligations are now active, tracked in `docs/TASKS.md` §5 (including the
+  ADR 0013 L1-gate sequencing conflict this creates, unresolved pending
+  further owner direction) and `docs/DECISIONS.md` ADR 0009.
 - **CWV field measurement** — requires real traffic; lab-only until L1 ships
   (plan items J-03/L-\*).
 - **Own-product media/photography pipeline** — L2-adjacent owner work

@@ -16,7 +16,7 @@ accepted text.
 - [ADR 0006 — CardCom trust model: webhook-as-hint, API-as-truth](#adr-0006)
 - [ADR 0007 — P0 observability: durable OperationalAlerts from class-aware invariant sweeps](#adr-0007)
 - [ADR 0008 — Database durability: PITR is a launch requirement, a tested restore is launch acceptance](#adr-0008)
-- [ADR 0009 — Dropship default: supplier is merchant of record; mirrored orders are non-financial](#adr-0009)
+- [ADR 0009 — Dropship merchant of record: World A default superseded 2026-07-15, owner confirmed World B (Elysia is merchant of record)](#adr-0009)
 - [ADR 0010 — Every own sale issues a legal numbered document on capture; accountant is EXTERNAL-P0; adapter fallback pre-authorized](#adr-0010)
 - [ADR 0011 — The launch catalog is a named capsule (floor 30, target 36), not 300 remediated products](#adr-0011)
 - [ADR 0012 — Dropship display truth: scheduled sync as baseline, mandatory click-out verification as guarantee](#adr-0012)
@@ -512,7 +512,18 @@ reservation expiry (ADR 0003).
 
 ## ADR 0009 — Dropship default: supplier is merchant of record; mirrored orders are non-financial
 
-Status: accepted (2026-07-08) — World A default, pending owner confirmation
+Status: **superseded by owner decision (2026-07-15) — World B confirmed.**
+The store-ownership question this ADR was written to gate is answered:
+**Elysia itself is the merchant of record** for dropship sales, not the
+supplier. Confirmed directly by the owner, with the real consequence
+restated and re-confirmed before recording (Elysia charges the customer,
+issues the invoice, and owns refund/chargeback liability, in place of the
+click-out-to-supplier-checkout flow this ADR's World-A default assumed).
+§6 below is no longer a contingency — it is now the required launch-blocking
+scope. The World-A text is kept below as the historical default this
+decision replaces, not as current guidance.
+
+Original status: accepted (2026-07-08) — World A default, pending owner confirmation
 
 The repo cannot decide who legally sells a dropship item. The deciding facts
 are external (store ownership, whose entity appears at checkout, who receives
@@ -553,20 +564,37 @@ book the customer's purchase as Elysia revenue._
 5. **Mirror safety guardrails.** External orders clearly typed/segregated,
    excluded from the sales-posting pipeline; GL posting checks merchant of
    record; admin UI labels supplier/MOR orders as such.
-6. **If World B is proven** (Elysia owns the store): the opposite obligations
-   activate as launch blockers — Shopify orders enter the financial system as
-   Elysia sales with Israeli invoicing, payment/refund/chargeback and
-   settlement reconciliation, supplier payable/COGS model, period-close
-   inclusion — and "Elysia does not process funds" becomes false. World B
-   cannot coexist with that claim; the owner must choose truth, not
-   convenience.
+6. **World B is confirmed** (Elysia owns the store): the following are now
+   active launch blockers, not a contingency — Shopify-sourced orders must
+   enter the financial system as Elysia sales with Israeli invoicing,
+   payment/refund/chargeback and settlement reconciliation, and a supplier
+   payable/COGS model, included in period close. Any public copy claiming
+   "Elysia does not process funds" is now false and must be corrected before
+   L1 (see D-04/C-01/C-04/G-07/G-08/G-10/J-08 in `docs/TASKS.md`).
 
 ### Open owner facts
 
-Store ownership (World A vs B); if World A — the agreement's commercial terms
-(commission %, base, settlement, refund/chargeback treatment, formalization
-status). Until answered: dropship visible only where legally truthful; mirrored
-orders non-financial; dropship GL posting disabled; commission disabled.
+~~Store ownership (World A vs B)~~ — **answered 2026-07-15: World B.** Elysia
+is the merchant of record for dropship sales.
+
+Still open: the supplier's **wholesale/COGS agreement** (Elysia now buys at
+wholesale and sells at retail, rather than earning a referral commission) —
+per-unit or tiered wholesale pricing, payment terms to the supplier,
+who absorbs a customer refund/return at the supplier leg, and whether a
+written agreement exists or is still informal. Until answered: the
+supplier-payable/COGS side of the World-B ledger cannot be modeled, even
+though the customer-facing sale itself can now move to `OWN_SALE`.
+
+Real, current engineering reality this decision invalidates (found while
+recording it, not assumed): `src/server/services/shopify-dropship-checkout.ts`
+today does not create an Elysia `Order` or touch CardCom for dropship items
+at all — it click-out redirects the customer to the **supplier's own Shopify
+checkout URL**, and `shopify-order-mirror.ts` only mirrors the result
+afterward, non-financially. Realizing World B requires replacing that
+click-out flow with a real integrated checkout, which is new implementation
+work, not a default/config flip — tracked as a new blocking item in
+`docs/TASKS.md` rather than started without a scoped plan, given the
+financial/legal stakes.
 
 ---
 
