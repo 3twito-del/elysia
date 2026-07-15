@@ -24,10 +24,18 @@ const nonProductionBuildEnv = isVercelProductionBuild
       TYPESENSE_HOST: process.env.TYPESENSE_HOST ?? "",
     };
 
+// --webpack: Turbopack is this Next.js version's default bundler (matching
+// why `dev` already forces it too), but Turbopack has a known, tracked,
+// unresolved nonce-propagation bug for dynamically-loaded script chunks
+// (vercel/next.js#64037) that broke this app's strict-dynamic CSP live in
+// production on every /search page load -- 2 script tags silently missing
+// their nonce, blocked by the browser, confirmed via a real production
+// console-error reproduction (docs/QA_EVIDENCE.md ->
+// g-11-turbopack-csp-nonce-incident). webpack has none of these violations.
 const nextInvocation =
   process.platform === "win32"
-    ? { args: ["/d", "/s", "/c", "next build"], command: "cmd.exe" }
-    : { args: ["build"], command: "next" };
+    ? { args: ["/d", "/s", "/c", "next build --webpack"], command: "cmd.exe" }
+    : { args: ["build", "--webpack"], command: "next" };
 
 const child = spawn(nextInvocation.command, nextInvocation.args, {
   env: { ...process.env, ...nonProductionBuildEnv },

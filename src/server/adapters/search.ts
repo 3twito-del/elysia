@@ -234,6 +234,32 @@ class TypesenseSearchProvider implements SearchProvider {
 
 export const searchProvider: SearchProvider = new TypesenseSearchProvider();
 
+// K-06/L-05 (docs/TASKS.md): a bare "credentials are set" check can't tell a
+// live provider from a dead one -- a Typesense Cloud cluster can be deleted
+// or expire while TYPESENSE_HOST/TYPESENSE_API_KEY stay configured, silently
+// running every search on the local fallback path with no signal anywhere.
+// Bounded to a short timeout so a health-check caller never blocks on it.
+export async function checkTypesenseConnectivity(
+  timeoutMs = 2_000,
+): Promise<"reachable" | "unreachable" | "not-configured"> {
+  const client = getTypesenseClient();
+
+  if (!client) return "not-configured";
+
+  try {
+    const result = await Promise.race([
+      client.health.retrieve(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), timeoutMs),
+      ),
+    ]);
+
+    return result.ok ? "reachable" : "unreachable";
+  } catch {
+    return "unreachable";
+  }
+}
+
 let typesenseClient: Client | null = null;
 
 function getTypesenseClient() {

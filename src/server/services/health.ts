@@ -1,4 +1,5 @@
 import { env } from "~/env";
+import { checkTypesenseConnectivity } from "~/server/adapters/search";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 import { shouldFallbackToCatalogFixturesOnDatabaseError } from "~/server/services/catalog-fixtures";
@@ -11,10 +12,7 @@ export async function createHealthChecks() {
 
   return {
     database: await checkDatabase(),
-    search:
-      env.TYPESENSE_HOST && env.TYPESENSE_API_KEY
-        ? "configured"
-        : "local-fallback",
+    search: await checkSearch(),
     shopifyDropship:
       env.SHOPIFY_DROPSHIP_ENABLED &&
       env.SHOPIFY_STORE_DOMAIN &&
@@ -100,4 +98,20 @@ async function checkDatabase() {
       ? "degraded-fallback"
       : "down";
   }
+}
+
+// A bare "credentials are set" check can't distinguish a live provider from
+// a deleted/expired one -- host+key stay present while every search
+// silently runs on the local fallback path with no signal anywhere. `search`
+// stays in optionalProviderChecks (never gates overall readiness: search is
+// demoted-by-design per docs/RUNBOOKS.md's Typesense outage runbook), but
+// the status value itself must tell "reachable" apart from "configured but
+// currently broken" for that runbook -- and any future alerting -- to have
+// something real to act on.
+async function checkSearch() {
+  const status = await checkTypesenseConnectivity();
+
+  if (status === "not-configured") return "local-fallback";
+
+  return status === "reachable" ? "configured" : "unreachable";
 }

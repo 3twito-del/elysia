@@ -367,8 +367,30 @@ have been deleted; partially done items state only their remaining scope.
   and RTL input direction were already correct on every checkout field.
   Remaining scope: keyboard-navigation and screen-reader (NVDA/VoiceOver)
   testing — this needs a human with real assistive tech and cannot be
-  fabricated or inferred from code. **Known cost, accepted deliberately**: the
-  CSP's per-request nonce requires the root layout to read `headers()`, which
+  fabricated or inferred from code. **Live incident found and fixed
+  2026-07-15, during an E-08 all-products visual QA sweep**: `/search` (every
+  query/filter variant) had a real, reproducible CSP violation live in
+  production — 2 script chunks rendered with no `nonce` attribute, blocked
+  by the browser (confirmed 3× locally, then reproduced live against
+  `elysia-jewellery.com` itself). Root-caused, not guessed: the build was
+  silently running on Turbopack (this Next.js version's new default — the
+  codebase already forces `--webpack` for `dev` for stability but the
+  `build` script never got the same flag), and Turbopack has a known,
+  tracked, unresolved upstream bug where dynamically-loaded script chunks
+  don't get the nonce propagated (`vercel/next.js#64037`, confirmed via web
+  search). Forcing `--webpack` on the build surfaced a second, real,
+  independent bug it had been silently masking: `verifyCloudinarySignature`
+  was exported directly from `route.ts`, which breaks Next's typed-route
+  validation under webpack (Turbopack didn't catch it) — fixed by moving it
+  to `src/server/adapters/cloudinary.ts`, matching the exact pattern already
+  used for Shopify/CardCom webhook verification. `scripts/build.mjs` now
+  forces `--webpack`. Verified: a clean `next build --webpack` production
+  build shows **zero CSP console errors** across home/search (all variants)/
+  category, vs. the same build under the default bundler showing 2 real
+  violations every time. Full detail:
+  `docs/QA_EVIDENCE.md` → `g-11-turbopack-csp-nonce-incident`. **Known cost,
+  accepted deliberately**: the CSP's per-request nonce requires the root
+  layout to read `headers()`, which
   forces every route (including previously-static marketing pages like
   `/checkout`, `/gifts`, `/warranty`) into dynamic rendering — confirmed via
   build output and a rejected hash-based alternative that broke Next's own
@@ -547,7 +569,45 @@ have been deleted; partially done items state only their remaining scope.
   scheduled sync job (ADR 0012), and webhook-registration/token-scope drift
   checks (wired into the existing operational-alert sweep) are shipped.
   Remaining scope: mirror-staleness alerting against the 12h freshness SLO
-  (needs the 6h cadence unlocked by Fact B).
+  (needs the 6h cadence unlocked by Fact B). **Live incident found
+  2026-07-15, while doing an L-05 deployment evidence refresh**: production
+  Typesense (`TYPESENSE_HOST=tdgkmbue18jz7xwap-1.a2.typesense.net`) has been
+  **unreachable** — the hostname doesn't resolve at all (confirmed via `vercel
+  logs`: `ENOTFOUND`, and independently via a plain `nslookup` from outside
+  Vercel's network: "Non-existent domain") — while `TYPESENSE_API_KEY` and
+  `TYPESENSE_HOST` both stay set, and `AI_SEMANTIC_SEARCH_ENABLED="true"`.
+  Every production search request has been silently running on the local
+  fallback path with **zero signal anywhere** — no alert exists to catch
+  this, because `/api/health`'s `search` check (`src/server/services/health.ts`)
+  only verified "are credentials present," never "is the provider actually
+  reachable" (unlike `checkDatabase()`, which already does a real `SELECT 1`
+  ping). Not user-facing broken — the fallback is the same tested, working
+  path E-03/L-04 already cover — but real functionality (Typesense-scored
+  relevance, semantic/AI search) has been silently degraded for an unknown
+  duration. **Fixed the detection gap**: added `checkTypesenseConnectivity`
+  (`src/server/adapters/search.ts`, a real `client.health.retrieve()` probe,
+  2s timeout so a dead provider can't hang a health check) and wired it into
+  `health.ts`'s `search` status, now distinguishing `configured` (reachable)
+  from `unreachable` (configured but dead — the exact state found here) from
+  `local-fallback` (not configured at all). Deliberately did **not** add
+  `unreachable` to the hard-failure list — search stays non-blocking by
+  design per `docs/RUNBOOKS.md`'s Typesense outage runbook; the status value
+  now just tells the truth for that runbook (and any future alerting) to act
+  on. Verified: 5 new unit tests
+  (`search-typesense-connectivity.test.ts` — reachable, unreachable-response,
+  unreachable-network-error using the exact real `ENOTFOUND` message,
+  timeout-doesn't-hang, and not-configured-never-calls-provider). **Not
+  fixed, and not attempted**: (1) the actual Typesense Cloud cluster —
+  needs dashboard/account access this pass doesn't have, tracked as an
+  EXTERNAL/OWNER follow-up, same shape as G-04's CardCom gap; (2)
+  `admin-integrations.ts`'s dashboard summary still only checks
+  configuration presence, not real connectivity — its `createIntegrationSummary`
+  helper is synchronous and would need a real refactor to thread an async
+  probe through, named here rather than rushed; (3) wiring the new
+  `unreachable` signal into the operational-alert sweep itself (this fix
+  only makes `/api/health` accurate — nothing currently reads it
+  automatically) is the concrete remaining scope for this item's own
+  mirror-staleness-alerting line above.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)

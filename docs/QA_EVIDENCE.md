@@ -38,6 +38,7 @@ Sections: 64
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
+- [g-11-turbopack-csp-nonce-incident](#evidence-g-11-turbopack-csp-nonce-incident)
 - [h-05-service-case-timeline](#evidence-h-05-service-case-timeline)
 - [h-06-order-aware-return-initiation](#evidence-h-06-order-aware-return-initiation)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
@@ -54,6 +55,7 @@ Sections: 64
 - [k-08-dependency-review](#evidence-k-08-dependency-review)
 - [k-02-role-permission-review](#evidence-k-02-role-permission-review)
 - [k-05-inventory-correctness](#evidence-k-05-inventory-correctness)
+- [k-06-typesense-connectivity-incident](#evidence-k-06-typesense-connectivity-incident)
 - [k-06-webhook-scope-drift-detection](#evidence-k-06-webhook-scope-drift-detection)
 - [k-13-user-feedback-migration-gap](#evidence-k-13-user-feedback-migration-gap)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
@@ -7337,3 +7339,203 @@ flagged in `docs/TASKS.md` I-06 for owner/lawyer decision instead.
 
 No code changed. This is a documented finding, not a fix — consistent with
 this repo's own convention for legal/policy-gated items (compare G-04, J-08).
+
+---
+
+<a id="evidence-k-06-typesense-connectivity-incident"></a>
+
+## Evidence: k-06-typesense-connectivity-incident
+
+# K-06 — Production Typesense Unreachable, Found During an L-05 Refresh
+
+Date: 2026-07-15.
+
+Scope: found while doing a routine L-05 deployment-evidence refresh (commit
+SHA/deployment ID/alias/smoke/log-window check for the latest push), not the
+original target.
+
+## Finding
+
+`vercel logs` on the latest production deployment showed a warning on a real
+`/search` request:
+
+```
+Request to Node 0 failed due to "ENOTFOUND getaddrinfo ENOTFOUND
+tdgkmbue18jz7xwap-1.a2.typesense.net"
+```
+
+Confirmed this is not a Vercel-network-specific blip: a plain `nslookup
+tdgkmbue18jz7xwap-1.a2.typesense.net` from an entirely independent network
+returns `Non-existent domain`. Pulled fresh production env vars
+(`vercel env pull --environment=production`) and confirmed
+`TYPESENSE_HOST`/`TYPESENSE_API_KEY` are both still set, and
+`AI_SEMANTIC_SEARCH_ENABLED="true"` — the app believes Typesense is
+configured and enabled; it is not reachable. Every production search request
+has been silently running on the local fallback path (confirmed working and
+tested — E-03, L-04) for an unknown duration, with real Typesense-scored
+relevance and semantic/AI search unavailable the whole time.
+
+## Root cause of the missing signal
+
+`createHealthChecks()`'s `search` check
+(`src/server/services/health.ts`, before this fix) was:
+
+```ts
+search:
+  env.TYPESENSE_HOST && env.TYPESENSE_API_KEY
+    ? "configured"
+    : "local-fallback",
+```
+
+— a presence check, not a reachability check. `checkDatabase()` right next
+to it does a real `SELECT 1`; `search` never got the equivalent. No alert
+exists that reads `/api/health` at all (`createHealthChecks`/
+`getHealthReadinessReport` have exactly one caller,
+`src/app/api/health/route.ts` — confirmed via grep), so even a correct check
+here wouldn't have paged anyone automatically; it would at least have made
+the truth visible to a manual check.
+
+## Fix
+
+- `checkTypesenseConnectivity` (`src/server/adapters/search.ts`): a real
+  `client.health.retrieve()` call raced against a 2-second timeout, so a
+  dead provider can't hang a health check. Returns `"reachable"` /
+  `"unreachable"` / `"not-configured"`.
+- `health.ts`'s `search` check now calls it and maps to `"configured"` /
+  `"unreachable"` / `"local-fallback"` — three genuinely distinct states
+  where there used to be two, with `"unreachable"` being exactly the state
+  found live in production.
+- Deliberately **not** added to `getHealthOk`'s hard-failure list: search is
+  demoted-by-design and non-blocking per `docs/RUNBOOKS.md` §8 (Search
+  outage runbook) — this fix makes the status value truthful, it doesn't
+  change the blocking/non-blocking design decision.
+
+## Verification
+
+- 5 new unit tests (`src/server/adapters/search-typesense-connectivity.test.ts`):
+  reachable, an explicit not-ok response, a network failure using the *exact*
+  real `ENOTFOUND` message from the production log (not a generic error),
+  a provider that never responds (proves the timeout actually bounds it),
+  and not-configured never calling the provider at all.
+- `copy:sync`/`copy:check` synced, `tsc --noEmit` clean, `eslint` clean, full
+  unit suite passing.
+
+## Residual
+
+1. The Typesense Cloud cluster itself — needs provider dashboard/account
+   access to diagnose (expired trial? deleted cluster? billing?) and either
+   restore or reprovision + reindex (`docs/RUNBOOKS.md` §8 already documents
+   the recovery steps: restore credentials, then `POST /api/search/reindex`).
+   EXTERNAL/OWNER, same shape as G-04.
+2. `admin-integrations.ts`'s dashboard summary (`Typesense search`
+   integration card) still only checks configuration presence — its
+   `createIntegrationSummary` helper is synchronous; threading a real async
+   probe through it is a real refactor, not attempted here.
+3. Nothing currently reads `/api/health` automatically — wiring the new
+   `unreachable` signal into the operational-alert sweep (ADR 0007) is the
+   concrete remaining scope named on K-06's own row for exactly this kind of
+   provider-down detection.
+
+---
+
+<a id="evidence-g-11-turbopack-csp-nonce-incident"></a>
+
+## Evidence: g-11-turbopack-csp-nonce-incident
+
+# G-11 — Live Production CSP Violation on /search (Turbopack Nonce Bug), Found and Fixed
+
+Date: 2026-07-15.
+
+Scope: found while running an E-08 all-products visual QA sweep against a
+real production build (not the original target).
+
+## Finding
+
+`pnpm exec tsx scripts/qa-site-audit.ts --all-products ...` flagged
+`/search?q=zzzz-no-match&maxPrice=1` with real console errors across all
+three viewports. The raw finding:
+
+```
+Loading the script '.../chunks/15sno62kcl~2l.js' violates the following
+Content Security Policy directive: "script-src 'self' 'nonce-...'
+'strict-dynamic'"...
+```
+
+## Verification, not assumption
+
+- Reproduced 3× locally with a fresh Playwright browser against a real
+  `next start` build — same 2 chunk names, different nonce each time (nonces
+  are per-request, the violation is not).
+- Reproduced on **every** `/search` variant tested (`/search`,
+  `/search?q=venus`, the zero-result query) but **not** on `/` or
+  `/category/rings` — page-specific, not site-wide.
+- Inspected the raw HTML: the two failing `<script>` tags had **no `nonce`
+  attribute at all**, unlike every neighboring script tag on the same page,
+  which did.
+- Reproduced live against **production** itself
+  (`https://elysia-jewellery.com/search?q=zzzz-no-match&maxPrice=1`) with a
+  real headless browser — same 2 console errors, confirming this was not a
+  local-only artifact.
+
+## Root cause
+
+The failing chunks' content (`globalThis.TURBOPACK||(globalThis.TURBOPACK=[])...`)
+showed the production build was compiled with **Turbopack**, not webpack —
+this Next.js version's new default bundler. `package.json`'s `dev` script
+already forces `next dev --webpack` (presumably added when Turbopack dev
+had stability issues); the `build` script (`scripts/build.mjs`, invoking
+`next build`) never got the same flag, so production builds have been
+silently running on Turbopack.
+
+A web search confirmed this is a known, already-tracked upstream bug:
+**"Nonce doesn't applied to all scripts using turbopack" ·
+vercel/next.js#64037** — Turbopack's client-side runtime doesn't propagate
+the CSP nonce when it dynamically inserts `<script>` tags for lazily-loaded
+chunks. Not an app-code mistake; a framework/bundler limitation.
+
+## Fix, and a second bug it uncovered
+
+Attempted the obvious fix — add `--webpack` to `scripts/build.mjs`'s `next
+build` invocation, mirroring the `dev` script's existing precedent — and
+the webpack build **failed a real TypeScript check** that Turbopack's build
+had been silently passing:
+
+```
+Type error: ... Property 'verifyCloudinarySignature' is incompatible with
+index signature ...
+```
+
+Root cause: `src/app/api/webhooks/cloudinary/route.ts` exported
+`verifyCloudinarySignature` directly alongside its `POST` handler — Next's
+App Router route.ts convention only permits specific exports (HTTP method
+handlers + a few reserved names), and only webpack's stricter type-checking
+pass caught the violation. Confirmed this was the odd one out: the Shopify
+and CardCom webhook routes already keep their signature verification in
+`src/server/adapters/*`, importing it into route.ts rather than exporting it
+from route.ts. Fixed by moving `verifyCloudinarySignature` to the new
+`src/server/adapters/cloudinary.ts`, matching that exact existing pattern —
+not a new convention, brought this route in line with its siblings.
+
+`scripts/build.mjs` now runs `next build --webpack` unconditionally.
+
+## Verification
+
+- A clean `next build --webpack` production build, then a fresh Playwright
+  check of `/`, `/search`, `/search?q=venus`, `/search?q=zzzz-no-match&maxPrice=1`,
+  `/category/rings`: **zero CSP console errors**, vs. 2 real violations on
+  every `/search` variant under the previous (Turbopack) build.
+- `route.test.ts` (Cloudinary webhook) passing against the new import path,
+  full unit suite green, `tsc --noEmit` clean, `eslint` clean.
+- New regression test in `scripts/gates.test.mjs` pinning that
+  `build.mjs` forces `--webpack`, referencing the tracked upstream issue
+  number so a future Next.js upgrade that fixes #64037 has a clear signal
+  for when this forcing can be revisited.
+
+## Residual
+
+None identified — this was root-caused to a specific, verifiable framework
+bug with a clean, low-risk, already-precedented fix (the same flag `dev`
+already used), and the fix is verified to eliminate the violation without
+introducing new ones. Worth re-checking on future Next.js upgrades whether
+vercel/next.js#64037 has been resolved, at which point forcing `--webpack`
+could potentially be revisited for Turbopack's build-speed benefits.

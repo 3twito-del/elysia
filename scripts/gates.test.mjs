@@ -143,7 +143,11 @@ describe("manual quality gates", () => {
     expect(buildScript).toContain('process.env.VERCEL_ENV === "production"');
     expect(buildScript).toContain("CATALOG_DB_ERROR_FALLBACK");
     expect(buildScript).toContain("E2E_CATALOG_FIXTURES");
-    expect(buildScript).toContain('"next build"');
+    expect(buildScript).toContain("next build");
+  });
+
+  it("forces --webpack for production builds (Turbopack's known CSP nonce bug, vercel/next.js#64037)", () => {
+    expect(buildScript).toContain("--webpack");
   });
 
   it("keeps gate:fix as the only mutating gate stage", () => {

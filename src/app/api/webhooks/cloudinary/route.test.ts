@@ -37,7 +37,9 @@ vi.mock("~/server/services/webhook-events", () => ({
   recordWebhookEvent: webhookMocks.recordWebhookEvent,
 }));
 
-import { POST, verifyCloudinarySignature } from "./route";
+import { verifyCloudinarySignature } from "~/server/adapters/cloudinary";
+
+import { POST } from "./route";
 
 describe("Cloudinary webhook verification", () => {
   beforeEach(() => {
