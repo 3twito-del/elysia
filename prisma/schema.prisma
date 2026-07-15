@@ -3,8 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // K-07/L-05 (docs/TASKS.md): `migrate deploy`'s advisory-lock-based safety
+  // mechanism is session-scoped and unreliable through PgBouncer transaction
+  // pooling (DATABASE_URL's `-pooler` endpoint) -- a lock taken on a pooled
+  // backend can outlive the client that took it, since PgBouncer recycles
+  // backends between clients without clearing session-level state. Found
+  // live in production 2026-07-15: a stuck advisory lock on an idle,
+  // 20-minute-old pooled backend blocked every subsequent migration.
+  // directUrl routes migrations to Neon's direct (unpooled) endpoint, the
+  // standard Prisma+Neon pattern for exactly this failure mode -- runtime
+  // queries still use the pooled `url` above, unaffected.
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum ProductStatus {

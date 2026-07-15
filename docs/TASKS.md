@@ -739,7 +739,23 @@ have been deleted; partially done items state only their remaining scope.
   verified serialized. Evidence: `docs/QA_EVIDENCE.md` → `l-04-full-state-matrix`.
 - **L-05 Production deployment evidence refresh** · P0 · NOW after each
   release — commit SHA, deployment ID, alias, smoke, 60-minute clean-log
-  window; recorded in `docs/QA_EVIDENCE.md`.
+  window; recorded in `docs/QA_EVIDENCE.md`. **Third live incident found
+  2026-07-15, same refresh pass as K-06/G-11**: two production deploys
+  failed on `Error: P1002 ... Timed out trying to acquire a postgres
+  advisory lock` — root-caused, not assumed transient: `prisma migrate
+  deploy`'s advisory lock is session-scoped and unreliable through
+  PgBouncer transaction pooling (`DATABASE_URL`'s Neon `-pooler` endpoint);
+  a direct query against production found the lock genuinely stuck on an
+  idle, 20-minute-old pooled backend. Terminated the stuck backend
+  (`pg_terminate_backend`, confirmed 0 remaining advisory locks) and fixed
+  the root cause: added `directUrl` to the Prisma datasource
+  (`env("DATABASE_URL_UNPOOLED")`, the standard Prisma+Neon pattern),
+  provisioned the real unpooled connection string in Vercel production env
+  (derived from the pooled URL per Neon's own naming convention — same host
+  minus `-pooler` — then verified reachable before use), and documented the
+  local/`.env.example` equivalent. Verification (deploy after this fix)
+  pending as of this commit. Full detail:
+  `docs/QA_EVIDENCE.md` → `l-05-deployment-evidence-2026-07-15`.
 - **L-06 Real transaction canaries** · P0 · EXTERNAL — low-value own and
   supplier transactions with refund/void, cleanup, and alerting.
 - **L-07 Product analytics definition** · P1 · NOW+OWNER — full funnel schema,
