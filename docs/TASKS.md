@@ -600,9 +600,11 @@ demo catalog's media as a defect to fix.
 - **H-07 Contact and attachment delivery validation** · P0 · MEASURE+EXTERNAL —
   real email delivery, reply routing, scanning, offline sync, duplicate
   submission, failure alerts.
-- **H-08 WhatsApp/chat/callback/SMS policy** · P2 · OWNER — only staffed,
-  consented channels; SMS stays deferred until credentials and a channel
-  decision exist (`SMS_PROVIDER_API_KEY` missing).
+- **H-08 WhatsApp/chat/callback/SMS policy — closed 2026-07-15** · P2 —
+  already answered by H-01: channels are email + phone only, explicitly
+  not WhatsApp/chat/SMS. No staffed channel exists for any of these, so
+  none are offered — the policy is simply "not yet," not a gap. Revisit
+  only if H-01's channel decision changes.
 - **H-09 Service quality measurement** · P1 · NOW+MEASURE.
 - **H-10 Ownership-continuity mystery shopping** · P0 (final claim) · MEASURE.
 
