@@ -7906,6 +7906,11 @@ different problem inside browserslist itself.
 - Build output confirms `/serwist/sw.js` and `/serwist/sw.js.map` still
   generate (`● /serwist/[path]`) — the route itself is unaffected, only the
   build-time warning about its dependency is gone.
+- Pushed to `main`; pulled the real production build log
+  (`vercel inspect ... --logs`) for the resulting deployment:
+  `2026-07-15T11:36:06.720Z  ✓ Compiled successfully in 120s`, grepped for
+  `compiled|warn|error` — one match, the success line. Confirmed clean in
+  production itself, not only locally.
 
 Related: see the `g-11-turbopack-csp-nonce-incident` section above — the
 fix that forced `next build --webpack` is what surfaced this warning in
