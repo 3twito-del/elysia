@@ -647,6 +647,34 @@ demo catalog's media as a defect to fix.
   either a lawyer read (does anonymous query telemetry need consent) or, if
   yes, a real server-readable consent signal (an actual cookie, not
   localStorage) before this can be fixed correctly — not attempted blind.
+
+  **Attempted 2026-07-15, reverted — a second, deeper legal blocker
+  found, not just an engineering gap.** Implemented the "real cookie"
+  path above: `writeCookieConsent` mirroring the choice into a minimal
+  `document.cookie`, a `hasServerAnalyticsConsent` pure gate, and wiring
+  it into `recordSearchEvent`. `pnpm check` caught a pre-existing,
+  deliberate test before this shipped:
+  `src/styles/cookie-privacy-controls-contract.test.ts`'s "keeps cookie
+  consent audit records redacted and minimal" asserts
+  `src/lib/cookie-consent.ts` **must never** contain `document.cookie` —
+  this codebase has a standing, tested "local storage only, no real
+  cookies" architecture for consent itself, matching the privacy page's
+  own copy ("אחסון מקומי ומדידה בהסכמה"). Real HTTP cookies are
+  transmitted to the server on every request (unlike localStorage) and
+  very plausibly carry their own consent-exemption question under
+  Israeli/EU cookie law ("strictly necessary" scope) — exactly the kind
+  of call the not-yet-engaged lawyer needs to make, not something to
+  add unilaterally to solve a different problem. Reverted cleanly
+  (verified via `git stash` that both an unrelated pre-existing e2e
+  failure — "keeps desktop PDP service details centered", "refunding an
+  order..." 500 — were already broken on `main` before this attempt, not
+  caused by it). **Net result: this item now has two stacked legal
+  questions, not one** — (1) does anonymous search-query logging need
+  consent at all, and (2) even if a cookie-based fix is chosen, is a new
+  consent cookie itself compatible with the existing local-storage-only
+  privacy posture. Both need the same not-yet-started lawyer engagement
+  (`docs/TASKS.md` §5) — do not attempt a third engineering workaround
+  without that input.
 - **I-07 Privacy export and deletion end to end** · P0 · MEASURE — legal
   sign-off and production-safe test.
 - **I-08 Transactional communication governance — residual** · P1 · NOW —
@@ -762,6 +790,17 @@ demo catalog's media as a defect to fix.
   restraint) — but that's a new, separate call if it comes up.
   Implementation still open: wire actual email routing per class (today
   everything goes to the single `OPERATIONS_EMAIL`).
+- **NEW — Two pre-existing e2e failures found 2026-07-15, not caused by
+  this session, not yet investigated** · P1 · flagged — found while
+  verifying an unrelated I-06 change (confirmed pre-existing via
+  `git stash` against clean `main`, not a regression from anything
+  touched today): (1) `keeps desktop PDP service details centered with
+  inset icons` fails with "Missing PDP service detail layout elements."
+  (2) `refunding an order is a real write, recorded in the audit log and
+  outbox` fails — its setup API call returns `500` instead of `200`,
+  meaning the actual refund flow was never reached. The second one in
+  particular touches real money/checkout territory and deserves its own
+  investigation pass, not a guess folded into this one.
 - **K-05 Inventory correctness testing — residual** · P1 · MEASURE — the
   correctness work is shipped and evidenced (docs/QA_EVIDENCE.md →
   `k-05-inventory-correctness`): the checkout oversell guard is a proven
