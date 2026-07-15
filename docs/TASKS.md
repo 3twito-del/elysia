@@ -416,13 +416,20 @@ demo catalog's media as a defect to fix.
   coupon/unavailable/price-change/conflict/failure/timeout/mobile-keyboard/
   back/refresh; no fake combined payment.
 - **G-07 Delivery promises from real operations** · P0 · OWNER+EXTERNAL — one
-  rule used by PDP, checkout, policy, email, and service.
-- **G-08 Gift options only when fulfilled** · P1 · OWNER+EXTERNAL.
+  rule used by PDP, checkout, policy, email, and service. **Blocked**: needs
+  a real supplier fulfillment process (G-01/G-03, EXTERNAL, not real yet —
+  demo catalog) before any delivery promise can be truthful.
+- **G-08 Gift options only when fulfilled** · P1 · OWNER+EXTERNAL. **Blocked**:
+  same real-fulfillment dependency as G-07.
 - **G-09 Order and payment reconciliation** · P0 · NOW after providers —
   paid-without-order, order-without-payment, duplicates, stale pendings;
   remediation without manual DB edits. (See also ADR 0002/0006 acceptance.)
 - **G-10 Refund/cancellation/return ownership** · P0 · OWNER+EXTERNAL — own vs
   supplier paths explicit; no unsupported actions on Shopify mirrors.
+  **Blocked**: World B means Elysia owns refund liability for dropship
+  (ADR 0009), but the actual split with the supplier depends on the
+  still-open wholesale/COGS agreement (§5) — can't be made explicit until
+  that exists.
 - **G-11 Checkout accessibility and security review — residual** · P1 ·
   MEASURE — the security half is shipped and evidenced
   (`docs/QA_EVIDENCE.md` → `g-11-checkout-security-review`): a site-wide
@@ -620,9 +627,12 @@ demo catalog's media as a defect to fix.
   non-product public content (legal pages, homepage, FAQ) needs its own
   governance model decision first — a real design question, not an
   extension of B-07's pattern.
-- **J-11 Social proof only when real** · P2 · OWNER.
+- **J-11 Social proof only when real** · P2 · OWNER. **Blocked**: needs real
+  customers/reviews, which need real sales — same demo-catalog constraint.
 - **J-12 Internationalization boundaries** · P2 · OWNER — no selectors for
   unsupported service; multi-currency is parked (ADR 0012, ILS-only).
+  Already has a working default (Hebrew/ILS-only); no fresh owner input
+  needed unless that default should change.
 
 ### K — Operations, admin, security, reliability
 
@@ -703,7 +713,9 @@ demo catalog's media as a defect to fix.
   blocked on owner Fact A — Postgres provider/tier.)
 - **K-09 Privacy and retention implementation** · P0 · OWNER+MEASURE —
   retention matrix, deletion jobs, legal holds; policy and implementation
-  agree.
+  agree. **Blocked**: this is lawyer-scoped work (ADR 0014), and that
+  engagement hasn't started yet (§5) — not something to guess at ahead of
+  counsel.
 - **K-10 Dashboard automation strategy** · P2 · DEFER — prefer Shopify API/CLI
   evidence; no release check depends on Cloudflare-blocked automation.
 - **K-11 Windows prebuilt limitation** · P3 · DEFER — local
