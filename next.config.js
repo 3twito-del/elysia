@@ -58,6 +58,23 @@ const config = {
   turbopack: {
     root: process.cwd(),
   },
+  webpack: (webpackConfig) => {
+    // browserslist's node.js resolves custom shareable configs/stats via
+    // dynamic `require()` (unused here — we don't set a custom browserslist
+    // config or `stats` option). @serwist/turbopack statically imports
+    // browserslist for esbuild target computation, which pulls this in and
+    // trips webpack's "Critical dependency: require function is used in a
+    // way in which dependencies cannot be statically extracted" warning even
+    // though the flagged code path never runs.
+    webpackConfig.ignoreWarnings = [
+      ...(webpackConfig.ignoreWarnings ?? []),
+      {
+        module: /node_modules[\\/]browserslist[\\/]/,
+        message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/,
+      },
+    ];
+    return webpackConfig;
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,

@@ -94,6 +94,7 @@ Sections: 64
 - [split-checkout-ux-audit](#evidence-split-checkout-ux-audit)
 - [tiffany-plus-visual-qa-mobile-first](#evidence-tiffany-plus-visual-qa-mobile-first)
 - [wave-0-owner-evidence-register](#evidence-wave-0-owner-evidence-register)
+- [webpack-build-browserslist-warning-fix](#evidence-webpack-build-browserslist-warning-fix)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
@@ -7833,3 +7834,79 @@ residual (language rule closed; transliteration/punctuation/numerals/CTA
 verbs remain open). A-04/A-05/A-06 updated with the real facts above,
 still open where a real fact is still missing — nothing fabricated to
 close them prematurely.
+
+<a id="evidence-webpack-build-browserslist-warning-fix"></a>
+
+## Evidence: webpack-build-browserslist-warning-fix
+
+# Production Build Log — Eliminate the browserslist "Compiled with warnings"
+
+Date: 2026-07-15.
+
+Scope: owner flagged a pasted Vercel build log line ("⚠ Compiled with
+warnings in 28.3s") and asked for a clean build log — not documentation of
+the warning as benign.
+
+## Root cause, traced not assumed
+
+`pnpm build` (webpack, forced by the G-11 fix earlier this session) printed:
+
+```
+./node_modules/.pnpm/browserslist@4.28.2/node_modules/browserslist/node.js
+Critical dependency: require function is used in a way in which
+dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/.pnpm/browserslist@4.28.2/node_modules/browserslist/node.js
+./node_modules/.pnpm/browserslist@4.28.2/node_modules/browserslist/index.js
+./node_modules/.pnpm/@serwist+turbopack@9.5.11_.../node_modules/@serwist/turbopack/dist/index.mjs
+./src/app/serwist/[path]/route.ts
+```
+
+Read `browserslist`'s `node.js` directly: the two flagged lines
+(`require(require.resolve(name, ...))` for custom shareable configs, and a
+computed `require(...)` for a custom `stats` file) are both optional,
+opt-in code paths this codebase never exercises — no `browserslist` config
+key, no shareable config package, no `stats` option anywhere in the repo.
+`@serwist/turbopack`'s `index.ts` statically `import`s `browserslist` (for
+`browserslistToEsbuild`, used to compute the service worker's esbuild
+target) — that static import is what pulls the dynamic-require code into
+webpack's static analysis and trips the warning, even though the flagged
+branch never runs.
+
+This is a known, ecosystem-wide webpack/browserslist interaction (not an
+Elysia bug, not a `@serwist/turbopack` bug) — the standard, precise fix is
+a scoped `ignoreWarnings` entry, not a blanket warning suppression.
+
+## Fix
+
+`next.config.js` gained a `webpack()` config function that appends one
+`ignoreWarnings` matcher, scoped to both the exact module path
+(`node_modules/browserslist/`) and the exact message text — so it cannot
+silently swallow an unrelated future warning from a different module or a
+different problem inside browserslist itself.
+
+## Verification, not assumption
+
+- `pnpm build` before the fix: `⚠ Compiled with warnings in 27.4s` with the
+  browserslist trace above.
+- `pnpm build` after the fix: `✓ Compiled successfully in 56s` — full log
+  grepped for `warn|error`, zero matches.
+- `pnpm check` (copy:check, lint, typecheck, 1707 unit tests): all green,
+  one pre-existing unrelated ESLint warning (`<img>` in the admin MFA
+  enroll form) untouched — out of scope for this fix.
+- `pnpm exec playwright test tests/e2e/pwa.spec.ts` — confirms the
+  `/serwist/[path]` route (the only caller of `@serwist/turbopack`) still
+  serves a working service worker: manifest/registration, offline product
+  page, offline size-saving, offline add-to-cart queueing, and the
+  no-admin/API-caching guarantee all pass. One `chromium-mobile` case
+  failed on the first run (cart badge locator timeout) and passed clean on
+  an isolated rerun — pre-existing flake unrelated to this change, not a
+  regression it introduced.
+- Build output confirms `/serwist/sw.js` and `/serwist/sw.js.map` still
+  generate (`● /serwist/[path]`) — the route itself is unaffected, only the
+  build-time warning about its dependency is gone.
+
+Related: see the `g-11-turbopack-csp-nonce-incident` section above — the
+fix that forced `next build --webpack` is what surfaced this warning in
+the first place; Turbopack builds never printed it.
