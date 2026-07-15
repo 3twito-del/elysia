@@ -857,13 +857,16 @@ the World-A-era wording:
   to full customer-sale invoicing for dropship, matching Gate L2 item 4
   below.
 
-**Not yet decided, flagged rather than assumed:** whether "own inventory +
-reservation controls" (Gate L2 item 5 below) — which is specific to
-Elysia's own physical stock (`InventoryItem`/branch model), not dropship —
-remains a genuinely separate, later phase, or also collapses into this
-merged gate. Nothing here currently forces owned-inventory commerce to
-launch alongside dropship; treat that as still open until the owner says
-otherwise.
+**Update 2026-07-15 (G-12):** owner confirmed owned-inventory commerce
+("own inventory + reservation controls," Gate L2 item 5 below — specific to
+Elysia's own physical stock, `InventoryItem`/branch model, not dropship) is
+real and near-term, not a distant hypothetical — raising this item's
+practical priority even though whether it launches alongside dropship or
+as its own later phase is still not decided (not assumed either way here).
+Payment architecture direction for it is confirmed: the existing local
+CardCom path already built (`cart-checkout.ts`/`manual-order.ts`/
+`pos-register.ts`) is the intended one, not a Shopify-channel or split
+approach — see `docs/TASKS.md` G-12.
 
 **Known concrete follow-up, not yet done:** `scripts/lib/release-scorecard.ts`
 hard-codes the `L1`/`L2` gate split as separate field lists (`ReleaseGate`

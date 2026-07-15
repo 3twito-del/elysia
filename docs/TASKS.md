@@ -373,10 +373,11 @@ demo catalog's media as a defect to fix.
   material facts per real product, same demo-catalog constraint.
 - **F-08 Comparison/shortlist support** · P2 · MEASURE+BENCHMARK — only if
   testing proves it reduces uncertainty.
-- **F-09 Recommendations — residual owner decision** · P2 · OWNER — dedupe and
-  disclosure are implemented and tested; the open question is hard-excluding
-  unavailable items vs. the current disclose-and-demote behavior. **Real,
-  standalone question, not blocked by anything above** — see below.
+- **F-09 Recommendations — closed 2026-07-15** · P2 · OWNER — dedupe and
+  disclosure are implemented and tested; owner confirmed the current
+  disclose-and-demote behavior (show unavailable items tagged, not
+  hard-excluded) is the intended design. No change needed — the existing
+  implementation is already correct, not a gap.
 - **F-10 Product structured data — residual** · P1 · NOW after C-01 — the
   builder omits empty/placeholder fields and gates the Offer on a valid price;
   remaining scope: verified field completeness and live Rich Results
@@ -471,8 +472,16 @@ demo catalog's media as a defect to fix.
   build output and a rejected hash-based alternative that broke Next's own
   RSC-streaming scripts (see `docs/QA_EVIDENCE.md`). Relevant to J-03/J-04 if
   Core Web Vitals regress after this ships.
-- **G-12 Long-term payment architecture decision** · P2 · OWNER — own products
-  local/CardCom vs Shopify vs split; one approved architecture and runbook.
+- **G-12 Long-term payment architecture decision** · P2 · OWNER —
+  **owner-confirmed 2026-07-15**: owned-inventory commerce (products
+  Elysia holds itself, not dropship) is real and near-term, not
+  hypothetical — raises this item's practical priority even though its
+  P2 label is unchanged here. Direction confirmed: continue the existing
+  local/CardCom architecture already built for owned stock
+  (`cart-checkout.ts`/`manual-order.ts`/`pos-register.ts`, `InventoryItem`)
+  rather than a Shopify-channel or split approach — no new architecture
+  needed, this was already the only implemented path. A written runbook is
+  still open.
 
 ### H — Service, appointments, ownership care
 
