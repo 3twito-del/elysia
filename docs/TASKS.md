@@ -237,14 +237,21 @@ demo catalog's media as a defect to fix.
 
 - **D-01 Reduce homepage length and competing intent** · P1 · BENCHMARK — rank
   sections, remove duplicate paths, cap rails.
-- **D-02 Unmistakable hero** · P1 · OWNER+BENCHMARK — approved house idea,
-  uniquely-Elysia campaign/product image, one dominant action.
+- **D-02 Unmistakable hero** · P1 · OWNER+BENCHMARK — approved house idea
+  (**done, A-01**), uniquely-Elysia campaign/product image (**blocked**: no
+  real products/photography exist yet, same demo-catalog constraint as
+  B-02/B-06 — no named hero piece either, per A-05), one dominant action
+  (design/engineering, not owner-blocked).
 - **D-03 Homepage manual validation** · P0 (release claim) · MEASURE — full
   keyboard/screen-reader/contrast/touch/reduced-motion/device matrix, real CWV,
   Rich Results.
-- **D-04 Factual homepage blockers** · P0 · OWNER — legal identity, approved
-  policy phrasing, real social proof, real promotion rules; unverified claims
-  stay absent.
+- **D-04 Factual homepage blockers** · P0 · OWNER — legal identity
+  (**blocked**: no entity yet, §5), approved policy phrasing (**blocked**:
+  lawyer engagement not yet started, §5), real social proof (**blocked**:
+  no real sales/customers yet), real promotion rules (**blocked**: C-04 →
+  supplier wholesale/COGS agreement, §5); unverified claims stay absent.
+  No new owner input needed here — already downstream of facts gathered
+  elsewhere in §5.
 - **D-05 Header taxonomy** · P1 · BENCHMARK — validate placement on desktop
   and mobile; AI stays out of primary navigation without an approved exception.
 - **D-06 Footer density** · P2 · BENCHMARK — no second landing page.
@@ -346,21 +353,30 @@ demo catalog's media as a defect to fix.
   optional facts per class; decision-critical facts early.
 - **F-02 Size and fit confidence** · P1 · OWNER+NOW — measured diagrams,
   conversion tables, saved sizes, return context; returning from the guide
-  restores product and selection.
+  restores product and selection. **Blocked**: accurate measured diagrams
+  need real product measurements, same demo-catalog constraint as B-02.
 - **F-03 Personalization only when operationally real** · P1 · OWNER+EXTERNAL —
-  otherwise the control stays absent.
+  otherwise the control stays absent. **Resolved 2026-07-15, not open**:
+  owner already confirmed (A-01 characterization) the current dropship
+  suppliers offer "little room for personalization" — not operationally
+  real today. Per this item's own rule, the control stays absent; revisit
+  only if that supplier reality changes.
 - **F-04 Advisor/appointment continuity near purchase** · P1 · OWNER+EXTERNAL —
   product-aware contact with saved context and reliable confirmation.
+  Depends on the service model (H-01/H-02 below, not yet asked) — is
+  advisory/appointment service real, staffed, and scheduled yet?
 - **F-05 Truthful availability and delivery resolution** · P0 · EXTERNAL+NOW —
   PDP, cart, checkout, email, account, and admin agree; no invented stock
   counts or delivery guarantees.
 - **F-06 Product-specific care and warranty** · P1 · OWNER — material-sensitive
-  care that never contradicts product guidance.
+  care that never contradicts product guidance. **Blocked**: needs real
+  material facts per real product, same demo-catalog constraint.
 - **F-08 Comparison/shortlist support** · P2 · MEASURE+BENCHMARK — only if
   testing proves it reduces uncertainty.
 - **F-09 Recommendations — residual owner decision** · P2 · OWNER — dedupe and
   disclosure are implemented and tested; the open question is hard-excluding
-  unavailable items vs. the current disclose-and-demote behavior.
+  unavailable items vs. the current disclose-and-demote behavior. **Real,
+  standalone question, not blocked by anything above** — see below.
 - **F-10 Product structured data — residual** · P1 · NOW after C-01 — the
   builder omits empty/placeholder fields and gates the Offer on a valid price;
   remaining scope: verified field completeness and live Rich Results
