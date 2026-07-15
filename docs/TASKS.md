@@ -160,20 +160,35 @@ have been deleted; partially done items state only their remaining scope.
 
 ### B — Product media and art direction
 
-- **B-01 Replace duplicated catalog media** · P0 · OWNER — product-to-media
-  manifest; no unrelated products share identical media hashes; missing assets
-  unpublish the product.
+**Real status, all four below (2026-07-15):** the current catalog
+("Silver Israel", `prisma/seed-catalog.ts`) is **demo/seed data, not a real
+supplier feed or real inventory** — confirmed by the owner. These items are
+not independent process gaps to solve now; they are correctly blocked on
+real products existing at all. Photography/media production will be
+Elysia's own responsibility going forward (owner-confirmed), not the
+supplier's — but that only becomes actionable once real products are being
+sold. Not fabricating readiness here: these stay OWNER-blocked on "real
+inventory exists," re-check when that changes rather than treating the
+demo catalog's media as a defect to fix.
+
+- **B-01 Replace duplicated catalog media** · P0 · OWNER — blocked on real
+  inventory (see note above); the demo catalog's shared media is not a bug
+  to fix in place.
 - **B-02 Minimum media set per product** · P0 · OWNER — clean primary,
   alternate angle, scale-on-body, construction detail, material macro,
-  packaging/context; P0/P1 products at 100%.
+  packaging/context; P0/P1 products at 100%. Blocked on real inventory;
+  photography will be Elysia's own (owner-confirmed), not the supplier's.
 - **B-03 Media art-direction standards** · P1 · NOW+OWNER — background, shadow,
-  color accuracy, crops, retouching; category grids read as one set.
+  color accuracy, crops, retouching; category grids read as one set. Blocked
+  on real inventory (demo catalog's media is not the target to retouch).
 - **B-04 Variant-media mapping** · P1 · NOW after assets — decide schema need;
   metal/stone change updates media without losing gallery position.
 - **B-05 PDP inspection quality** · P1 · NOW after B-02 — zoom resolution,
   touch pan, sequencing, color fidelity; nothing blocks the purchase panel.
 - **B-06 Truthful scale and fit media** · P1 · OWNER — on-body photography at
-  defined measurements; reproducible scale claims.
+  defined measurements; reproducible scale claims. Owner-confirmed: only
+  possible once real products are sold (needs real physical stock to
+  photograph).
 - **B-07 Asset governance — residual** · P1 · NOW — the manifest and
   enforcement engine are shipped: `ProductMedia` carries `provenance`
   (`SUPPLIER_FEED`/`OWNER_UPLOAD`/`AI_GENERATED`/`STOCK_LICENSED`/`UNKNOWN`),
