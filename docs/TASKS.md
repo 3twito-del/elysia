@@ -362,9 +362,27 @@ have been deleted; partially done items state only their remaining scope.
   event truth only; no fabricated milestones for Shopify mirrors.
 - **I-04 Reorder/care/service continuity** · P2 · BENCHMARK — without turning
   account into marketing.
-- **I-05 Wishlist as a decision tool** · P1 · MEASURE+NOW — availability/price
-  change cues, size memory, advisor handoff; survives guest-to-account merge;
-  no fake scarcity.
+- **I-05 Wishlist as a decision tool — residual** · P1 · MEASURE+NOW —
+  availability cues, decision-support comparison (category/material/variant
+  cues), advisor handoff (`/service` with saved-item context), and
+  guest-to-account merge already existed
+  (`src/app/account/_lib/wishlist-shortlist.ts`). Closed the one gap the code
+  itself flagged as missing ("no price/availability snapshot from when the
+  item was saved"): `WishlistItem.priceAtSave` (nullable, additive-only
+  migration) is now captured at save time on both write paths (`saveWishlistItem`,
+  `mergeGuestWishlistAction`) and surfaced as a real "price dropped/increased
+  since you saved it" note (`getWishlistItemPriceChange`) on the wishlist
+  page — computed only from a genuine stored-vs-current comparison, never
+  fabricated, and silently absent for pre-migration saves rather than
+  guessing a historical price. "Size memory" already exists structurally: a
+  wishlist item is a specific saved variant (including its size), and the
+  separate site-wide saved-size feature (`size-fit.ts`) already restores
+  selection on PDP return. Verified: 5 new unit tests
+  (`wishlist-shortlist.test.ts`), a fixed pre-existing test that would have
+  silently accepted `NaN` into a price column, and a live round-trip through
+  the real DB and the exact Prisma query shape the wishlist page uses.
+  **Remaining, genuinely MEASURE**: whether these cues measurably change
+  decision behavior needs field data, not further engineering.
 - **I-06 Preference and consent governance** · P0 · NOW+OWNER — source,
   timestamp, withdrawal, retention. (ADR 0014 requires behavioral pre-consent
   proof; consent-surface unification is parked post-L1.)

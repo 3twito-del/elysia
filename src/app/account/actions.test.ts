@@ -168,12 +168,14 @@ describe("saveCustomerSizeAction", () => {
     mocks.wishlistUpsert.mockResolvedValueOnce({ id: "wishlist_1" });
     mocks.productFindMany.mockResolvedValueOnce([
       {
+        basePrice: "500",
         slug: "venus-line-ring",
-        variants: [{ id: "variant_existing" }],
+        variants: [{ id: "variant_existing", priceDelta: "0" }],
       },
       {
+        basePrice: "620",
         slug: "noor-earrings",
-        variants: [{ id: "variant_new" }],
+        variants: [{ id: "variant_new", priceDelta: "0" }],
       },
     ]);
     mocks.wishlistItemUpsert.mockResolvedValueOnce({});
@@ -202,6 +204,7 @@ describe("saveCustomerSizeAction", () => {
       create: {
         variantId: "variant_new",
         wishlistId: "wishlist_1",
+        priceAtSave: 620,
       },
     });
     expect(mocks.transaction).toHaveBeenCalledTimes(1);

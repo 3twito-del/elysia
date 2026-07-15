@@ -16,6 +16,7 @@ import { customerWishlistInclude } from "../account/_lib/customer-wishlist-query
 import {
   getWishlistDecisionSupportFromItems,
   getWishlistItemAvailabilityNote,
+  getWishlistItemPriceChange,
 } from "../account/_lib/wishlist-shortlist";
 import {
   customerLogoutAction,
@@ -262,6 +263,12 @@ function CustomerWishlistItemCard({ item }: { item: CustomerWishlistItem }) {
     availabilityMode: product.availabilityMode,
     inventoryItems: item.variant.inventoryItems,
   });
+  const currentPrice =
+    Number(product.basePrice) + Number(item.variant.priceDelta);
+  const priceChange = getWishlistItemPriceChange({
+    currentPrice,
+    priceAtSave: item.priceAtSave === null ? null : Number(item.priceAtSave),
+  });
 
   return (
     <article className="wishlist-product-card glass-inset flex min-w-0 gap-3 rounded-md border p-3">
@@ -286,11 +293,22 @@ function CustomerWishlistItemCard({ item }: { item: CustomerWishlistItem }) {
           <span className="text-muted-foreground truncate text-xs">
             {details}
           </span>
-          <span className="text-sm font-medium">
-            {formatPrice(
-              Number(product.basePrice) + Number(item.variant.priceDelta),
-            )}
-          </span>
+          <span className="text-sm font-medium">{formatPrice(currentPrice)}</span>
+          {priceChange ? (
+            <span
+              className={
+                priceChange.direction === "down"
+                  ? "text-foreground truncate text-xs font-medium"
+                  : "text-muted-foreground truncate text-xs"
+              }
+              data-price-direction={priceChange.direction}
+              data-testid="wishlist-item-price-change-note"
+            >
+              {priceChange.direction === "down"
+                ? `המחיר ירד ב-${formatPrice(priceChange.deltaAbs)} מאז השמירה`
+                : `המחיר עלה ב-${formatPrice(priceChange.deltaAbs)} מאז השמירה`}
+            </span>
+          ) : null}
           {availabilityNote ? (
             <span
               className="text-muted-foreground truncate text-xs"

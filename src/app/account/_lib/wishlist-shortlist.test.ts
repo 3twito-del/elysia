@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { getWishlistDecisionSupport } from "./wishlist-shortlist";
+import {
+  getWishlistDecisionSupport,
+  getWishlistItemPriceChange,
+} from "./wishlist-shortlist";
 
 describe("wishlist shortlist decision support", () => {
   it("returns compact cues and category/service next steps", () => {
@@ -53,5 +56,56 @@ describe("wishlist shortlist decision support", () => {
 
   it("does not create support for an empty wishlist", () => {
     expect(getWishlistDecisionSupport([])).toBeNull();
+  });
+});
+
+describe("wishlist item price change", () => {
+  it("returns null when there is no saved-price snapshot", () => {
+    expect(
+      getWishlistItemPriceChange({ currentPrice: 500, priceAtSave: null }),
+    ).toBeNull();
+  });
+
+  it("returns null when the price has not moved", () => {
+    expect(
+      getWishlistItemPriceChange({ currentPrice: 500, priceAtSave: 500 }),
+    ).toBeNull();
+  });
+
+  it("reports a drop when the current price is lower than the saved price", () => {
+    const change = getWishlistItemPriceChange({
+      currentPrice: 450,
+      priceAtSave: 500,
+    });
+
+    expect(change).toEqual({
+      currentPrice: 450,
+      deltaAbs: 50,
+      direction: "down",
+      priceAtSave: 500,
+    });
+  });
+
+  it("reports an increase when the current price is higher than the saved price", () => {
+    const change = getWishlistItemPriceChange({
+      currentPrice: 550,
+      priceAtSave: 500,
+    });
+
+    expect(change).toEqual({
+      currentPrice: 550,
+      deltaAbs: 50,
+      direction: "up",
+      priceAtSave: 500,
+    });
+  });
+
+  it("ignores sub-agora rounding noise", () => {
+    expect(
+      getWishlistItemPriceChange({
+        currentPrice: 500.001,
+        priceAtSave: 500,
+      }),
+    ).toBeNull();
   });
 });

@@ -34,6 +34,37 @@ export function getWishlistItemAvailabilityNote(
   return status.canAddToCart ? null : status.label;
 }
 
+export type WishlistItemPriceChange = {
+  currentPrice: number;
+  deltaAbs: number;
+  direction: "down" | "up";
+  priceAtSave: number;
+};
+
+/**
+ * Real price-change cue for a saved wishlist item, computed only from a
+ * genuine `priceAtSave` snapshot vs. the current price. Returns null when
+ * there is no snapshot (item saved before `priceAtSave` existed) or the
+ * price hasn't moved -- never a fabricated "price dropped" claim.
+ */
+export function getWishlistItemPriceChange(input: {
+  currentPrice: number;
+  priceAtSave: number | null;
+}): WishlistItemPriceChange | null {
+  if (input.priceAtSave === null) return null;
+
+  const deltaAbs = Math.abs(input.currentPrice - input.priceAtSave);
+
+  if (deltaAbs < 0.01) return null;
+
+  return {
+    currentPrice: input.currentPrice,
+    deltaAbs,
+    direction: input.currentPrice < input.priceAtSave ? "down" : "up",
+    priceAtSave: input.priceAtSave,
+  };
+}
+
 export type WishlistShortlistItem = {
   categoryName?: string | null;
   categorySlug?: string | null;

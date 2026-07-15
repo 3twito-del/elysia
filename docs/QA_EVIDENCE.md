@@ -84,6 +84,7 @@ Sections: 64
 - [split-checkout-ux-audit](#evidence-split-checkout-ux-audit)
 - [tiffany-plus-visual-qa-mobile-first](#evidence-tiffany-plus-visual-qa-mobile-first)
 - [wave-0-owner-evidence-register](#evidence-wave-0-owner-evidence-register)
+- [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
 ---
@@ -7017,3 +7018,80 @@ full unit suite **1681/1681** passing, `next build` green.
 Remaining named gaps: authenticated local-order placement + own-checkout
 success + supplier redirect (EXTERNAL, CardCom/Shopify creds); empirical
 concurrency proof (K-05 MEASURE); live provider-error path (EXTERNAL).
+
+---
+
+<a id="evidence-i-05-wishlist-price-change-cue"></a>
+
+## Evidence: i-05-wishlist-price-change-cue
+
+# I-05 Wishlist Price-Change Cue
+
+Date: 2026-07-15.
+
+Scope: "availability/price change cues, size memory, advisor handoff;
+survives guest-to-account merge; no fake scarcity."
+
+## What already existed, verified rather than rebuilt
+
+`src/app/account/_lib/wishlist-shortlist.ts` already had: a live
+availability note (`getWishlistItemAvailabilityNote`), decision-support
+comparison cues across category/material/variant
+(`getWishlistDecisionSupport`), an advisor handoff to `/service` carrying
+saved-item context (`createWishlistServiceHref`), and guest-to-account merge
+(`mergeGuestWishlistAction`, `guest-wishlist-merge-notice.tsx`). "Size
+memory" is structural, not a separate feature to build: a wishlist item *is*
+a saved variant (including its size), and the site-wide saved-size feature
+(`src/lib/size-fit.ts`) independently restores the selection on PDP return.
+
+The one gap was explicit in the code's own comment: "There is no
+price/availability snapshot from when the item was saved."
+
+## What was built
+
+- `WishlistItem.priceAtSave` (nullable `Decimal(10,2)`,
+  `prisma/migrations/20260714040000_wishlist_item_price_at_save`,
+  additive-only — existing rows stay `null`, never backfilled with a guessed
+  historical price).
+- Captured at save time on both write paths: `saveWishlistItem`
+  (`src/app/actions.ts`) and `mergeGuestWishlistAction`
+  (`src/app/account/actions.ts`), both computing `basePrice + priceDelta`
+  the same way the wishlist page already displays the price, guarded with
+  `Number.isFinite` so an unexpected malformed price never writes `NaN` into
+  the column (caught by a pre-existing test with an incomplete mock
+  fixture — see Verification).
+- `getWishlistItemPriceChange` (`wishlist-shortlist.ts`): returns `null`
+  when there's no snapshot or the price hasn't moved (>= 1 agora), otherwise
+  `{ direction: "down" | "up", deltaAbs, ... }` — purely computed, never a
+  fabricated claim.
+- Wired into `src/app/wishlist/page.tsx`'s item card: a real, existing-token
+  styling only (`text-foreground`/`text-muted-foreground` — no new color was
+  introduced; this brand palette has no green/success token and the design
+  system's own restraint rule argues against inventing one for this).
+
+## Verification
+
+- 5 new unit tests in `wishlist-shortlist.test.ts` (no snapshot → null, no
+  movement → null, drop, increase, sub-agora rounding noise ignored).
+- Running the full suite surfaced a real, independent bug: a pre-existing
+  `account/actions.test.ts` mock for `mergeGuestWishlistAction` didn't
+  include `basePrice`/`priceDelta` on its fixture, which would have written
+  `priceAtSave: NaN` to the database in that code path before the
+  `Number.isFinite` guard was added. Fixed the guard (not just the test) and
+  updated the fixture to a realistic shape with a concrete expected
+  `priceAtSave` value.
+- A live round-trip against the real local DB: created a real customer +
+  wishlist item with a `priceAtSave` 100 above the product's real current
+  price, re-read it through the *exact* Prisma include shape
+  `customerWishlistInclude` uses (`{ wishlist: customerWishlistInclude }` on
+  `Customer`), and fed the result into `getWishlistItemPriceChange` —
+  produced `{ direction: "down", deltaAbs: 100, ... }` correctly. Cleaned up
+  afterward.
+- `copy:sync`/`copy:check` synced (new Hebrew copy strings for the two price
+  directions), `tsc --noEmit` clean, `eslint` clean, full unit suite
+  **1690/1690** passing.
+
+## Residual
+
+MEASURE only: whether these cues change decision behavior in the field is
+outside what code changes can prove.

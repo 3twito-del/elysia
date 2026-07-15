@@ -481,6 +481,16 @@ export async function mergeGuestWishlistAction(
   const newVariantIds = variantIds.filter(
     (variantId) => !existingVariantIds.has(variantId),
   );
+  const priceByVariantId = new Map(
+    products.flatMap((product) => {
+      const variant = product.variants[0];
+      const price = Number(product.basePrice) + Number(variant?.priceDelta);
+
+      return variant && Number.isFinite(price)
+        ? [[variant.id, price] as const]
+        : [];
+    }),
+  );
 
   if (newVariantIds.length > 0) {
     await db.$transaction(
@@ -496,6 +506,7 @@ export async function mergeGuestWishlistAction(
           create: {
             wishlistId: wishlist.id,
             variantId,
+            priceAtSave: priceByVariantId.get(variantId),
           },
         }),
       ),

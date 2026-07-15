@@ -175,12 +175,17 @@ export async function saveWishlistItem(
     return { ok: true, saved: false, message: "התכשיט הוסר מהמועדפים" };
   }
 
+  const priceAtSave = Number(product.basePrice) + Number(variant.priceDelta);
+
   await db.wishlistItem.upsert({
     where: {
       wishlistId_variantId: wishlistIdentity,
     },
     update: {},
-    create: wishlistIdentity,
+    create: {
+      ...wishlistIdentity,
+      priceAtSave: Number.isFinite(priceAtSave) ? priceAtSave : undefined,
+    },
   });
   await recordPublicActionAnalyticsSafely({
     type: "wishlist_add",
