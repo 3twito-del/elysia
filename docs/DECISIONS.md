@@ -20,7 +20,7 @@ accepted text.
 - [ADR 0010 — Every own sale issues a legal numbered document on capture; accountant is EXTERNAL-P0; adapter fallback pre-authorized](#adr-0010)
 - [ADR 0011 — The launch catalog is a named capsule (floor 30, target 36), not 300 remediated products](#adr-0011)
 - [ADR 0012 — Dropship display truth: scheduled sync as baseline, mandatory click-out verification as guarantee](#adr-0012)
-- [ADR 0013 — Launch is two named gates: L1 referral storefront, L2 own commerce activation](#adr-0013)
+- [ADR 0013 — Launch gate: superseded 2026-07-15, L1/L2 merged into one real-money gate (World B)](#adr-0013)
 - [ADR 0014 — L1 legal/compliance package: lawyer EXTERNAL-P0, verified identity, consent proof, statutory a11y, replay off](#adr-0014)
 - [ADR 0015 — High Jewelry Reference Gate site-list substitution: 8 unreachable Tier A sites replaced with verified-accessible maisons](#adr-0015)
 
@@ -783,7 +783,20 @@ unavailability, stale data, discount blocking, currency mismatch.
 
 ## ADR 0013 — Launch is two named gates: L1 referral storefront, L2 own commerce activation
 
-Status: accepted (2026-07-08)
+Status: **superseded by owner decision (2026-07-15) — L1 and L2 merge into a
+single real-money launch gate.** ADR 0009's World B (Elysia is merchant of
+record for dropship — the entire L1 capsule per ADR 0011) breaks this ADR's
+founding premise ("on the first public day Elysia processes zero customer
+money"). Presented with the real options (rebuild the launch gate around
+real money infrastructure vs. a temporary honest-referral transition vs.
+something else), the owner chose explicitly: **there is no more
+zero-money-day-one phase.** CardCom capture, invoicing, and reconciliation —
+previously gating L2 only — now gate the first public launch itself,
+because dropship needs them from day one. The original two-gate text below
+is kept as the historical design this decision replaces, not current
+guidance; see "What the merge means" beneath it for the current gate.
+
+Original status: accepted (2026-07-08)
 
 ADR 0009 (supplier is MOR) + ADR 0011 (supplier-only capsule) + ADR 0012
 (supplier checkout is the money truth) mean that on the first public day Elysia
@@ -793,7 +806,7 @@ Elysia customer-money event, CardCom capture and customer sales documents gate
 L2, not L1. "L1 is public truth. L2 is money truth. They must be governed
 separately."
 
-### Gate L1 — Referral Storefront Launch (first public day)
+### Gate L1 — Referral Storefront Launch (first public day) — historical, World-A text
 
 1. **Capsule readiness** (ADR 0011): supplier-only, ≥30 verified products
    (target 36), no legalPlaceholder claims, no unlicensed media, everything
@@ -820,7 +833,45 @@ separately."
    referral-model legality, MOR disclosure language, privacy/cookie
    obligations, intake-role terms, and material-claims review.
 
-### Gate L2 — Own Commerce Activation (first shekel Elysia touches)
+### What the merge means (current, 2026-07-15)
+
+The launch gate is now items 1–9 above **plus** the full Gate L2 checklist
+below, all required before first public launch — with these corrections to
+the World-A-era wording:
+
+- Item 2 (display truth): "discounts blocked on supplier-MOR items" no
+  longer applies as written — Elysia is not a supplier-MOR reseller of
+  these items under World B. Discount truth is now a normal own-pricing
+  question (compare-at accuracy against a real cost basis), blocked until
+  the supplier wholesale/COGS agreement exists (`docs/TASKS.md` §5) so a
+  true cost is known — tracked under C-04, not restated here as solved.
+- Item 3 (MOR guards): "mirrored orders non-financial" is the opposite of
+  what World B requires — dropship orders must post as `OWN_SALE`, not be
+  refused by the ledger guard. The guard's *purpose* (no revenue posts
+  without a declared, legitimate financial treatment) stands; its default
+  assumption for dropship flips from `SUPPLIER_MOR_REFERENCE` to
+  `OWN_SALE`.
+- Item 4: reframed as the OWNER-P0 supplier wholesale/COGS agreement
+  (`docs/TASKS.md` §5), not a commission agreement.
+- Item 9: accountant engagement scope grows from "commission invoicing"
+  to full customer-sale invoicing for dropship, matching Gate L2 item 4
+  below.
+
+**Not yet decided, flagged rather than assumed:** whether "own inventory +
+reservation controls" (Gate L2 item 5 below) — which is specific to
+Elysia's own physical stock (`InventoryItem`/branch model), not dropship —
+remains a genuinely separate, later phase, or also collapses into this
+merged gate. Nothing here currently forces owned-inventory commerce to
+launch alongside dropship; treat that as still open until the owner says
+otherwise.
+
+**Known concrete follow-up, not yet done:** `scripts/lib/release-scorecard.ts`
+hard-codes the `L1`/`L2` gate split as separate field lists (`ReleaseGate`
+type, `gate: "L1"` / `gate: "L2"` per field) — the scorecard tool itself
+needs a real code change to reflect the merge, not just this document.
+Tracked as a new NOW-tagged item in `docs/TASKS.md`.
+
+### Gate L2 — Own Commerce Activation (first shekel Elysia touches) — historical name, now folded into the single launch gate above
 
 1. **`OWN_COMMERCE_ENABLED=false` by default** — a structural switch, not a UI
    toggle: own-sale product publication, CardCom checkout, GL sale posting, and

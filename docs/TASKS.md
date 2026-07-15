@@ -207,8 +207,12 @@ have been deleted; partially done items state only their remaining scope.
   facts update centrally.
 - **C-04 Pricing and promotion truth** · P0 · OWNER — compare-at rules,
   promotion ownership, price history, supplier drift; every public discount
-  reproducible. (Note: ADR 0012 structurally blocks all discounts on
-  supplier-MOR items at L1.)
+  reproducible. (Note, updated 2026-07-15: the old "ADR 0012 blocks
+  discounts on supplier-MOR items" framing no longer applies — World B
+  means these are Elysia's own-priced items, not supplier-MOR. Discounting
+  is blocked instead until the supplier wholesale/COGS agreement
+  (`docs/TASKS.md` §5) gives a real cost basis to discount against
+  truthfully.)
 - **C-05 Collection merchandising controls** · P1 · NOW after A-05 — hero
   product, manual rank, launch status, availability-aware fallback.
 - **C-07 Supplier provenance language** · P1 · BENCHMARK+OWNER — what source/
@@ -363,15 +367,18 @@ have been deleted; partially done items state only their remaining scope.
 - **G-04 CardCom enablement and proof** · P0 · EXTERNAL — credentials missing
   (`CARD_COM_TERMINAL`, `CARD_COM_API_NAME`, `CARD_COM_API_PASSWORD`); then
   success/decline/cancel/duplicate/timeout/refund/reconciliation per the ADR
-  0006 trust model. Gates L2, not L1 (ADR 0013). **Confirmed in code**
-  (2026-07-12 K-08 webhook review, `docs/QA_EVIDENCE.md`
-  "k-08-webhook-security-review"): `src/server/services/payment-webhooks.ts`
-  currently commits `PAID`/`CAPTURED` and fires the GL/loyalty pipeline
-  directly from `x-cardcom-signature`-gated webhook fields — ADR 0006's
-  server-to-server verification call is not implemented. Not exploitable
-  today (`OWN_COMMERCE_ENABLED` off, no CardCom credentials configured, so no
+  0006 trust model. Gates first public launch itself now, not a separate L2
+  (ADR 0013, merged 2026-07-15 — World B means dropship needs CardCom from
+  day one). **Confirmed in code** (2026-07-12 K-08 webhook review,
+  `docs/QA_EVIDENCE.md` "k-08-webhook-security-review"):
+  `src/server/services/payment-webhooks.ts` currently commits
+  `PAID`/`CAPTURED` and fires the GL/loyalty pipeline directly from
+  `x-cardcom-signature`-gated webhook fields — ADR 0006's server-to-server
+  verification call is not implemented. Not exploitable today
+  (`OWN_COMMERCE_ENABLED` off, no CardCom credentials configured, so no
   order can reach `PENDING_PAYMENT` via this path), but the verify-then-commit
-  flow must ship as part of this item, not assumed already done, before L2.
+  flow must ship as part of this item, not assumed already done, before
+  launch.
 - **G-05 Complete order-confirmation state** · P0 · NOW after G-02/G-04 —
   source-aware confirmation; refresh and duplicate callbacks idempotent.
 - **G-06 Checkout state matrix** · P0 · NOW+MEASURE — empty/own/supplier/mixed/
@@ -776,7 +783,10 @@ have been deleted; partially done items state only their remaining scope.
 - **L-10 Trust and luxury perception research** · P0 (final claim) · MEASURE.
 - **L-11 Release scorecard — residual** · P1 · OWNER/EXTERNAL —
   `pnpm release:scorecard` exists and enforces `NOT READY` on any missing
-  field; the L1/L2 split is implemented. Remaining scope is turning the
+  field; the L1/L2 split is implemented, **but now stale** — ADR 0013
+  merged L1/L2 into one real-money gate 2026-07-15 (World B), so the tool's
+  two-section model no longer matches reality; see the new "Release
+  scorecard L1/L2 merge" item in §5. Remaining scope is turning the
   owner/external-blocked fields to `PASS` with real evidence.
 - **L-12 Benchmark refresh cadence** · P2 · NOW, recurring — ran a real
   reachability pass 2026-07-15 against all 15 current gate sources
@@ -799,35 +809,39 @@ have been deleted; partially done items state only their remaining scope.
 
 ## 5. Launch gates and external/owner blockers
 
-The two-gate launch model (ADR 0013) governs sequencing: L1 (referral
-storefront, zero Elysia-processed money) then L2 (own commerce,
-`OWN_COMMERCE_ENABLED`). Acceptance criteria live in `docs/DECISIONS.md`.
+**Launch gate merged (owner decision, 2026-07-15):** the former two-gate
+model (ADR 0013) — L1 referral storefront with zero Elysia-processed money,
+then L2 own commerce — no longer holds. World B (Elysia is merchant of
+record for dropship, ADR 0009) breaks L1's "zero money on day one" premise
+for the entire supplier-only L1 capsule. Presented with the real options,
+the owner chose explicitly: **no zero-money-day-one phase; CardCom capture,
+invoicing, and reconciliation — previously L2-only — now gate first public
+launch itself.** Full detail and the specific corrected acceptance criteria:
+`docs/DECISIONS.md` ADR 0013 ("What the merge means"). Still open, not
+assumed either way: whether owned-inventory commerce (`InventoryItem`
+stock, unrelated to dropship) launches alongside dropship or stays a
+separate later phase.
 
-**Open conflict, unresolved (2026-07-15) — not silently reconciled:** ADR
-0013's entire L1 gate is built on ADR 0009's World-A default ("on the first
-public day Elysia processes zero customer money," because the supplier was
-assumed to be MOR and dropship checkout click-outs to the supplier's own
-Shopify checkout). The owner has now confirmed **World B** — Elysia itself
-is merchant of record for dropship, meaning Elysia must charge, invoice, and
-own refund/chargeback liability for dropship sales, which is the entire L1
-capsule (ADR 0011: supplier-only). That directly contradicts "zero
-Elysia-processed money on day one." This was not resolved unilaterally —
-real options exist (rebuild L1 as a real-money gate with CardCom/invoicing
-required before any public launch; keep a temporary referral-only posture
-for a defined transition period while World-B integration is built, if that
-can be made legally honest; some other sequencing) and the choice has real
-legal/compliance consequences (ADR 0009 point 3: storefront truth must match
-legal truth). Needs explicit owner direction before `docs/DECISIONS.md`
-ADR 0013 or this section's gate list is rewritten.
+**Known concrete follow-up, not yet done:** `scripts/lib/release-scorecard.ts`
+hard-codes the `L1`/`L2` split as separate field lists (`ReleaseGate` type).
+The tool needs a real code change to reflect the merged gate — tagged NOW,
+not owner-blocked, since the decision itself is now made:
+
+- **NEW — Release scorecard L1/L2 merge** · P1 · NOW — update
+  `scripts/lib/release-scorecard.ts`'s `ReleaseGate`/field-list model and
+  `scripts/release-scorecard.test.ts` to reflect the single merged launch
+  gate per ADR 0013's 2026-07-15 update, instead of two separate L1/L2
+  readiness sections.
 
 Named blockers that no engineering task can close:
 
 - **EXTERNAL-P0 — CardCom sandbox + official integration documentation**
   (ADR 0006): verification endpoint, stable transaction identity, signing
-  semantics, sandbox cases. Gates L2.
+  semantics, sandbox cases. Now gates first public launch, not just L2.
 - **EXTERNAL-P0 — Israeli רו"ח engagement** (ADR 0010): document type, VAT,
   digital-document rules, PCN874/SHAAM, and the D6 ruling on internal issuance.
-  Engaged at L1 for commission invoicing; gates L2 documents.
+  Scope grows from commission-only invoicing to full customer-sale invoicing
+  for dropship — now gates first public launch.
 - **EXTERNAL-P0 — Lawyer engagement for the L1 package** (ADR 0014): referral
   terms, seller-identity wording, privacy (incl. Amendment 13), cookies,
   accessibility statement, refund split.
@@ -836,22 +850,19 @@ Named blockers that no engineering task can close:
   merchant of record for dropship**. Still open: wholesale pricing terms,
   payment terms to the supplier, refund/return cost allocation at the
   supplier leg, written-agreement status. No agreement, no dropship launch.
-  This also invalidates ADR 0013's L1 premise ("zero Elysia-processed
-  money on day one") — see the new L1/L2 sequencing conflict flagged below,
-  unresolved pending owner input.
 - **OWNER-P0 — Verified legal identity** (ADR 0014): entity, registration
-  number, contacts across all legal surfaces. No verified identity, no L1.
-  **Real status (2026-07-15): no entity exists yet** — owner plans to
-  incorporate shortly before launch. All facts in
+  number, contacts across all legal surfaces. No verified identity, no
+  launch. **Real status (2026-07-15): no entity exists yet** — owner plans
+  to incorporate shortly before launch. All facts in
   `src/lib/legal-content.ts` are placeholder (`[להשלמה]`) and stay that way
   until then; that file is the single place to fill in once real, no
-  engineering rework needed. Given the ADR 0013 L1/L2 sequencing conflict
-  above — if L1 ends up requiring real money infrastructure (World B), then
-  registration + business bank account + CardCom merchant KYC + accountant
-  invoicing setup can plausibly take weeks, not days, which narrows how
-  late "shortly before launch" can actually mean. Lawyer/accountant
-  engagement (the two EXTERNAL-P0 items above) does not require the entity
-  to exist first and should start now regardless of exact incorporation
+  engineering rework needed. Given the launch gate now requires real money
+  infrastructure (World B, above), registration + business bank account +
+  CardCom merchant KYC + accountant invoicing setup can plausibly take
+  weeks, not days, which narrows how late "shortly before launch" can
+  actually mean. Lawyer/accountant engagement (the two EXTERNAL-P0 items
+  above) does not require the entity to exist first and should start now
+  regardless of exact incorporation
   timing.
 - **OWNER-P0 — Fact A / Fact B infrastructure answers** (ADR 0008): Postgres
   provider/tier/PITR; Vercel per-minute cron capability.
