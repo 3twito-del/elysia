@@ -478,6 +478,12 @@ demo catalog's media as a defect to fix.
 
 - **H-01 Service promise** · P0 · OWNER — channels, hours, response target,
   languages; every public claim maps to staffing and a queue.
+  **Owner-confirmed 2026-07-15, partial**: channels are email + phone (not
+  WhatsApp/chat/SMS — H-08 stays deferred per its own rule); hours are
+  "defined" but the specific hours/response-target numbers were not given
+  — still needed before any public claim can cite them. Unblocks H-03
+  (already NOW after H-01) to proceed; H-02/H-04 still need their own
+  EXTERNAL real-case proof on top of this.
 - **H-02 Appointments as a real journey** · P1 · OWNER+EXTERNAL —
   mystery-shopper booking completes end to end.
 - **H-03 Product-aware advisor handoff** · P1 · NOW after H-01 — context moves
@@ -640,7 +646,11 @@ demo catalog's media as a defect to fix.
   event-class SLOs, escalating email delivery to `OPERATIONS_EMAIL`, and the
   invariant sweep are shipped (ADR 0003/0007). Remaining scope: the owner
   names a human owner + escalation path per alert class beyond the single
-  operations inbox.
+  operations inbox. **Owner-confirmed 2026-07-15, partial**: there is more
+  than one person, routed by alert class/type (not one solo operator) — the
+  model is per-class ownership. Still needed: the actual name/contact per
+  alert class to route `OPERATIONS_EMAIL` escalation to, once real staffing
+  exists — not fabricated here.
 - **K-05 Inventory correctness testing — residual** · P1 · MEASURE — the
   correctness work is shipped and evidenced (docs/QA_EVIDENCE.md →
   `k-05-inventory-correctness`): the checkout oversell guard is a proven
@@ -721,9 +731,16 @@ demo catalog's media as a defect to fix.
 - **K-11 Windows prebuilt limitation** · P3 · DEFER — local
   `vercel build --prod` hits an `EPERM` symlink error; remote Vercel build is
   the supported path until a workaround is confirmed.
-- **K-12 Physical boutique scope** · P2 · OWNER — keep the truthful online-only
-  route or provide verified branch data; never imply boutiques that do not
-  exist.
+- **K-12 Physical boutique scope** · P2 · OWNER — **closed 2026-07-15**:
+  owner confirmed online-only, with an explicit instruction — keep the
+  branch-management code/infrastructure, only hide it from the end
+  customer, not remove it. Verified already correct, no change needed:
+  `src/app/branches/page.tsx:54-55` gates customer-facing branch display on
+  `ServiceSettings.physicalBranchesEnabled` (defaults `false` in
+  `prisma/schema.prisma`) AND real branch data existing; all admin
+  branch-management surfaces (`src/app/admin/*`) stay untouched. This is
+  the same shape as the earlier `20260518120000_service_requests_hidden_branches`
+  migration — a deliberate, already-existing pattern, not new work.
 
 ### L — QA, measurement, release proof
 
