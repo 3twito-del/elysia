@@ -327,6 +327,81 @@ describe("catalog readiness", () => {
     ).toBe(false);
   });
 
+  it("flags a fact/policy verification with no expiration date", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      factVerification: {
+        ...complete.factVerification!,
+        expiresAt: undefined,
+      },
+      policyVerification: {
+        ...complete.policyVerification!,
+        expiresAt: undefined,
+      },
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+    });
+    const codes = audit.issues.map((issue) => issue.code);
+
+    expect(codes).toEqual(
+      expect.arrayContaining([
+        "FACT_VERIFICATION_EXPIRATION_MISSING",
+        "POLICY_VERIFICATION_EXPIRATION_MISSING",
+      ]),
+    );
+  });
+
+  it("blocks an expired fact/policy verification -- the J-10 rollback behavior", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      factVerification: {
+        ...complete.factVerification!,
+        expiresAt: "2026-01-01T00:00:00.000Z",
+      },
+      policyVerification: {
+        ...complete.policyVerification!,
+        expiresAt: "2026-01-01T00:00:00.000Z",
+      },
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+      now: new Date("2026-06-19T00:00:00.000Z"),
+    });
+
+    expect(audit.ready).toBe(false);
+    expect(audit.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          code: "FACT_VERIFICATION_EXPIRED",
+          severity: "blocker",
+        }),
+        expect.objectContaining({
+          code: "POLICY_VERIFICATION_EXPIRED",
+          severity: "blocker",
+        }),
+      ]),
+    );
+  });
+
+  it("accepts a fact verification that has not yet expired", () => {
+    const complete = createCompleteProduct();
+    const product = createCompleteProduct({
+      factVerification: {
+        ...complete.factVerification!,
+        expiresAt: "2027-01-01T00:00:00.000Z",
+      },
+    });
+    const audit = auditCatalogReadiness([product], {
+      mediaFiles: createMediaFiles(product),
+      now: new Date("2026-06-19T00:00:00.000Z"),
+    });
+
+    expect(
+      audit.issues.some((issue) => issue.code === "FACT_VERIFICATION_EXPIRED"),
+    ).toBe(false);
+  });
+
   it("writes a deterministic markdown summary", () => {
     const product = createCompleteProduct();
     const audit = auditCatalogReadiness([product], {
@@ -363,6 +438,7 @@ function createCompleteProduct(
       sourceReference: "supplier-spec-sheet:OWN-1",
       verifiedAt: "2026-06-18T00:00:00.000Z",
       verifiedBy: "catalog-owner",
+      expiresAt: "2027-06-18T00:00:00.000Z",
     },
     material: { name: "זהב צהוב 14K", slug: "yellow-gold" },
     media: [
@@ -424,6 +500,7 @@ function createCompleteProduct(
       sourceReference: "policy:2026-06-18",
       verifiedAt: "2026-06-18T00:00:00.000Z",
       verifiedBy: "policy-owner",
+      expiresAt: "2027-06-18T00:00:00.000Z",
     },
     ...overrides,
   };

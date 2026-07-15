@@ -57,6 +57,7 @@ export function mapPrismaProductToCatalogReadiness(
           sourceReference: product.factSourceReference ?? "",
           verifiedAt: product.factVerifiedAt ?? "",
           verifiedBy: product.factVerifiedBy ?? "",
+          expiresAt: product.factVerificationExpiresAt,
         }
       : null,
     material: {
@@ -122,6 +123,7 @@ export function mapPrismaProductToCatalogReadiness(
           sourceReference: product.policySourceReference ?? "",
           verifiedAt: product.policyVerifiedAt ?? "",
           verifiedBy: product.policyVerifiedBy ?? "",
+          expiresAt: product.policyVerificationExpiresAt,
         }
       : null,
   };

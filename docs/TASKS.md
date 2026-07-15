@@ -549,8 +549,30 @@ have been deleted; partially done items state only their remaining scope.
 - **J-08 Legal identity and policy review** · P0 · OWNER+EXTERNAL — counsel
   approval; footer/checkout expose only applicable facts. (ADR 0014: no
   verified legal identity, no L1.)
-- **J-10 Content governance** · P1 · NOW — owner, source, review date,
-  expiration, rollback for every public claim.
+- **J-10 Content governance — residual, scoped to product facts/policy** ·
+  P1 · NOW — "every public claim" site-wide (legal pages, homepage copy,
+  FAQ, etc.) has no single existing data model to extend, unlike B-07's
+  `ProductMedia` — attempting all of it in one pass would mean inventing a
+  new governance concept from nothing, which this pass deliberately did not
+  do. Scoped instead to the one place governance already partially existed:
+  `Product.factVerifiedAt`/`factVerifiedBy`/`factSourceReference` and the
+  `policy*` equivalents (owner, source, review date already there since
+  I-341) had no **expiration** and no **rollback** — a fact verified once
+  stayed "verified" forever, with nothing to force re-review. Closed both:
+  `factVerificationExpiresAt`/`policyVerificationExpiresAt`
+  (`prisma/migrations/20260715010000_product_verification_expiration`,
+  additive-only) plus three new I-341 catalog-readiness checks
+  (`scripts/lib/catalog-readiness.ts`): no expiration set (medium),
+  expiration passed (blocker), matching the existing MISSING severity — an
+  expired verification is treated as unverified, the "rollback" is that
+  automatic degradation (matching the "missing fact → hide the field"
+  ground rule), not a separate manual undo mechanism. Verified: 3 new unit
+  tests plus a live round-trip against a real DB row proving the full
+  DB → mapping → engine path. **Remaining, explicitly not this pass's
+  scope**: extending owner/source/review-date/expiration/rollback to
+  non-product public content (legal pages, homepage, FAQ) needs its own
+  governance model decision first — a real design question, not an
+  extension of B-07's pattern.
 - **J-11 Social proof only when real** · P2 · OWNER.
 - **J-12 Internationalization boundaries** · P2 · OWNER — no selectors for
   unsupported service; multi-currency is parked (ADR 0012, ILS-only).

@@ -283,59 +283,63 @@ model Stone {
 }
 
 model Product {
-  id                     String                   @id @default(cuid())
-  slug                   String                   @unique
-  sku                    String                   @unique
-  name                   String
-  shortDescription       String
-  description            String
-  status                 ProductStatus            @default(DRAFT)
-  categoryId             String
-  materialId             String
-  stoneId                String?
-  basePrice              Decimal                  @db.Decimal(10, 2)
-  availabilityMode       ProductAvailabilityMode  @default(READY_TO_ORDER)
-  source                 ProductSource            @default(OWN)
-  externalProvider       String?
-  externalProductId      String?
-  externalHandle         String?
-  supplierKey            String?
-  externalSyncedAt       DateTime?
-  commerceHighlights     String[]                 @default([])
-  deliveryPromise        String?
-  returnPolicy           String?
-  careInstructions       String?
-  warranty               String?
-  countryOfManufacture   String?
-  manufacturerOrImporter String?
-  materialDetails        String?
-  measurements           String?
-  stoneDetails           String?
-  factSourceReference    String?
-  factVerifiedAt         DateTime?
-  factVerifiedBy         String?
-  policySourceReference  String?
-  policyVerifiedAt       DateTime?
-  policyVerifiedBy       String?
-  tags                   String[]
-  category               Category                 @relation(fields: [categoryId], references: [id])
-  material               Material                 @relation(fields: [materialId], references: [id])
-  stone                  Stone?                   @relation(fields: [stoneId], references: [id])
-  collections            Collection[]
-  variants               ProductVariant[]
-  media                  ProductMedia[]
-  searchEmbeddings       ProductSearchEmbedding[]
-  pushInterests          ProductPushInterest[]
-  blogPosts              BlogPost[]
-  searchEvents           SearchEvent[]
-  viewEvents             ProductViewEvent[]
-  clickEvents            ProductClickEvent[]
-  analyticsEvents        AnalyticsEvent[]
-  dailyMetrics           ProductDailyMetric[]
-  purchaseOrderItems     PurchaseOrderItem[]
-  costSnapshots          ProductCostSnapshot[]
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
+  id                          String                   @id @default(cuid())
+  slug                        String                   @unique
+  sku                         String                   @unique
+  name                        String
+  shortDescription            String
+  description                 String
+  status                      ProductStatus            @default(DRAFT)
+  categoryId                  String
+  materialId                  String
+  stoneId                     String?
+  basePrice                   Decimal                  @db.Decimal(10, 2)
+  availabilityMode            ProductAvailabilityMode  @default(READY_TO_ORDER)
+  source                      ProductSource            @default(OWN)
+  externalProvider            String?
+  externalProductId           String?
+  externalHandle              String?
+  supplierKey                 String?
+  externalSyncedAt            DateTime?
+  commerceHighlights          String[]                 @default([])
+  deliveryPromise             String?
+  returnPolicy                String?
+  careInstructions            String?
+  warranty                    String?
+  countryOfManufacture        String?
+  manufacturerOrImporter      String?
+  materialDetails             String?
+  measurements                String?
+  stoneDetails                String?
+  factSourceReference         String?
+  factVerifiedAt              DateTime?
+  factVerifiedBy              String?
+  /// J-10 content governance: when this fact verification must be re-reviewed.
+  factVerificationExpiresAt   DateTime?
+  policySourceReference       String?
+  policyVerifiedAt            DateTime?
+  policyVerifiedBy            String?
+  /// J-10 content governance: when this policy verification must be re-reviewed.
+  policyVerificationExpiresAt DateTime?
+  tags                        String[]
+  category                    Category                 @relation(fields: [categoryId], references: [id])
+  material                    Material                 @relation(fields: [materialId], references: [id])
+  stone                       Stone?                   @relation(fields: [stoneId], references: [id])
+  collections                 Collection[]
+  variants                    ProductVariant[]
+  media                       ProductMedia[]
+  searchEmbeddings            ProductSearchEmbedding[]
+  pushInterests               ProductPushInterest[]
+  blogPosts                   BlogPost[]
+  searchEvents                SearchEvent[]
+  viewEvents                  ProductViewEvent[]
+  clickEvents                 ProductClickEvent[]
+  analyticsEvents             AnalyticsEvent[]
+  dailyMetrics                ProductDailyMetric[]
+  purchaseOrderItems          PurchaseOrderItem[]
+  costSnapshots               ProductCostSnapshot[]
+  createdAt                   DateTime                 @default(now())
+  updatedAt                   DateTime                 @updatedAt
 
   @@index([status])
   @@index([source])

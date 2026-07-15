@@ -47,6 +47,7 @@ Sections: 64
 - [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
 - [j-05-technical-seo-validation](#evidence-j-05-technical-seo-validation)
 - [j-09-pre-consent-tracking](#evidence-j-09-pre-consent-tracking)
+- [j-10-verification-expiration-rollback](#evidence-j-10-verification-expiration-rollback)
 - [k-01-admin-e2e-workflow-proof](#evidence-k-01-admin-e2e-workflow-proof)
 - [k-08-admin-mfa-security-review](#evidence-k-08-admin-mfa-security-review)
 - [k-08-webhook-security-review](#evidence-k-08-webhook-security-review)
@@ -7645,3 +7646,72 @@ Both fixes deployed (commit `fa4b415`) and confirmed live in production
 with a fresh Playwright check directly against `elysia-jewellery.com`
 after that deploy went Ready (zero CSP errors; documented in the G-11
 entry above).
+
+---
+
+<a id="evidence-j-10-verification-expiration-rollback"></a>
+
+## Evidence: j-10-verification-expiration-rollback
+
+# J-10 Content Governance — Product Fact/Policy Verification Expiration
+
+Date: 2026-07-15.
+
+Scope: "owner, source, review date, expiration, rollback for every public
+claim."
+
+## Scope decision, made explicitly rather than guessed into
+
+"Every public claim" spans legal pages, homepage copy, FAQ, product facts,
+and more — unlike B-07 (which extended one existing, well-defined model,
+`ProductMedia`), there is no single existing data model covering all public
+claims site-wide. Attempting the full scope in one pass would mean either
+inventing a new cross-cutting governance concept from nothing (risking
+conflict with a real future design decision) or shipping a token gesture
+that doesn't actually cover most public content. Neither was done.
+
+Scoped instead to where governance already partially existed: `Product`'s
+`factVerifiedAt`/`factVerifiedBy`/`factSourceReference` and the `policy*`
+equivalents (owner, source, review date — built for I-341's catalog
+readiness work) had **no expiration and no rollback** — a verified fact
+stayed "verified" forever with nothing forcing re-review.
+
+## What was built
+
+- `factVerificationExpiresAt`/`policyVerificationExpiresAt` on `Product`
+  (`prisma/migrations/20260715010000_product_verification_expiration`,
+  additive-only, nullable — existing verified facts are not retroactively
+  assigned an expiration).
+- Three new checks in the I-341 catalog-readiness engine
+  (`auditVerificationRecord`, `scripts/lib/catalog-readiness.ts`), for both
+  fact and policy verification:
+  - No expiration set → medium (matches the severity of other
+    missing-metadata findings).
+  - Expiration passed → **blocker**, same severity as a missing
+    verification entirely. This is the "rollback": an expired verification
+    is treated exactly like an unverified one, automatic degradation rather
+    than a separate manual undo mechanism — consistent with this
+    document's own ground rule ("missing fact → hide the field").
+
+## Verification
+
+- 3 new unit tests in `scripts/catalog-readiness.test.ts` (16/16 passing in
+  that file): no-expiration flagged on both fact and policy, an expired
+  verification blocks readiness on both, and a not-yet-expired verification
+  passes cleanly.
+- A live round-trip against the real local DB: set real
+  `factSourceReference`/`factVerifiedAt`/`factVerifiedBy` (no expiration) on
+  a real product row, ran it through the real
+  `mapPrismaProductToCatalogReadiness` → `auditCatalogReadiness` path,
+  confirmed `FACT_VERIFICATION_EXPIRATION_MISSING` fires — then reverted the
+  row. Confirms the DB → mapping → engine wiring, not just the pure-function
+  tests. (A fresh, un-verified seed row correctly hits the pre-existing
+  `FACT_VERIFICATION_MISSING` code instead, unchanged by this work.)
+- `tsc --noEmit` clean, `eslint` clean, full unit suite 1707/1707 passing.
+
+## Residual
+
+Extending owner/source/review-date/expiration/rollback to non-product
+public content (legal pages, homepage, FAQ) is a real, separate design
+decision — what the governance unit even is for a page vs. a product fact
+— not attempted here, not silently dropped.

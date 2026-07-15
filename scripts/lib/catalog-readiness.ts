@@ -113,6 +113,8 @@ export type CatalogReadinessVerification = {
   sourceReference: string;
   verifiedAt: Date | string;
   verifiedBy: string;
+  /** J-10 content governance: when this verification must be re-reviewed. */
+  expiresAt?: Date | string | null;
 };
 
 export type CatalogReadinessSpecifications = {
@@ -396,6 +398,8 @@ function auditProductTruth(
   auditVerificationRecord({
     category: "data",
     code: "FACT_VERIFICATION_MISSING",
+    expirationMissingCode: "FACT_VERIFICATION_EXPIRATION_MISSING",
+    expiredCode: "FACT_VERIFICATION_EXPIRED",
     field: "factVerification",
     issues,
     label: "Product fact verification",
@@ -406,6 +410,8 @@ function auditProductTruth(
   auditVerificationRecord({
     category: "policy",
     code: "POLICY_VERIFICATION_MISSING",
+    expirationMissingCode: "POLICY_VERIFICATION_EXPIRATION_MISSING",
+    expiredCode: "POLICY_VERIFICATION_EXPIRED",
     field: "policyVerification",
     issues,
     label: "Product policy verification",
@@ -459,6 +465,8 @@ function auditProductTruth(
 function auditVerificationRecord(input: {
   category: CatalogReadinessCategory;
   code: string;
+  expirationMissingCode: string;
+  expiredCode: string;
   field: string;
   issues: CatalogReadinessIssue[];
   label: string;
@@ -477,15 +485,48 @@ function auditVerificationRecord(input: {
     Number.isNaN(verifiedAt.getTime()) ||
     verifiedAt.getTime() > input.now.getTime();
 
-  if (!invalid) return;
+  if (invalid) {
+    addProductIssue(input.issues, input.productSlug, {
+      category: input.category,
+      code: input.code,
+      field: input.field,
+      message: `${input.label} needs a source reference, verifier, and valid verification date.`,
+      severity: "blocker",
+    });
+    return;
+  }
 
-  addProductIssue(input.issues, input.productSlug, {
-    category: input.category,
-    code: input.code,
-    field: input.field,
-    message: `${input.label} needs a source reference, verifier, and valid verification date.`,
-    severity: "blocker",
-  });
+  // J-10 content governance: a review date alone doesn't stop a fact from
+  // going stale forever -- an explicit expiration is what makes re-review
+  // actually happen. An expired verification is treated the same as an
+  // unverified one (a blocker, not a warning): the "rollback" is automatic
+  // degradation to unverified, matching the "missing fact -> hide the
+  // field" ground rule, not a separate manual undo mechanism.
+  if (!input.verification?.expiresAt) {
+    addProductIssue(input.issues, input.productSlug, {
+      category: input.category,
+      code: input.expirationMissingCode,
+      field: `${input.field}.expiresAt`,
+      message: `${input.label} has no expiration date, so it can never be flagged for re-review.`,
+      severity: "medium",
+    });
+    return;
+  }
+
+  const expiresAt = new Date(input.verification.expiresAt);
+
+  if (
+    !Number.isNaN(expiresAt.getTime()) &&
+    expiresAt.getTime() <= input.now.getTime()
+  ) {
+    addProductIssue(input.issues, input.productSlug, {
+      category: input.category,
+      code: input.expiredCode,
+      field: `${input.field}.expiresAt`,
+      message: `${input.label} expired ${expiresAt.toISOString()} and can no longer be trusted as verified.`,
+      severity: "blocker",
+    });
+  }
 }
 
 function auditSourceMapping(
