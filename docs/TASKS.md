@@ -841,6 +841,18 @@ Named blockers that no engineering task can close:
   unresolved pending owner input.
 - **OWNER-P0 — Verified legal identity** (ADR 0014): entity, registration
   number, contacts across all legal surfaces. No verified identity, no L1.
+  **Real status (2026-07-15): no entity exists yet** — owner plans to
+  incorporate shortly before launch. All facts in
+  `src/lib/legal-content.ts` are placeholder (`[להשלמה]`) and stay that way
+  until then; that file is the single place to fill in once real, no
+  engineering rework needed. Given the ADR 0013 L1/L2 sequencing conflict
+  above — if L1 ends up requiring real money infrastructure (World B), then
+  registration + business bank account + CardCom merchant KYC + accountant
+  invoicing setup can plausibly take weeks, not days, which narrows how
+  late "shortly before launch" can actually mean. Lawyer/accountant
+  engagement (the two EXTERNAL-P0 items above) does not require the entity
+  to exist first and should start now regardless of exact incorporation
+  timing.
 - **OWNER-P0 — Fact A / Fact B infrastructure answers** (ADR 0008): Postgres
   provider/tier/PITR; Vercel per-minute cron capability.
 - **OWNER — capsule facts, media rights, and photography** (ADR 0011): ≥30
