@@ -491,14 +491,15 @@ demo catalog's media as a defect to fix.
 
 ### H — Service, appointments, ownership care
 
-- **H-01 Service promise** · P0 · OWNER — channels, hours, response target,
-  languages; every public claim maps to staffing and a queue.
-  **Owner-confirmed 2026-07-15, partial**: channels are email + phone (not
-  WhatsApp/chat/SMS — H-08 stays deferred per its own rule); hours are
-  "defined" but the specific hours/response-target numbers were not given
-  — still needed before any public claim can cite them. Unblocks H-03
-  (already NOW after H-01) to proceed; H-02/H-04 still need their own
-  EXTERNAL real-case proof on top of this.
+- **H-01 Service promise** · P0 · OWNER — **owner-confirmed 2026-07-15**:
+  channels are email + phone (not WhatsApp/chat/SMS — H-08 stays deferred
+  per its own rule); hours 09:00–17:00 (days not specified — assume the
+  standard Israeli business week, Sun–Thu, unless told otherwise; don't
+  publish a day range that wasn't actually confirmed). Staffing: Shimon
+  Twito (שמעון טויטו) handles consultation and complaint handling — the
+  substantive customer-facing service role. A specific response-time
+  target (e.g. "within 24h") was not given — still needed before any
+  public claim cites one. Unblocks H-03 to proceed.
 - **H-02 Appointments as a real journey** · P1 · OWNER+EXTERNAL —
   mystery-shopper booking completes end to end.
 - **H-03 Product-aware advisor handoff** · P1 · NOW after H-01 — context moves
@@ -663,13 +664,23 @@ demo catalog's media as a defect to fix.
 
 - **K-04 SLOs and alert ownership — residual** · P1 · OWNER — the alert model,
   event-class SLOs, escalating email delivery to `OPERATIONS_EMAIL`, and the
-  invariant sweep are shipped (ADR 0003/0007). Remaining scope: the owner
-  names a human owner + escalation path per alert class beyond the single
-  operations inbox. **Owner-confirmed 2026-07-15, partial**: there is more
-  than one person, routed by alert class/type (not one solo operator) — the
-  model is per-class ownership. Still needed: the actual name/contact per
-  alert class to route `OPERATIONS_EMAIL` escalation to, once real staffing
-  exists — not fabricated here.
+  invariant sweep are shipped (ADR 0003/0007). **Owner-confirmed
+  2026-07-15**: per-class ownership — Ariel Twito (אריאל טויטו) owns
+  technical/site alert classes (uptime, provider drift, payment-webhook
+  failures, security). Shimon Twito owns customer-facing service escalation
+  (complaints/consultation, matching his H-01 role). **Surname-display
+  decision (owner explicitly delegated this one)**: this is internal
+  escalation routing (`OPERATIONS_EMAIL`/runbook contact, not a rendered
+  public page) — use the full name internally for genuine accountability.
+  Do not publish either name on any customer-facing surface under this
+  item; a public-facing named contact (e.g. the still-open accessibility
+  coordinator in `src/lib/legal-content.ts`) is a separate decision to make
+  on its own terms, not inherited from this one. If a public "technical
+  support" contact is ever wanted, default to first-name-only there,
+  matching the confirmed brand voice (sparse, warm not cold,
+  restraint) — but that's a new, separate call if it comes up.
+  Implementation still open: wire actual email routing per class (today
+  everything goes to the single `OPERATIONS_EMAIL`).
 - **K-05 Inventory correctness testing — residual** · P1 · MEASURE — the
   correctness work is shipped and evidenced (docs/QA_EVIDENCE.md →
   `k-05-inventory-correctness`): the checkout oversell guard is a proven
