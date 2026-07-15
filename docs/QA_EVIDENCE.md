@@ -205,9 +205,9 @@ and order support.
 - `Change Type`: Protected account recovery and privacy action clarity.
 - `Route Context`: `/account`.
 - `Primary Lens`: Account, privacy, service, and auth-boundary guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: `docs/qa/account-recovery-service-shortcuts-benchmark.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -289,9 +289,9 @@ presentation.
 - `Change Type`: Account order comprehension and self-service UX.
 - `Route Context`: account and order detail.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Account, service, checkout, returns, and order guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -376,9 +376,9 @@ and privacy/service escalation.
 - `Change Type`: Account and service recovery UX.
 - `Route Context`: account and service.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Account, service, and commerce recovery guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -467,7 +467,7 @@ and audit-safe operational copy.
 - `Change Type`: Protected admin operations recovery and table-state clarity.
 - `Route Context`: Admin order, customer, and service queues.
 - `Primary Lens`: Admin and operations guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: Existing admin empty-state, route error boundary, and
   outbox/job failure contract tests.
 - `Required Gate`: Internal admin benchmark evidence; public gate is not
@@ -638,9 +638,9 @@ paths back to product discovery and service.
 - `Change Type`: AI and stylist degraded-state UX.
 - `Route Context`: demoted AI/service tool routes.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: AI/stylist route guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -847,7 +847,7 @@ store-location promises.
 - `Change Type`: Public service and location clarity.
 - `Route Context`: Branches and service route.
 - `Primary Lens`: Public structure and service corpus from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -1530,8 +1530,7 @@ Exit criteria:
 - Release-slice gate passes against the validation, apply, readiness, quality,
   and scorecard artifacts for the same scope.
 - Artifact is retained.
-- `docs/qa/catalog-readiness-wave-0-baseline.md`,
-  `docs/TIFFANY_SURPASS_MASTER_PLAN.md`, and `docs/PROJECT_TASKS.md` are
+- `docs/qa/catalog-readiness-wave-0-baseline.md` and `docs/TASKS.md` are
   updated with the new result.
 
 ## Owner Register
@@ -1726,8 +1725,8 @@ refinement summary, reset behavior, sort clarity, and product-grid entry.
 - `Change Type`: Public UX and commerce-control clarity.
 - `Route Context`: `/category/[slug]`.
 - `Primary Lens`: Public structure and commerce corpus from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -1808,8 +1807,8 @@ continuation from the category listing context.
 - `Change Type`: Public UX and commerce-discovery recovery.
 - `Route Context`: `/category/[slug]`.
 - `Primary Lens`: Public structure and commerce corpus from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -1897,9 +1896,9 @@ currently supported data.
 - `Change Type`: Public checkout commerce confidence.
 - `Route Context`: Checkout.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Checkout, account, and service rules in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -1961,7 +1960,7 @@ Implement a narrow checkout summary:
 
 This benchmark supports checkout copy and summary structure only. Real paid
 Shopify checkout, supplier fulfillment confirmation, and CardCom production
-credentials remain blocked in `docs/PROJECT_TASKS.md`.
+credentials remain blocked in `docs/TASKS.md`.
 
 ---
 
@@ -1986,10 +1985,10 @@ checkout source context.
 - `Change Type`: Public checkout cart recovery and mobile summary clarity.
 - `Route Context`: `/checkout`.
 - `Primary Lens`: Checkout and payment guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: `docs/qa/checkout-delivery-confidence-benchmark.md` and
   `docs/qa/checkout-validation-payment-confidence-benchmark.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -2073,9 +2072,9 @@ handoff, and source-aware delivery confidence.
 - `Change Type`: Public checkout recovery and payment-confidence clarity.
 - `Route Context`: `/checkout`.
 - `Primary Lens`: Checkout and payment guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: `docs/qa/checkout-delivery-confidence-benchmark.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -2229,8 +2228,8 @@ questions.
 - `Change Type`: Public content-route recovery.
 - `Route Context`: FAQ, legal, privacy, and accessibility content routes.
 - `Primary Lens`: Content/legal readability and service recovery guidance from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -2303,7 +2302,7 @@ This audit covers cookie consent, accessibility controls, mobile navigation,
 category filter sheets, and sticky public chrome behavior at the current
 baseline. It records verification evidence for
 the historical task item `I-002`, now consolidated under
-`docs/PROJECT_TASKS.md`.
+`docs/TASKS.md`.
 
 ## Evidence
 
@@ -2698,9 +2697,9 @@ discovery before editorial support sections.
 - `Change Type`: Homepage structure and discovery UX.
 - `Route Context`: home.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Home, PLP, search, gifts, service, and route-structure
-  guidance in `docs/FULL_PRODUCT_BENCHMARK.md`.
+  guidance in `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -4088,10 +4087,10 @@ offline browsing and online-only checkout/payment completion.
 - `Change Type`: PWA reliability and offline recovery clarity.
 - `Route Context`: `/offline` and `src/app/manifest.ts`.
 - `Primary Lens`: PWA, reliability, and public route rules in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: `docs/qa/production-deployment-evidence-ledger.md` and
   existing PWA route tests.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -4293,9 +4292,9 @@ and recommendation placement.
 - `Change Type`: Public PDP commerce confidence.
 - `Route Context`: PDP.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Product detail and purchase-confidence rules in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -4384,8 +4383,8 @@ the relationship between the buy area and secondary product details.
 - `Change Type`: PDP purchase-confidence clarity.
 - `Route Context`: `/product/[slug]`.
 - `Primary Lens`: Product detail and purchase confidence guidance from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -4468,9 +4467,9 @@ This benchmark covers product cards on `/category/[slug]`, `/search`,
 - `Change Type`: Product-listing card UX.
 - `Route Context`: PLP/search/gifts/product recommendations.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: PLP, search, gifts, product-card, and PDP guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -4559,7 +4558,7 @@ It replaces the narrower thumbnail-clarity decision in
 - `Route Context`: `/product/[slug]`.
 - `Primary Lens`: High Jewelry Reference Gate and the selected 30-site jewelry
   benchmark corpus in `src/lib/public-design-policy.ts`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; 30-site threshold is `18.75`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); 30-site threshold is `18.75`.
 
 ## Benchmark Evidence
 
@@ -4670,8 +4669,8 @@ gallery-first PDP layout or adding decorative media.
 - `Change Type`: Public PDP media and purchase confidence clarity.
 - `Route Context`: `/product/[slug]`.
 - `Primary Lens`: Product detail and public media rules in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -4759,8 +4758,8 @@ search-origin PDP visit.
 - `Change Type`: Public PDP recommendation and discovery continuation clarity.
 - `Route Context`: `/product/[slug]`.
 - `Primary Lens`: PDP and product discovery guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -4842,9 +4841,9 @@ environment values, customer data, or private dashboard screenshots.
 
 Related documents:
 
-- `docs/PROJECT_TASKS.md`
-- `docs/FULL_PRODUCT_BENCHMARK.md`
-- `docs/ENGINEERING_CONVENTIONS.md`
+- `docs/TASKS.md`
+- `docs/DESIGN.md`
+- `docs/ENGINEERING.md`
 - `scripts/smoke.mjs`
 
 ## Latest Production Evidence
@@ -4906,7 +4905,7 @@ vercel ls --yes
 vercel inspect https://elysia-jewellery.com
 vercel logs https://elysia-jewellery.com --level error --since 1h --json
 $env:SMOKE_BASE_URL = "https://elysia-jewellery.com"; pnpm smoke
-pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/PROJECT_TASKS.md
+pnpm exec prettier --check docs/qa/production-deployment-evidence-ledger.md docs/TASKS.md
 git diff --check
 ```
 
@@ -5356,12 +5355,14 @@ admin, API, and PWA surfaces. Use it before accepting product-changing work that
 touches route behavior, route structure, checkout/account/admin flows, provider
 routes, or global QA coverage.
 
-Related documents:
+Related documents (corrected 2026-07-15 — an L-01 audit found these four
+paths dead post the docs consolidation in PR #17; current equivalents):
 
-- `docs/PROJECT_TASKS.md`
-- `docs/FULL_PRODUCT_BENCHMARK.md`
-- `docs/PUBLIC_CHANGE_GATE.md`
-- `docs/ENGINEERING_CONVENTIONS.md`
+- `docs/TASKS.md` (was `PROJECT_TASKS.md`)
+- `docs/DESIGN.md` (was `FULL_PRODUCT_BENCHMARK.md`; the High Jewelry
+  Reference Gate now lives there)
+- `docs/DESIGN.md` Part I (was `PUBLIC_CHANGE_GATE.md`, merged in)
+- `docs/ENGINEERING.md` (was `ENGINEERING_CONVENTIONS.md`)
 
 ## Latest Baseline
 
@@ -5484,8 +5485,8 @@ controls, reset behavior, and product-grid entry.
 - `Change Type`: Public UX and commerce-control density.
 - `Route Context`: PLP/search/gifts.
 - `Primary Lens`: Public structure and commerce corpus from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -5576,8 +5577,8 @@ recovery, and route-backed continuation links.
 - `Change Type`: Public UX and commerce discovery recovery.
 - `Route Context`: `/search`.
 - `Primary Lens`: Public structure and commerce corpus from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -5658,8 +5659,8 @@ recovery copy without adding unsupported contact channels.
 - `Change Type`: Public service-contact clarity.
 - `Route Context`: `/service`.
 - `Primary Lens`: Service route guidance from
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+  `docs/DESIGN.md`.
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -5744,10 +5745,10 @@ constraints, and offline queued service requests.
 - `Change Type`: Public service request recovery and support-routing clarity.
 - `Route Context`: `/service`.
 - `Primary Lens`: Service, account, and public form guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Secondary Lens`: `docs/qa/service-response-contact-clarity-benchmark.md` and
   existing attachment UX tests.
-- `Required Gate`: `docs/PUBLIC_CHANGE_GATE.md`; high-jewelry gate threshold is
+- `Required Gate`: `docs/DESIGN.md` (Part I); high-jewelry gate threshold is
   `11.25`.
 
 ## Benchmark Evidence
@@ -5829,9 +5830,9 @@ context, and route-backed return from the guide to the originating product.
 - `Change Type`: Public UX and commerce-support clarity.
 - `Route Context`: Size guide and product detail route.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: PDP and service support rules in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence
@@ -6000,7 +6001,7 @@ Status: owner-assignment register, not completion evidence.
 Last updated: 2026-06-19.
 
 This register covers the Wave 0 owner-gated blockers named in
-`docs/TIFFANY_SURPASS_MASTER_PLAN.md` immediate action 6:
+`docs/TASKS.md` immediate action 6:
 
 - G-01 real Shopify supplier proof.
 - G-02 paid Shopify checkout proof.
@@ -6161,9 +6162,9 @@ saved pieces.
 - `Change Type`: Account wishlist UX and public commerce decision support.
 - `Route Context`: account.
 - `Primary Lens`: High Jewelry Reference Gate in
-  `docs/PUBLIC_CHANGE_GATE.md`.
+  `docs/DESIGN.md` (Part I).
 - `Secondary Lens`: Account, wishlist, PLP, PDP, and service guidance in
-  `docs/FULL_PRODUCT_BENCHMARK.md`.
+  `docs/DESIGN.md`.
 - `Required Gate`: Tier A high-jewelry threshold `11.25`.
 
 ## Benchmark Evidence

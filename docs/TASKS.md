@@ -668,8 +668,23 @@ have been deleted; partially done items state only their remaining scope.
 
 ### L — QA, measurement, release proof
 
-- **L-01 Outcome evidence over checklists** · P0 · NOW — every claim links to a
-  current artifact, environment, commit, route, state, and residual risk.
+- **L-01 Outcome evidence over checklists** · P0 · NOW, ongoing discipline —
+  not a completable build (every future evidence entry must keep meeting
+  this bar), but audited rather than left as an assumption: grepped
+  `docs/QA_EVIDENCE.md` for cross-references to documents this repo's own
+  PR #17 consolidation deleted. Found **62 stale references** across the
+  file — mostly a repeated boilerplate "Required Gate" line
+  (`docs/PUBLIC_CHANGE_GATE.md`, `docs/FULL_PRODUCT_BENCHMARK.md`) on older
+  benchmark entries, plus scattered references to `docs/PROJECT_TASKS.md`
+  and the pre-merge master-plan docs — pointing at paths that no longer
+  exist, exactly what L-01 exists to prevent. Fixed mechanically (verified
+  no test pins the old strings first): `PROJECT_TASKS.md` → `TASKS.md`,
+  `FULL_PRODUCT_BENCHMARK.md`/`PUBLIC_CHANGE_GATE.md` → `DESIGN.md` (the
+  content was merged into it, confirmed via the L-03 evidence entry), 
+  `ENGINEERING_CONVENTIONS.md` → `ENGINEERING.md`, and the three former
+  master-plan docs → `TASKS.md` (matching `TASKS.md`'s own header, which
+  already documents the merge). Line count unchanged (7719 before/after) —
+  pure substitution, no content lost.
 - **L-02 Stable browser evidence collection — residual** · P1 · NOW —
   the originally-diagnosed reliability gap is fixed: catalog-fixture drift
   under `E2E_CATALOG_FIXTURES=1` (hard-coded friendly slugs like
@@ -736,9 +751,24 @@ have been deleted; partially done items state only their remaining scope.
   `pnpm release:scorecard` exists and enforces `NOT READY` on any missing
   field; the L1/L2 split is implemented. Remaining scope is turning the
   owner/external-blocked fields to `PASS` with real evidence.
-- **L-12 Benchmark refresh cadence** · P2 · NOW, recurring — quarterly review
-  of Tiffany and the 15-site gate sources; archive observations and access
-  failures.
+- **L-12 Benchmark refresh cadence** · P2 · NOW, recurring — ran a real
+  reachability pass 2026-07-15 against all 15 current gate sources
+  (`src/lib/public-design-policy.ts` `tierALuxuryHouses`, the ADR
+  0015-replaced list — this row's own wording still said "Tiffany", which
+  ADR 0015 already replaced with Repossi; corrected here). **12 of 15**
+  loaded with real, confirmed product content (Cartier, Repossi, Garrard,
+  Vhernier, Verdura, Chopard, Suzanne Kalan, Anna Sheffield, Mikimoto,
+  Messika, De Beers, Roberto Coin). **1 hard failure**: Buccellati returned
+  HTTP 405 (likely a bot-detection edge rule, the same failure class ADR
+  0015 already documented for other sites). **2 partial**: Jessica
+  McCormack and Pomellato returned navigation/structure only, no product
+  listings in the fetched content — plausibly client-rendered product grids
+  this tool's fetch-and-convert-to-markdown approach doesn't execute, not
+  necessarily the site being down. **Not a replacement trigger**: ADR 0015's
+  own bar was 8 of 15 unreachable across two independent passes; 1 clean
+  failure plus 2 ambiguous ones falls well short of that, so no site
+  substitution is warranted from this pass — recorded as a normal quarterly
+  observation. Next due: 2026-10-15 (quarterly from this pass).
 
 ## 5. Launch gates and external/owner blockers
 
