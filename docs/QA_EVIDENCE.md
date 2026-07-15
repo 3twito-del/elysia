@@ -37,6 +37,7 @@ Sections: 64
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
 - [h-05-service-case-timeline](#evidence-h-05-service-case-timeline)
+- [h-06-order-aware-return-initiation](#evidence-h-06-order-aware-return-initiation)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
 - [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
 - [j-05-technical-seo-validation](#evidence-j-05-technical-seo-validation)
@@ -7095,3 +7096,49 @@ price/availability snapshot from when the item was saved."
 
 MEASURE only: whether these cues change decision behavior in the field is
 outside what code changes can prove.
+
+---
+
+<a id="evidence-h-06-order-aware-return-initiation"></a>
+
+## Evidence: h-06-order-aware-return-initiation
+
+# H-06 Order-Aware Return Initiation — Already Built, Verified
+
+Date: 2026-07-15.
+
+Scope: "source-specific instructions; no unsupported self-service on
+Shopify mirrors."
+
+## Finding — structurally already correct, not a gap
+
+Investigated whether `/account/orders/[id]`'s self-service
+`ReturnRequestForm` could reach a Shopify-mirror order. It cannot, by
+construction rather than by a conditional check that could regress:
+
+- `Order` (local orders) and `ShopifyOrderMirror` (Shopify mirrors) are two
+  entirely separate Prisma models with separate id spaces — there is no
+  shared `source` column to branch on.
+- `/account/orders/[id]/page.tsx` loads exclusively via
+  `db.order.findFirst({ where: { id, customerId } })`; a Shopify mirror's id
+  can never resolve here.
+- `requestReturnAction`'s server-side lookup (`src/app/account/actions.ts`)
+  uses the identical `db.order.findFirst` query — the same structural
+  guarantee applies to direct form submission, not just the rendered link.
+- Shopify mirrors are rendered in a completely separate branch of
+  `/account/page.tsx`: a "לקריאה בלבד" (read-only) badge, `getOrderSourceLabel`/
+  `getOrderSourceDescription("SHOPIFY_MIRROR")` (already-written copy stating
+  "recorded read-only; continue through Elysia service"), and only a
+  `/service`-bound "פנייה לשירות" link with the order number pre-filled — no
+  return-form affordance exists in that branch to remove.
+- Already pinned by a structural test:
+  `src/styles/order-source-labels.test.ts` asserts
+  `accountOrderDetail` (the order-detail page source) does **not** contain
+  `"SHOPIFY_MIRROR"` at all — proving the separation is enforced at the
+  source-file level, not just by current behavior.
+- e2e coverage: `tests/e2e/authenticated-account.spec.ts` signs in a fixture
+  customer with both a local order and a Shopify-mirror order and asserts
+  both surfaces render (`account-local-order`, `account-shopify-mirror-order`).
+
+No code change made — nothing to fix. `docs/TASKS.md`'s H-06 row is deleted
+per its own "completed items are deleted" convention.

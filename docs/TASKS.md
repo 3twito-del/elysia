@@ -345,8 +345,6 @@ have been deleted; partially done items state only their remaining scope.
   with the customer; minimized and consented.
 - **H-04 Repair/resize/care intake** · P1 · OWNER+EXTERNAL — one real case
   completes with tracked status.
-- **H-06 Order-aware return initiation** · P1 · NOW+OWNER — source-specific
-  instructions; no unsupported self-service on Shopify mirrors.
 - **H-07 Contact and attachment delivery validation** · P0 · MEASURE+EXTERNAL —
   real email delivery, reply routing, scanning, offline sync, duplicate
   submission, failure alerts.
