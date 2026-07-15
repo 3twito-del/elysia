@@ -134,11 +134,19 @@ have been deleted; partially done items state only their remaining scope.
   existing "House Point Of View" manifesto already expresses it visually) —
   A-02 is now unblocked, still needs its own High Jewelry Reference Gate
   benchmark pass.
-- **A-03 Bilingual voice system — residual** · P1 · NOW+OWNER — owner-confirmed
-  2026-07-15 (`docs/DESIGN.md`): Hebrew is the default register for all
-  copy; English only for memorable slogans/short phrases whose effect would
-  be lost in translation. Remaining scope: transliteration conventions,
-  punctuation direction, numerals/currency, CTA verb standards.
+- **A-03 Bilingual voice system — closed 2026-07-15** · P1 —
+  owner-confirmed (`docs/DESIGN.md`): Hebrew is the default register for
+  all copy; English only for memorable slogans/short phrases whose effect
+  would be lost in translation. Remaining rules now also confirmed:
+  foreign/loan terms (brand name, material/stone names) stay in Latin
+  script, not transliterated; numerals are plain digits, not spelled out;
+  CTA verbs address the customer in Hebrew feminine singular. Verified
+  the CTA rule against real site copy before recording it as already
+  consistent, not assumed: `בחרי`/`המשיכי`/`הוסיפי`-style imperatives are
+  the dominant pattern across checkout, PDP, size-guide, and the service
+  form (grepped, not guessed); the one non-feminine exception found
+  (`admin/insights/live`) is an admin-only internal tool, not
+  customer-facing copy, so it doesn't contradict the rule.
 - **A-04 Evidence-backed house copy** · P1 · OWNER — a real fact now exists
   to build the bank from (`docs/DESIGN.md`): Elysia currently runs on
   dropship suppliers with limited customization — copy must not imply
@@ -150,9 +158,12 @@ have been deleted; partially done items state only their remaining scope.
   piece exists yet — this item stays blocked on that fact, not fabricated.
 - **A-06 Brand into ownership** · P2 · OWNER — packaging, gift note, order
   email, care card, repair/return communication; no provider-template feel.
-  Owner-confirmed 2026-07-15 (`docs/DESIGN.md`): the post-purchase touch is
-  "a personal message" — concrete shape (from whom, what channel, current
-  vs. needs building) still needs its own follow-up, not assumed.
+  **Mechanics confirmed 2026-07-15** (`docs/DESIGN.md`): sent from "צוות
+  Elysia," by email, and does not exist in any form yet — a new build.
+  **Still open, not invented**: the actual message copy. Once real copy
+  exists, the buildable part (wiring a personal-message block into the
+  order-confirmation email send path) becomes a plain NOW item — not
+  attempted here since there's no content to ship yet.
 - **A-07 Campaign and editorial cadence** · P2 · OWNER — storytelling changes
   because a real campaign exists, not for layout novelty. **Blocked**: no
   real campaign exists yet — same demo-catalog/no-real-business constraint
@@ -557,15 +568,14 @@ demo catalog's media as a defect to fix.
 
 ### H — Service, appointments, ownership care
 
-- **H-01 Service promise** · P0 · OWNER — **owner-confirmed 2026-07-15**:
-  channels are email + phone (not WhatsApp/chat/SMS — H-08 stays deferred
-  per its own rule); hours 09:00–17:00 (days not specified — assume the
-  standard Israeli business week, Sun–Thu, unless told otherwise; don't
-  publish a day range that wasn't actually confirmed). Staffing: Shimon
-  Twito (שמעון טויטו) handles consultation and complaint handling — the
-  substantive customer-facing service role. A specific response-time
-  target (e.g. "within 24h") was not given — still needed before any
-  public claim cites one. Unblocks H-03 to proceed.
+- **H-01 Service promise — closed 2026-07-15** · P0 — channels: email +
+  phone (not WhatsApp/chat/SMS — H-08 stays deferred per its own rule).
+  Hours: Sun–Thu 09:00–17:00, Fri 09:00–14:00. Response-time target:
+  within one business day. Staffing: Shimon Twito (שמעון טויטו) handles
+  consultation and complaint handling — the substantive customer-facing
+  service role. Every fact a public service-promise claim needs is now
+  real, not placeholder. Unblocks H-03 (already shipped) and H-02/H-04's
+  remaining EXTERNAL real-case proof.
 - **H-02 Appointments as a real journey** · P1 · OWNER+EXTERNAL —
   mystery-shopper booking completes end to end.
 - **H-03 Product-aware advisor handoff — closed 2026-07-15** · P1 — found a

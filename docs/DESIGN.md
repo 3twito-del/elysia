@@ -256,11 +256,16 @@ register, not outdated. A reasonable price range, not entry-level discount.
 **Voice:** sparse, reserved, warm rather than cold — few words, said with
 confidence, not distance for its own sake.
 
-**Language rule (A-03, partial closure):** Hebrew is the default register
+**Language rule (A-03, closed 2026-07-15):** Hebrew is the default register
 for all copy. English is used only for memorable slogans or short phrases
 whose specific effect would be lost in translation — never as a default
-register. (Transliteration conventions, numerals/currency, and CTA verb
-standards remain open under A-03.)
+register. Foreign/loan terms (brand name, material and stone names, etc.)
+stay in their original Latin script rather than being transliterated into
+Hebrew letters. Numerals are written as plain digits (1, 2, 3), not spelled
+out. Calls to action address the customer in the Hebrew feminine singular
+(e.g. "הוסיפי לסל", "בחרי מידה") — matching the voice already used
+throughout the storefront, now confirmed as the deliberate standard, not
+an inconsistency to fix.
 
 **Verified supply-chain fact (A-04 fact bank; also feeds C-07)**: Elysia
 currently works with dropship suppliers, with limited product-customization
@@ -269,10 +274,15 @@ copy must not imply in-house manufacture or bespoke craftsmanship this
 arrangement doesn't support. Greater direct supplier involvement is a
 possible future direction, not a current fact — do not write it as one.
 
+**Post-purchase personal message (A-06), mechanics confirmed 2026-07-15:**
+sent from "צוות Elysia" (the Elysia team, not a named individual), by
+email, and does not exist in any form yet — a new build, not an
+extension of something informal. **Still genuinely open:** the actual
+message copy itself — mechanics are decided, wording is not, and must
+not be invented here.
+
 **Still genuinely open, not fabricated here:** no named hero piece exists
-yet (blocks A-05's collection architecture); the concrete shape of the
-post-purchase personal note (A-06) beyond "a personal message" is not yet
-specified — needs its own follow-up, not invented.
+yet (blocks A-05's collection architecture).
 
 ### House Point Of View
 
