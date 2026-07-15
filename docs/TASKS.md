@@ -265,8 +265,22 @@ have been deleted; partially done items state only their remaining scope.
 - **E-08 All-products visual consistency** · P1 · NOW — run all configured
   `--route-shard` shards and consolidate artifacts; every active product gets
   desktop and mobile evidence.
-- **E-10 Discovery measurement** · P1 · NOW+MEASURE — query success,
-  refinements, zero results, clickthrough; privacy-respecting, deduplicated.
+- **E-10 Discovery measurement — residual** · P1 · NOW+MEASURE — more capture
+  already exists than expected: `SearchEvent` (server-written, every real
+  search) plus the client `search_performed` `AnalyticsEvent` beacon
+  (consent-gated, deduplicated via `idempotencyKey`) both capture
+  query/filters/resultCount; `ProductClickEvent` already ties a click back to
+  `query`+`position`; `analytics-insights.ts` already surfaces top and
+  zero-result queries. Not yet built: an actual clickthrough/query-success
+  rate (joining `SearchEvent`/`search_performed` to a following click or
+  order in the same session) and a refinement rate (sequential query changes
+  within a session) — `SearchEvent` itself carries no session identifier, so
+  refinement analysis would need the `AnalyticsEvent` path's
+  `sessionKeyHash` instead. Not attempted this pass: this is pre-launch with
+  no real traffic, so these rates would have nothing to compute against yet
+  — genuinely MEASURE-blocked, not an engineering gap. Found and flagged
+  separately, not fixed here: `SearchEvent`'s write path has no consent gate
+  at all (see I-06).
 
 ### F — PDP and purchase authority
 
@@ -402,7 +416,28 @@ have been deleted; partially done items state only their remaining scope.
   decision behavior needs field data, not further engineering.
 - **I-06 Preference and consent governance** · P0 · NOW+OWNER — source,
   timestamp, withdrawal, retention. (ADR 0014 requires behavioral pre-consent
-  proof; consent-surface unification is parked post-L1.)
+  proof; consent-surface unification is parked post-L1.) **New finding
+  (2026-07-15), not fixed here — flagged, not guessed at**: J-09's audit
+  scoped explicitly to "client-side call sites" sending to
+  `/api/analytics/events`/`/api/analytics/replay`. A separate, server-side
+  write sits outside that scope: `recordSearchEvent`
+  (`src/app/search/page.tsx`) fires unconditionally via `after()` on every
+  real search request, writing the raw query text, filters, and result count
+  to `SearchEvent` with **no consent check at all** — every other live
+  tracking path is gated on `consent === "all"`, this one has no gate.
+  Investigated *why*: `src/lib/cookie-consent.ts`'s consent record lives only
+  in `window.localStorage` (never a real HTTP cookie), so it is
+  **structurally unreadable from a Server Component** — there is currently no
+  server-side signal to gate on, not a simple missed `if`. `SearchEvent` rows
+  carry no visitor/session/customer identifier, so whether anonymous
+  query-text logging even requires consent under Amendment 13 is itself a
+  real legal question, not an engineering one. (The two other server-side
+  event-writers, `recordProductClickEvent`/`recordProductViewEvent`, are
+  confirmed dead code per J-09 — their only callers are two API routes with
+  zero live callers in `src` — so they are not part of this finding.) Needs
+  either a lawyer read (does anonymous query telemetry need consent) or, if
+  yes, a real server-readable consent signal (an actual cookie, not
+  localStorage) before this can be fixed correctly — not attempted blind.
 - **I-07 Privacy export and deletion end to end** · P0 · MEASURE — legal
   sign-off and production-safe test.
 - **I-08 Transactional communication governance — residual** · P1 · NOW —

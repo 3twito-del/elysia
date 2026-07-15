@@ -34,12 +34,14 @@ Sections: 64
 - [checkout-validation-payment-confidence-benchmark](#evidence-checkout-validation-payment-confidence-benchmark)
 - [customer-auth-e2e-fixture](#evidence-customer-auth-e2e-fixture)
 - [e-03-merchandiser-aware-ranking](#evidence-e-03-merchandiser-aware-ranking)
+- [e-10-discovery-measurement](#evidence-e-10-discovery-measurement)
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
 - [g-11-checkout-security-review](#evidence-g-11-checkout-security-review)
 - [h-05-service-case-timeline](#evidence-h-05-service-case-timeline)
 - [h-06-order-aware-return-initiation](#evidence-h-06-order-aware-return-initiation)
 - [homepage-discovery-commerce-balance-benchmark](#evidence-homepage-discovery-commerce-balance-benchmark)
+- [i-06-search-event-consent-gap](#evidence-i-06-search-event-consent-gap)
 - [i-08-transactional-communication-governance](#evidence-i-08-transactional-communication-governance)
 - [j-05-technical-seo-validation](#evidence-j-05-technical-seo-validation)
 - [j-09-pre-consent-tracking](#evidence-j-09-pre-consent-tracking)
@@ -7221,3 +7223,117 @@ met for the Typesense path.
 ## Residual
 
 Collection priority: MEASURE/OWNER, gated on C-05/A-05 as documented above.
+
+---
+
+<a id="evidence-e-10-discovery-measurement"></a>
+
+## Evidence: e-10-discovery-measurement
+
+# E-10 Discovery Measurement — Capture Audit
+
+Date: 2026-07-15.
+
+Scope: "query success, refinements, zero results, clickthrough;
+privacy-respecting, deduplicated."
+
+## Finding — more already built than expected, genuinely MEASURE-blocked for the rest
+
+Audited every search-related capture and aggregation path rather than
+assuming a gap:
+
+- `SearchEvent` (`src/app/search/page.tsx`'s `recordSearchEvent`, fired via
+  `after()` on every real search request) captures query, full filter state,
+  and result count — server-side, so it works even with JS disabled.
+- The client `SearchAnalytics` component
+  (`src/app/search/_components/search-analytics.tsx`) independently sends a
+  `search_performed` `AnalyticsEvent` with the same shape, correctly
+  consent-gated (`consent === "all"`, the post-J-09 pattern) and deduplicated
+  via `idempotencyKey: "search:" + pathname + search`.
+- `ProductClickEvent` already ties a product click back to the originating
+  `query` and result `position` (`recordProductClickEvent`).
+- `analytics-insights.ts` already aggregates top queries and zero-result
+  queries from `SearchEvent` for the admin insights surface.
+
+Not yet built: an actual clickthrough/query-success rate (join
+`SearchEvent`/`search_performed` to a subsequent click or order in the same
+session) and a refinement rate (sequential query changes within one
+session — `SearchEvent` itself has no session identifier at all, so this
+would need the `AnalyticsEvent` path's `sessionKeyHash` instead). Not
+attempted: this is a pre-launch site with no real production traffic yet
+(confirmed via project memory: pre-revenue, no real products) — these rates
+would have nothing real to compute against. This is the `MEASURE` tag doing
+real work, not an excuse.
+
+## Related finding, not part of this item
+
+Auditing `SearchEvent`'s write path surfaced a real, separate, more urgent
+gap in consent gating — see `i-06-search-event-consent-gap` below.
+
+---
+
+<a id="evidence-i-06-search-event-consent-gap"></a>
+
+## Evidence: i-06-search-event-consent-gap
+
+# I-06 — SearchEvent Writes With No Consent Gate (Found, Not Fixed)
+
+Date: 2026-07-15.
+
+Scope: found while auditing E-10's capture paths, not the original target —
+documented under I-06 (consent governance) since that's what it actually is.
+
+## Finding
+
+`recordSearchEvent` (`src/app/search/page.tsx`) runs unconditionally via
+`after()` on every real search page render (any query or category), writing
+raw query text, the full filter selection, and result count to `SearchEvent`
+in the real database — with **no consent check at all**. Every other live
+tracking path in this codebase (`analytics-provider.tsx`, `product-analytics.tsx`,
+`search-analytics.tsx` — the three J-09 audited and fixed) gates on
+`consent === "all"`. This one doesn't.
+
+This sits outside J-09's own stated scope: that audit explicitly traced
+"client-side call sites that send an event to `/api/analytics/events` or
+`/api/analytics/replay`." `recordSearchEvent` is a server-side direct
+Prisma write with no client sender and no relation to either route — a
+genuinely separate surface, not a re-discovery of an already-assessed one.
+
+Checked whether the other server-side event writers share this gap:
+`recordProductClickEvent`/`recordProductViewEvent`
+(`src/server/services/product-events.ts`) write directly too, but their only
+callers are `/api/events/product-click` and `/api/events/product-view` —
+confirmed **dead code** by J-09 (zero live callers anywhere in `src`). Not
+part of this finding.
+
+## Why this wasn't fixed blind
+
+1. **No server-readable consent signal exists.** `src/lib/cookie-consent.ts`'s
+   consent record lives only in `window.localStorage`
+   (`readCookieConsent()` explicitly returns `null` whenever
+   `typeof window === "undefined"`) — never set as an actual HTTP cookie. A
+   Server Component / `after()` callback has no cookie, header, or any other
+   signal to gate on. This isn't a missed `if (consent === "all")` — the
+   architecture has nothing to check yet.
+2. **Whether this even needs consent is a real legal question, not an
+   engineering one.** `SearchEvent` rows carry no visitor ID, session key, or
+   customer ID — structurally anonymous, aggregate product-discovery
+   telemetry, closer to a server access log than to identity-linked
+   measurement tracking. But the raw query *text* itself could incidentally
+   contain something identifying (a customer searching a person's name).
+   ADR 0014 already names exactly this class of question as
+   lawyer-scoped ("privacy policy under Israeli law incl. Amendment 13;
+   cookie/consent language").
+
+Fixing this correctly needs one of: (a) a lawyer read confirming anonymous
+query telemetry doesn't require consent under Amendment 13, in which case
+this is fine as-is and should be documented as a deliberate exception, or
+(b) if it does, a real server-readable consent signal (an actual cookie, not
+localStorage) built first — a materially larger change than gating one
+write. Guessing at either answer risks being wrong in a regulated area;
+flagged in `docs/TASKS.md` I-06 for owner/lawyer decision instead.
+
+## Verification
+
+No code changed. This is a documented finding, not a fix — consistent with
+this repo's own convention for legal/policy-gated items (compare G-04, J-08).
