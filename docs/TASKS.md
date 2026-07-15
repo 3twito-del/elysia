@@ -384,7 +384,32 @@ demo catalog's media as a defect to fix.
   advisory/appointment service real, staffed, and scheduled yet?
 - **F-05 Truthful availability and delivery resolution** · P0 · EXTERNAL+NOW —
   PDP, cart, checkout, email, account, and admin agree; no invented stock
-  counts or delivery guarantees.
+  counts or delivery guarantees. **Audited 2026-07-15, no fabrication
+  found** — checked PDP (`getStockQuantityLabel`'s exact numeric count is
+  admin-only, never shown to customers; PDP shows only categorical
+  זמין/אזל מהמלאי/בהזמנה אישית/לייעוץ), checkout (delivery text is
+  generic shipping-cost/method language, never repeats or could contradict
+  a per-product `deliveryPromise`), `shipping-returns` page (no hardcoded
+  day-count delivery claim), order/account pages (no fabricated delivery
+  date estimate), and inventory-mutation cache invalidation
+  (`revalidateCatalogMutation` fires on `updateAdminInventory`, so PDP
+  ISR isn't stale after an admin change). **One hypothesis investigated
+  and disproven, not shipped**: suspected the PDP's price-adjacent
+  availability badge (summed `availableQuantity` across all variants)
+  could visibly contradict `ProductPurchasePanel`'s per-selected-variant
+  status. Traced the actual math: `getInitialVariantSku` already prefers
+  an in-stock variant whenever one exists, which makes "sum across
+  variants > 0" and "the variant it will pick as default has stock > 0"
+  logically equivalent for `getPublicProductCommerceStatus`'s only
+  quantity-sensitive branch (READY_TO_ORDER) — so the two computations
+  can never actually disagree. Implemented a fix, wrote tests, and only
+  then proved through the tests themselves that both old and new code
+  produced identical output — reverted rather than ship a no-op change
+  with a fabricated bug narrative. Recorded here so this isn't
+  re-investigated from scratch. Structured data's separate,
+  product-level (not per-variant) `inStock` computation is intentional
+  and industry-standard (schema.org `Product` without per-variant
+  `Offer`s), not a gap.
 - **F-06 Product-specific care and warranty** · P1 · OWNER — material-sensitive
   care that never contradicts product guidance. **Blocked**: needs real
   material facts per real product, same demo-catalog constraint.
