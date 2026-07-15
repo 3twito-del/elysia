@@ -1025,7 +1025,11 @@ demo catalog's media as a defect to fix.
   supplier transactions with refund/void, cleanup, and alerting.
 - **L-07 Product analytics definition** · P1 · NOW+OWNER — full funnel schema,
   deduplication, consent, attribution.
-- **L-08 Experiment governance** · P2 · OWNER.
+- **L-08 Experiment governance — closed 2026-07-15** · P2 —
+  owner-confirmed: sole approver for any future A/B/experiment on the
+  site is the owner — no separate process or committee. Real experiments
+  need real traffic first (pre-launch now), so this stays a recorded
+  policy, not an active workflow, until then.
 - **L-09 Comparative usability studies** · P0 (final claim) · MEASURE.
 - **L-10 Trust and luxury perception research** · P0 (final claim) · MEASURE.
 - **L-11 Release scorecard — residual** · P1 · OWNER/EXTERNAL —
