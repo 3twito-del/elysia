@@ -97,6 +97,7 @@ Sections: 64
 - [webpack-build-browserslist-warning-fix](#evidence-webpack-build-browserslist-warning-fix)
 - [release-scorecard-l1-l2-merge](#evidence-release-scorecard-l1-l2-merge)
 - [h-03-b-07-media-governance-admin-ui](#evidence-h-03-b-07-media-governance-admin-ui)
+- [g-06-checkout-state-matrix](#evidence-g-06-checkout-state-matrix)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
@@ -8078,3 +8079,82 @@ Verification, not assumption:
 - `pnpm exec playwright test -g "archiving a product|approving a media
   asset"` — both green. Full `pnpm check` — green, one pre-existing
   unrelated ESLint warning untouched.
+
+<a id="evidence-g-06-checkout-state-matrix"></a>
+
+## Evidence: g-06-checkout-state-matrix
+
+# G-06 Checkout State Matrix — Coupon Rejection, Refresh/Back, and a Real Environment Limit Found
+
+Date: 2026-07-15.
+
+Scope: the checkout state matrix (empty/own/supplier/mixed/coupon/
+unavailable/price-change/conflict/failure/timeout/mobile-keyboard/back/
+refresh). Four states (empty/own/supplier/mixed) already had real e2e
+coverage before this pass — verified by reading the existing test file,
+not re-asserted. This pass added two more and investigated a third that
+turned out to be structurally unreachable in this harness.
+
+## Added: coupon rejection + refresh/back (real e2e, both green)
+
+- `rejects an unknown coupon code without changing the checkout total`:
+  submits a genuinely unknown code through the real checkout form, asserts
+  the real Hebrew error text, `role="alert"`, and that the order total is
+  byte-identical before and after (no silent partial-apply).
+- `keeps checkout contents and total stable across a page refresh and
+  browser back`: adds a real item, records the total, reloads the page,
+  navigates away and back — asserts the item and total survive both,
+  proving session persistence isn't just a claim.
+
+## Investigated and found a real, structural environment limit — documented, not worked around
+
+Attempted a third test: apply a genuinely valid coupon (a real DB row,
+`percentOff: 10`, active window) and assert the checkout total drops.
+It failed. Debugged properly before concluding anything:
+
+1. First hypothesis (wrong): case-sensitivity in the coupon code. Fixed
+   the test fixture to uppercase the code like real coupon creation does
+   (`normalizeCouponCode`). Still failed identically.
+2. Verified the coupon really existed in the exact database the dev
+   server uses (`getTestDb().coupon.findUnique` right before the UI
+   interaction — present, active, correct code).
+3. Intercepted the actual `cart.updateOptions` network request/response
+   in the browser. The response's cart `id` was `fixture_cart_hrrb1y` —
+   a **fixture** cart, not a real DB row — with `couponStatus: "unknown"`
+   even though the exact code sent matched a real, active DB coupon.
+4. Traced it to source: `src/server/services/cart-fixtures.ts` hard-codes
+   `couponStatus`/`couponMessage` to `"unknown"` for any non-empty coupon
+   code, unconditionally. `shouldUseFixtureCart()` is literally
+   `shouldUseCatalogFixtures()` — a single global env check
+   (`E2E_CATALOG_FIXTURES === "1"`), independent of which product is in
+   the cart. `playwright.config.ts` always sets this for local runs
+   (`shouldStartLocalE2EServer` branch). So **every** cart in this local
+   e2e harness — regardless of product — evaluates coupons through the
+   fixture stub, which never queries the real `Coupon` table.
+
+This is a deliberate design choice elsewhere in the codebase (fast,
+DB-seed-independent customer-facing e2e), not a bug — so the fix was to
+stop trying to force it, delete the unachievable test, and write down
+*why* directly in `docs/TASKS.md` next to G-06, so a future session
+doesn't waste time rediscovering the same dead end. The coupon
+business-logic itself (success/expired/unknown/ineligible) was already
+solidly unit-tested (`coupons.test.ts`) before and after this pass —
+untouched, still accurate.
+
+## Verification
+
+- `pnpm exec playwright test -g "checkout|cart" --project=chromium-desktop`
+  — 12/12 passing, including the two new tests and all four
+  previously-existing checkout-state tests (empty/own/supplier/mixed),
+  confirmed still green.
+- `pnpm exec tsc --noEmit` clean. Full `pnpm check` green, one
+  pre-existing unrelated ESLint warning untouched.
+
+## Honestly still open (not attempted this pass, not fabricated as done)
+
+unavailable (item goes out of stock mid-checkout — unit-tested via
+`assertCartReservationAvailable`, not e2e-verified), price-change on a
+local/own item (the dropship click-out drift path is separately covered
+under ADR 0012/G-11; the local-checkout equivalent isn't), conflict,
+failure, timeout (needs real CardCom credentials — EXTERNAL, G-04), and a
+checkout-specific mobile-keyboard pass. Full detail: `docs/TASKS.md` G-06.

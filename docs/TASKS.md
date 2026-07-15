@@ -430,9 +430,39 @@ demo catalog's media as a defect to fix.
   launch.
 - **G-05 Complete order-confirmation state** · P0 · NOW after G-02/G-04 —
   source-aware confirmation; refresh and duplicate callbacks idempotent.
-- **G-06 Checkout state matrix** · P0 · NOW+MEASURE — empty/own/supplier/mixed/
-  coupon/unavailable/price-change/conflict/failure/timeout/mobile-keyboard/
-  back/refresh; no fake combined payment.
+- **G-06 Checkout state matrix — residual** · P0 · NOW+MEASURE —
+  empty/own/supplier/mixed/coupon/unavailable/price-change/conflict/
+  failure/timeout/mobile-keyboard/back/refresh; no fake combined payment.
+  **Status as of 2026-07-15**, real e2e verification, not assumed:
+  - **Already covered (pre-existing)**: empty, own, supplier, mixed —
+    real e2e tests (`tests/e2e/critical-flows.spec.ts`).
+  - **Added this pass**: coupon rejection (unknown code shows the real
+    error, `role="alert"`, total unchanged) and refresh/back (checkout
+    contents and total survive a page reload and a browser back
+    navigation) — both real e2e, verified against the actual running app.
+  - **Real environment limit found, not a bug**: a valid-coupon
+    *success* path cannot be e2e-tested in this local harness.
+    `playwright.config.ts` always sets `E2E_CATALOG_FIXTURES=1` for local
+    runs, which routes every cart through `cart-fixtures.ts` —
+    `shouldUseFixtureCart()` is literally `shouldUseCatalogFixtures()`, a
+    global flag independent of which product is in the cart. That fixture
+    cart hard-codes `couponStatus` to `"unknown"` for any code. Verified
+    directly: created a real DB coupon, intercepted the actual
+    `cart.updateOptions` network response, confirmed it came back
+    `"unknown"` regardless. `evaluateCouponCode`'s real business logic
+    (success/expired/unknown/ineligible) stays covered by
+    `coupons.test.ts`'s existing unit tests — only the full
+    browser-to-real-DB-coupon path is unreachable here.
+  - **Still genuinely open, not attempted this pass**: unavailable
+    (item goes out of stock between add-to-cart and checkout submit —
+    `assertCartReservationAvailable` is unit-tested but not e2e-verified),
+    price-change (mid-checkout price drift on a local/own item — the
+    dropship click-out price-drift path is separately covered under
+    ADR 0012/G-11, but the local-checkout equivalent isn't), conflict,
+    failure, timeout (real payment failure/timeout needs CardCom
+    credentials, EXTERNAL-blocked — G-04), and a checkout-specific
+    mobile-keyboard pass (general keyboard-nav e2e coverage exists
+    elsewhere, not verified against the checkout form specifically).
 - **G-07 Delivery promises from real operations** · P0 · OWNER+EXTERNAL — one
   rule used by PDP, checkout, policy, email, and service. **Blocked**: needs
   a real supplier fulfillment process (G-01/G-03, EXTERNAL, not real yet —

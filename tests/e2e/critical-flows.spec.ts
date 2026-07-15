@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import {
@@ -9,6 +11,14 @@ import {
   deleteDisposableAdminProduct,
   getTestDb,
 } from "./helpers/db";
+
+function randomTestSuffix() {
+  return randomUUID().slice(0, 8);
+}
+
+function parseShekelAmount(text: string) {
+  return Number(text.replace(/[^\d]/gu, ""));
+}
 
 const consentStorageKey = "elysia_cookie_consent";
 const accessibilityStorageKey = "elysia.accessibility-settings";
@@ -124,6 +134,84 @@ test.describe("critical shopping flows", () => {
       "לאישור",
     );
     await expect(page.locator('[aria-label^="כמות "]')).toContainText("1");
+  });
+
+  // A real valid-coupon success path cannot be exercised here: this local
+  // e2e harness always sets E2E_CATALOG_FIXTURES=1 (playwright.config.ts),
+  // which routes every cart through cart-fixtures.ts — and that fixture
+  // cart hard-codes couponStatus to "unknown" for any code, real or not
+  // (verified by intercepting the actual cart.updateOptions response for a
+  // genuinely valid, freshly created DB coupon — it still came back
+  // "unknown"). This isn't a bug to fix; it's this harness's real
+  // structural limit, documented rather than faked. The rejection path
+  // below is unaffected — an unknown code returns the same message in
+  // both fixture and real-DB mode, and evaluateCouponCode's business logic
+  // is separately unit-tested (coupons.test.ts).
+  test("rejects an unknown coupon code without changing the checkout total (G-06)", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${cartProductSlug}`);
+    await waitForProductPurchasePanelClientReady(page);
+    await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
+    await expect(page.getByText(/נוספה לסל|התכשיט נוסף לסל/)).toBeVisible();
+
+    await page.goto("/checkout");
+
+    const totalBefore = parseShekelAmount(
+      await page.getByTestId("checkout-order-total").innerText(),
+    );
+
+    await page.locator("#coupon").fill(`NOT-A-REAL-CODE-${randomTestSuffix()}`);
+    await page.getByRole("button", { name: "החילי" }).click();
+
+    const couponStatus = page.getByTestId("checkout-coupon-status");
+
+    await expect(couponStatus).toContainText("לא נמצא");
+    await expect(couponStatus).toHaveAttribute("role", "alert");
+
+    const totalAfter = parseShekelAmount(
+      await page.getByTestId("checkout-order-total").innerText(),
+    );
+
+    expect(totalAfter).toBe(totalBefore);
+  });
+
+  test("keeps checkout contents and total stable across a page refresh and browser back (G-06)", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto(`/product/${cartProductSlug}`);
+    await waitForProductPurchasePanelClientReady(page);
+    await page.getByRole("button", { exact: true, name: "הוספה לסל" }).click();
+    await expect(page.getByText(/נוספה לסל|התכשיט נוסף לסל/)).toBeVisible();
+
+    await page.goto("/checkout");
+
+    const itemLink = page
+      .getByRole("link", { name: new RegExp(cartProductName) })
+      .first();
+
+    await expect(itemLink).toBeVisible();
+    const totalBeforeRefresh = await page
+      .getByTestId("checkout-order-total")
+      .innerText();
+
+    await page.reload({ waitUntil: "domcontentloaded" });
+
+    await expect(itemLink).toBeVisible();
+    await expect(page.getByTestId("checkout-order-total")).toHaveText(
+      totalBeforeRefresh,
+    );
+
+    await page.goto("/");
+    await page.goBack({ waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveURL(/\/checkout/);
+    await expect(itemLink).toBeVisible();
+    await expect(page.getByTestId("checkout-order-total")).toHaveText(
+      totalBeforeRefresh,
+    );
   });
 
   test("navigates a multi-image PDP gallery in full screen", async ({
