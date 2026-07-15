@@ -95,6 +95,7 @@ Sections: 64
 - [tiffany-plus-visual-qa-mobile-first](#evidence-tiffany-plus-visual-qa-mobile-first)
 - [wave-0-owner-evidence-register](#evidence-wave-0-owner-evidence-register)
 - [webpack-build-browserslist-warning-fix](#evidence-webpack-build-browserslist-warning-fix)
+- [release-scorecard-l1-l2-merge](#evidence-release-scorecard-l1-l2-merge)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
@@ -7915,3 +7916,69 @@ different problem inside browserslist itself.
 Related: see the `g-11-turbopack-csp-nonce-incident` section above — the
 fix that forced `next build --webpack` is what surfaced this warning in
 the first place; Turbopack builds never printed it.
+
+<a id="evidence-release-scorecard-l1-l2-merge"></a>
+
+## Evidence: release-scorecard-l1-l2-merge
+
+# Release Scorecard Code Update for the ADR 0013 L1/L2 Merge
+
+Date: 2026-07-15.
+
+Scope: real engineering follow-up to the owner's World B decision (ADR
+0009) and the resulting L1/L2 launch-gate merge (ADR 0013) — flagged as a
+known concrete gap when the docs were updated, now closed in code.
+
+## What changed
+
+`scripts/lib/release-scorecard.ts`:
+
+- Removed the `ReleaseGate` type, the `gate` field on every field
+  definition/result, `ReleaseGateSummary`, `summarizeGate()`, and the
+  `gates: Record<ReleaseGate, ReleaseGateSummary>` property on
+  `ReleaseScorecard` — the scorecard is now one flat required-field list
+  with a single `ready` verdict, matching the merged gate.
+- Renamed `supplierPaidFlowProof` → `dropshipPaidFlowProof`, relabeled from
+  "Real supplier (MOR) paid checkout proven end to end" to "Real dropship
+  payment proven end to end — Elysia as merchant of record, not a supplier
+  click-out" — the old label described exactly the click-out flow World B
+  replaces.
+- Relabeled `ownPaidFlowProof` to specify owned-inventory (branch stock)
+  payment specifically, since both proofs are now Elysia-as-MOR flows and
+  need to stay distinguishable.
+- Grew `reconciliation`'s label/refs to explicitly include the dropship
+  supplier-payable/COGS leg (ADR 0009 §6), not just own-commerce
+  reconciliation.
+- `formatReleaseScorecardMarkdown`: removed the per-gate summary lines,
+  the `| Gate | ... |` table column, and the per-gate verdict loop;
+  replaced with a single "Launch gate: READY/NOT READY" line and one
+  verdict section.
+- `scripts/release-scorecard.ts` (CLI): removed the `gates.L1`/`gates.L2`
+  block from the console JSON summary.
+
+## Verification, not assumption
+
+- Searched the whole repo for every real caller before editing (not just
+  the two files being changed): `scripts/release-slice-gate.ts` only reads
+  the flat `scorecard.ready`/`blockingFields`/`satisfiedCount`/`totalCount`
+  fields — confirmed unaffected by removing `gates`.
+  `scripts/release-slice-pipeline-smoke.test.ts` hard-codes the full field
+  fixture (`createPassingScorecardFields`) — updated the renamed key there
+  too, or the smoke test would have silently left `dropshipPaidFlowProof`
+  missing and never reached `ready: true`.
+- `pnpm exec tsc --noEmit` — clean.
+- `scripts/release-scorecard.test.ts` — rewrote the two tests that asserted
+  the old L1/L2 split (`assigns exactly the own-commerce proofs to gate
+  L2`, `reports L1 ready while L2 remains blocked`) with tests that assert
+  the actual current invariant (no partial-gate readiness; both paid-flow
+  proof fields present and distinct).
+- `pnpm exec vitest run scripts/release-scorecard.test.ts
+  scripts/release-slice-pipeline-smoke.test.ts
+  scripts/release-slice-gate.test.ts scripts/gates.test.mjs` — 30/30
+  passing.
+- Real CLI smoke run (`pnpm exec tsx scripts/release-scorecard.ts
+  --out-dir <tmp>`), not just unit tests: produced a clean flat JSON
+  artifact with `dropshipPaidFlowProof` present and no `gates.L1`/
+  `gates.L2` keys anywhere in the output.
+- Full `pnpm check` (copy:check, lint, typecheck, 1707 unit tests) —
+  green, one pre-existing unrelated ESLint warning untouched.

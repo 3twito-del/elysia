@@ -229,6 +229,7 @@ function createPassingScorecardFields() {
   return {
     cleanLogWindow: { status: "pass" as const },
     coreWebVitals: { status: "pass" as const },
+    dropshipPaidFlowProof: { status: "pass" as const },
     legalSignOff: { status: "pass" as const },
     ownPaidFlowProof: { status: "pass" as const },
     p0Blockers: { status: "pass" as const },
@@ -238,7 +239,6 @@ function createPassingScorecardFields() {
     rollbackReadiness: { status: "pass" as const },
     security: { status: "pass" as const },
     supplierFulfillment: { status: "pass" as const },
-    supplierPaidFlowProof: { status: "pass" as const },
     visualMatrix: { status: "pass" as const },
     wcag: { status: "pass" as const },
   };

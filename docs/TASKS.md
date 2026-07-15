@@ -822,16 +822,22 @@ assumed either way: whether owned-inventory commerce (`InventoryItem`
 stock, unrelated to dropship) launches alongside dropship or stays a
 separate later phase.
 
-**Known concrete follow-up, not yet done:** `scripts/lib/release-scorecard.ts`
-hard-codes the `L1`/`L2` split as separate field lists (`ReleaseGate` type).
-The tool needs a real code change to reflect the merged gate — tagged NOW,
-not owner-blocked, since the decision itself is now made:
-
-- **NEW — Release scorecard L1/L2 merge** · P1 · NOW — update
-  `scripts/lib/release-scorecard.ts`'s `ReleaseGate`/field-list model and
-  `scripts/release-scorecard.test.ts` to reflect the single merged launch
-  gate per ADR 0013's 2026-07-15 update, instead of two separate L1/L2
-  readiness sections.
+**Release scorecard L1/L2 merge — closed 2026-07-15.**
+`scripts/lib/release-scorecard.ts` no longer has a `ReleaseGate`/per-field
+gate concept — one flat required-field list, one `ready` verdict. Two
+fields renamed/relabeled to match World B: `supplierPaidFlowProof` →
+`dropshipPaidFlowProof` ("Elysia as merchant of record, not a supplier
+click-out"); `ownPaidFlowProof` relabeled to specify owned-inventory
+(branch stock) specifically, since both proofs are now Elysia-MOR flows.
+`reconciliation`'s scope grew to explicitly include the dropship
+supplier-payable/COGS leg. `formatReleaseScorecardMarkdown` output
+simplified to match (no more per-gate sections). Verified: CLI smoke run
+(`pnpm exec tsx scripts/release-scorecard.ts`) produces a clean flat
+artifact with the renamed field and no `gates.L1`/`gates.L2`;
+`scripts/release-scorecard.test.ts`,
+`scripts/release-slice-pipeline-smoke.test.ts`, and
+`scripts/release-slice-gate.test.ts` all green (30/30); full `pnpm check`
+green.
 
 Named blockers that no engineering task can close:
 
