@@ -219,6 +219,61 @@ The manifesto may recommend restraint, demotion, or a more precise expression.
 It may not approve a public design change that fails the High Jewelry Reference
 Gate unless a mandatory exception or explicit user-approved exception exists.
 
+### House Idea and Positioning
+
+Marker: `ELYSIA_HOUSE_IDEA` — owner-confirmed 2026-07-15, the acceptance
+record for A-01 (`docs/TASKS.md`: "define the unmistakable house idea").
+This is the brand-truth source the "House Point Of View" manifesto below
+already expressed in visual/UX terms without yet having a written origin —
+the two are the same idea in two registers, design and positioning.
+
+**The house idea, one line:** Elysia is European classical jewelry-making
+in an old-money register — refinement without logo-driven noise — priced so
+that good taste is not a luxury tax.
+
+**The owned tension:** classic timelessness held against a live, current
+market. Elysia is not nostalgic and not trend-chasing — it stays legibly
+European and classical while continuing to read as relevant now, not dated.
+
+**What Elysia is not, on purpose** (the acceptance test for A-01: an
+independent reviewer should describe Elysia this way, not as
+"Tiffany-like"):
+
+- Not a status-logo brand. The explicit premise: some prestige brands
+  charge for a visible logo on a piece that is not, on its own merits,
+  beautiful. Elysia's bet is the opposite trade.
+- Not "affordable jewelry" in the discount sense. The tone/restraint
+  reference point is Loro Piana — quiet, understated, confident — without
+  Loro Piana's price.
+- Not loud, trend-driven, or gimmick-led in design. European, classical,
+  free of decorative gimmicks.
+
+**Target customer:** an "old money" aesthetic sensibility — conservative,
+elegant, unwilling to overpay for a logo, past needing visible brand
+signaling to feel secure in their own taste. Innovative within a classical
+register, not outdated. A reasonable price range, not entry-level discount.
+
+**Voice:** sparse, reserved, warm rather than cold — few words, said with
+confidence, not distance for its own sake.
+
+**Language rule (A-03, partial closure):** Hebrew is the default register
+for all copy. English is used only for memorable slogans or short phrases
+whose specific effect would be lost in translation — never as a default
+register. (Transliteration conventions, numerals/currency, and CTA verb
+standards remain open under A-03.)
+
+**Verified supply-chain fact (A-04 fact bank; also feeds C-07)**: Elysia
+currently works with dropship suppliers, with limited product-customization
+room. This is a real, current operating fact, not a caveat to hide — public
+copy must not imply in-house manufacture or bespoke craftsmanship this
+arrangement doesn't support. Greater direct supplier involvement is a
+possible future direction, not a current fact — do not write it as one.
+
+**Still genuinely open, not fabricated here:** no named hero piece exists
+yet (blocks A-05's collection architecture); the concrete shape of the
+post-purchase personal note (A-06) beyond "a personal message" is not yet
+specified — needs its own follow-up, not invented.
+
 ### House Point Of View
 
 Elysia should feel quiet, precise, intimate, and product-led. Luxury is not

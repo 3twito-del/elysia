@@ -9,6 +9,7 @@ Sections: 64
 
 ## Index
 
+- [a-01-house-idea-and-positioning](#evidence-a-01-house-idea-and-positioning)
 - [about-page-redesign](#evidence-about-page-redesign)
 - [account-dashboard-privacy-shortcut-clarity-benchmark](#evidence-account-dashboard-privacy-shortcut-clarity-benchmark)
 - [account-order-timeline-clarity-benchmark](#evidence-account-order-timeline-clarity-benchmark)
@@ -7765,3 +7766,70 @@ Extending owner/source/review-date/expiration/rollback to non-product
 public content (legal pages, homepage, FAQ) is a real, separate design
 decision — what the governance unit even is for a page vs. a product fact
 — not attempted here, not silently dropped.
+
+---
+
+<a id="evidence-a-01-house-idea-and-positioning"></a>
+
+## Evidence: a-01-house-idea-and-positioning
+
+# A-01 — House Idea and Positioning, Owner-Confirmed
+
+Date: 2026-07-15.
+
+Scope: "one sentence of brand truth, promises, emotional territories, the
+owned tension. Acceptance: independent reviewers describe Elysia
+consistently, not as 'Tiffany-like'."
+
+## Source
+
+Direct owner interview — a structured sequence of characterization
+questions (why the house exists, the owned tension, distinctiveness without
+the name, target customer, voice, language rule, verifiable supply-chain
+facts, hero-piece status, post-purchase touch), answered in full by the
+product owner. Not inferred, not generated from existing marketing copy.
+
+## What was recorded
+
+Written into `docs/DESIGN.md` under a new "House Idea and Positioning"
+subsection (Part II, immediately before the existing "House Point Of View"
+visual manifesto, which — cross-checked, not assumed — already expressed
+the same idea in design/UX terms without a written positioning origin):
+
+- The house idea: European classical jewelry-making in an old-money
+  register — refinement without logo-driven noise — priced so good taste
+  isn't a luxury tax.
+- The owned tension: classic timelessness held against a live, current
+  market (not nostalgic, not trend-chasing).
+- Explicit negative positioning (what Elysia is *not*, the actual
+  acceptance test for "not Tiffany-like"): not a status-logo brand, not
+  discount-affordable, not loud/gimmick-led — reference point Loro Piana
+  for tone and restraint, at an accessible price.
+- Target customer, voice, and a concrete language rule (Hebrew default;
+  English only for slogans that would lose their effect in translation) —
+  closing part of A-03.
+- A real, verified supply-chain fact for A-04's fact bank and C-07's
+  supplier-honesty requirement: dropship suppliers, limited customization,
+  future direct involvement is a possibility not a current fact.
+- What's still genuinely unknown, recorded as open rather than invented: no
+  named hero piece yet (A-05 stays blocked on this); the post-purchase
+  "personal message" touch has no defined shape yet (A-06 residual).
+
+## Verification
+
+- `pnpm exec vitest run src/styles/design-manifesto-contract.test.ts
+  src/styles/high-jewelry-reference-gate.test.ts
+  src/styles/public-structure-enforcement.test.ts
+  src/styles/tiffany-plus-completion.test.ts` — **10/10 passing**: confirms
+  the addition (inserted before the existing manifesto section, not
+  replacing it) didn't disturb any of the ~30 pinned doc-content checks
+  this repo's own docs-structure convention relies on.
+
+## Downstream effect on the backlog
+
+`docs/TASKS.md`: A-01 deleted (closed, per this file's own convention).
+A-02 unblocked (still needs its own benchmark pass). A-03 updated to
+residual (language rule closed; transliteration/punctuation/numerals/CTA
+verbs remain open). A-04/A-05/A-06 updated with the real facts above,
+still open where a real fact is still missing — nothing fabricated to
+close them prematurely.

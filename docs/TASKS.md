@@ -127,23 +127,32 @@ have been deleted; partially done items state only their remaining scope.
 
 ### A — Brand authority and house codes
 
-- **A-01 Define the unmistakable house idea** · P1 · OWNER+MEASURE — one
-  sentence of brand truth, promises, emotional territories, the owned tension.
-  Acceptance: independent reviewers describe Elysia consistently, not as
-  "Tiffany-like".
 - **A-02 Recognizable visual code system** · P1 · BENCHMARK — image geometry,
   crop rules, signature framing, motion grammar, one restrained proprietary
-  accent. Acceptance: five unbranded screens read as one house. Depends: A-01.
-- **A-03 Bilingual voice system** · P1 · NOW+OWNER — when English is allowed,
-  transliteration, punctuation direction, numerals/currency, CTA verb
-  standards. Acceptance: Hebrew remains the primary reading path.
-- **A-04 Evidence-backed house copy** · P1 · OWNER — rewrite public copy from a
-  verified fact bank; unsupported superlatives absent.
+  accent. Acceptance: five unbranded screens read as one house. Depends:
+  A-01 (closed — see `docs/DESIGN.md` "House Idea and Positioning"; the
+  existing "House Point Of View" manifesto already expresses it visually) —
+  A-02 is now unblocked, still needs its own High Jewelry Reference Gate
+  benchmark pass.
+- **A-03 Bilingual voice system — residual** · P1 · NOW+OWNER — owner-confirmed
+  2026-07-15 (`docs/DESIGN.md`): Hebrew is the default register for all
+  copy; English only for memorable slogans/short phrases whose effect would
+  be lost in translation. Remaining scope: transliteration conventions,
+  punctuation direction, numerals/currency, CTA verb standards.
+- **A-04 Evidence-backed house copy** · P1 · OWNER — a real fact now exists
+  to build the bank from (`docs/DESIGN.md`): Elysia currently runs on
+  dropship suppliers with limited customization — copy must not imply
+  in-house manufacture or bespoke craftsmanship this doesn't support. Still
+  needs the rest of a full verified fact bank before a copy rewrite pass.
 - **A-05 Collection architecture** · P1 · OWNER+BENCHMARK — named collections,
   hero pieces, visual worlds, cross-sell logic; publication justified by
-  distinct products and media.
+  distinct products and media. Owner-confirmed 2026-07-15: no named hero
+  piece exists yet — this item stays blocked on that fact, not fabricated.
 - **A-06 Brand into ownership** · P2 · OWNER — packaging, gift note, order
   email, care card, repair/return communication; no provider-template feel.
+  Owner-confirmed 2026-07-15 (`docs/DESIGN.md`): the post-purchase touch is
+  "a personal message" — concrete shape (from whom, what channel, current
+  vs. needs building) still needs its own follow-up, not assumed.
 - **A-07 Campaign and editorial cadence** · P2 · OWNER — storytelling changes
   because a real campaign exists, not for layout novelty.
 - **A-08 Blind distinctiveness validation** · P0 (final claim) · MEASURE —
@@ -824,7 +833,7 @@ placeholder facts, duplicate media, or unproven payment.
 | Wave  | Theme                              | Open items                                                                                                               |
 | ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | **0** | Truth & proof foundation           | I-341, I-342, C-01/C-04, D-04, G-01…G-04, H-01/H-07, I-06/I-07, J-08, K-05/K-07/K-09, L-01/L-04/L-05/L-07 |
-| **1** | House identity, collections, media | A-01…A-05, B-01…B-07, C-05/C-07                                                                                          |
+| **1** | House identity, collections, media | A-02…A-05 (A-01 closed), B-01…B-07, C-05/C-07                                                                            |
 | **2** | Discovery & PDP authority          | E-01…E-10, F-01…F-11, D-05                                                                                               |
 | **3** | Real commerce & clienteling        | G-05…G-12, H-02…H-10, I-02…I-08, A-06                                                                                    |
 | **4** | Reduction, polish, field quality   | D-01…D-03/D-06…D-08, J-01…J-07/J-10…J-12, K-04/K-06, L-02/L-03/L-06                                                      |
