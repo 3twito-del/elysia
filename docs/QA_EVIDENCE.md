@@ -34,6 +34,7 @@ Sections: 64
 - [checkout-validation-payment-confidence-benchmark](#evidence-checkout-validation-payment-confidence-benchmark)
 - [customer-auth-e2e-fixture](#evidence-customer-auth-e2e-fixture)
 - [e-03-merchandiser-aware-ranking](#evidence-e-03-merchandiser-aware-ranking)
+- [e-08-all-products-visual-sweep](#evidence-e-08-all-products-visual-sweep)
 - [e-10-discovery-measurement](#evidence-e-10-discovery-measurement)
 - [faq-content-service-recovery-links-benchmark](#evidence-faq-content-service-recovery-links-benchmark)
 - [floating-chrome-collision-audit](#evidence-floating-chrome-collision-audit)
@@ -60,6 +61,7 @@ Sections: 64
 - [k-13-user-feedback-migration-gap](#evidence-k-13-user-feedback-migration-gap)
 - [k-14-audit-trail-completion](#evidence-k-14-audit-trail-completion)
 - [k-15-permission-domain-split](#evidence-k-15-permission-domain-split)
+- [l-05-deployment-evidence-2026-07-15](#evidence-l-05-deployment-evidence-2026-07-15)
 - [l-02-stable-browser-evidence-collection](#evidence-l-02-stable-browser-evidence-collection)
 - [l-03-visual-regression-human-approval](#evidence-l-03-visual-regression-human-approval)
 - [l-04-full-state-matrix](#evidence-l-04-full-state-matrix)
@@ -7530,6 +7532,11 @@ not a new convention, brought this route in line with its siblings.
   `build.mjs` forces `--webpack`, referencing the tracked upstream issue
   number so a future Next.js upgrade that fixes #64037 has a clear signal
   for when this forcing can be revisited.
+- **Production confirmed** (2026-07-15, after the deploy from this push went
+  `Ready`): a fresh Playwright check directly against
+  `elysia-jewellery.com` — `/`, `/search`, `/search?q=venus`,
+  `/search?q=zzzz-no-match&maxPrice=1` — **zero CSP console errors**,
+  matching the pre-push local verification exactly.
 
 ## Residual
 
@@ -7539,3 +7546,102 @@ already used), and the fix is verified to eliminate the violation without
 introducing new ones. Worth re-checking on future Next.js upgrades whether
 vercel/next.js#64037 has been resolved, at which point forcing `--webpack`
 could potentially be revisited for Turbopack's build-speed benefits.
+
+---
+
+<a id="evidence-e-08-all-products-visual-sweep"></a>
+
+## Evidence: e-08-all-products-visual-sweep
+
+# E-08 All-Products Visual Sweep — First Real Execution
+
+Date: 2026-07-15.
+
+Scope: "run all configured `--route-shard` shards and consolidate
+artifacts; every active product gets desktop and mobile evidence." The
+4-shard command was documented (`route-status-sharded-visual-audit`, dated
+2026-06-19) but never actually executed — this is that first execution.
+
+## Setup
+
+Real production build (`next build --webpack`, post the G-11 fix in this
+same pass), `next start`, real local Postgres freshly re-seeded via
+`pnpm db:seed` (104 real products, not `E2E_CATALOG_FIXTURES`). All 4
+documented shards run sequentially:
+
+```
+pnpm exec tsx scripts/qa-site-audit.ts --base-url http://localhost:3000 \
+  --all-products --route-shard <i>/4 --browsers chromium \
+  --viewports desktop,tablet,mobile --screenshots all \
+  --out-dir artifacts/qa/2026-07-15-all-products-shard-<i>
+```
+
+## Result
+
+**197 routes × 3 viewports = 591 audits: 567 passed, 24 failed.** Every
+failure attributed to one of four known causes, none left unexplained:
+
+| Failure group | Count | Cause |
+| --- | --- | --- |
+| `/search`, `/search?q=venus`, `/search?q=zzzz-no-match&maxPrice=1` (×3 viewports) | 9 | Real, live Turbopack CSP nonce bug — found and fixed in this same pass, see `g-11-turbopack-csp-nonce-incident` |
+| `/product/hera-bracelet`, `/product/muse-pearl-earrings`, `/product/venus-line-ring` (×3 viewports) | 9 | Already-documented L-02 gap (fixture-only products not in the real DB), surfacing through a third path — this tool's `getRouteInventoryProductSlugs()` reads `listFixtureCatalogProducts()` directly, independent of `E2E_CATALOG_FIXTURES` |
+| `/product/elysia-supplier-silver-halo-ring` (×3 viewports) | 3 | Expected — the route inventory's own `getProductRouteNotes` already documents this needs fixtures mode or a real DB-backed supplier product |
+| `/p/sample-landing` (×3 viewports) | 3 | New, minor: a hardcoded example CMS landing-page slug (`scripts/qa-route-inventory.ts`) with no matching seeded `LandingPage` row |
+
+## Verification
+
+Raw JSON/markdown reports and 591 screenshots per the artifact standard,
+under `artifacts/qa/2026-07-15-all-products-shard-{1,2,3,4}/` (gitignored
+per `/artifacts/qa/` in `.gitignore` — not committed, reproducible via the
+command above). Cross-checked failure attribution against source
+(`scripts/qa-route-inventory.ts`'s `source`/`notes` fields in each shard's
+`route-inventory.json`), not asserted from memory.
+
+## Residual
+
+The mechanism itself is now proven end-to-end (documented commands actually
+run, at real scale, with 100%-attributed results) — remaining scope is
+breadth (firefox/webkit) and cleaning up the 4 known content/seed-data gaps,
+none of which are new visual-consistency findings.
+
+---
+
+<a id="evidence-l-05-deployment-evidence-2026-07-15"></a>
+
+## Evidence: l-05-deployment-evidence-2026-07-15
+
+# L-05 Production Deployment Evidence Refresh — 2026-07-15
+
+Commit: `cba01b6` (E-02 corpus depth) at the time this refresh started.
+Deployment: `dpl_149iV7k1F1TWqQsXiMzSgc9vQK7o`,
+`https://elysia-efg3m1d2x-ariel-twitos-projects.vercel.app`, alias
+`elysia-jewellery.com`, status Ready.
+
+## Smoke
+
+`GET /`, `GET /search`, `GET /api/health` all `200`; `/api/health` returned
+`{"ok":true,...}`.
+
+## Log window
+
+`vercel logs` on the live deployment surfaced one real warning on a real
+`/search` request: a Typesense DNS failure
+(`ENOTFOUND tdgkmbue18jz7xwap-1.a2.typesense.net`). Investigated rather than
+dismissed — this is what led to the two real findings below. No other
+errors or warnings in the sampled window.
+
+## What this refresh found (not routine — two real, live issues)
+
+1. **K-06** — production Typesense has been unreachable (dead DNS hostname)
+   while credentials stay configured, with no health check accurate enough
+   to have caught it. Fixed the detection gap. Full detail:
+   `k-06-typesense-connectivity-incident`.
+2. **G-11** — `/search` had a live, reproducible CSP violation in
+   production from a Turbopack nonce-propagation bug (tracked upstream,
+   `vercel/next.js#64037`). Fixed by forcing `--webpack` for production
+   builds. Full detail: `g-11-turbopack-csp-nonce-incident`.
+
+Both fixes deployed (commit `fa4b415`) and confirmed live in production
+with a fresh Playwright check directly against `elysia-jewellery.com`
+after that deploy went Ready (zero CSP errors; documented in the G-11
+entry above).

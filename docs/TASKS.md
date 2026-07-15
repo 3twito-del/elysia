@@ -271,9 +271,30 @@ have been deleted; partially done items state only their remaining scope.
 - **E-06 Gifts around decisions** · P1 · BENCHMARK+MEASURE — occasion,
   recipient, budget, material, urgency; shortlist with fewer decisions; no
   invented stock/delivery/suitability.
-- **E-08 All-products visual consistency** · P1 · NOW — run all configured
-  `--route-shard` shards and consolidate artifacts; every active product gets
-  desktop and mobile evidence.
+- **E-08 All-products visual consistency — residual** · P1 · NOW — run for
+  the first time (2026-07-15): the documented 4-shard command
+  (`docs/QA_EVIDENCE.md` → `route-status-sharded-visual-audit`) had never
+  actually been executed. Ran all 4 shards against a real production build
+  and a freshly-seeded real DB (chromium, desktop+tablet+mobile,
+  `--screenshots all`): **197 routes × 3 viewports = 591 audits, 567 passed,
+  24 failed** — every failure attributed, none left unexplained:
+  (1) 9 failures were a real, live CSP bug this same pass found and fixed
+  (G-11, `/search` in every variant — see that item); (2) 9 failures are
+  `hera-bracelet`/`muse-pearl-earrings`/`venus-line-ring` 404ing against the
+  real DB, the exact already-documented L-02 gap surfacing through a third
+  path (this tool's route inventory reads `listFixtureCatalogProducts()`
+  directly, independent of `E2E_CATALOG_FIXTURES`); (3) 3 failures on
+  `elysia-supplier-silver-halo-ring` are expected per the tool's own route
+  notes (needs fixtures mode or a real DB-backed supplier product, neither
+  active in this run); (4) 3 failures on `/p/sample-landing` are a new,
+  minor, same-shape finding — a hardcoded example CMS landing-page slug
+  (`scripts/qa-route-inventory.ts`) with no matching seeded `LandingPage`
+  row. Artifacts: `artifacts/qa/2026-07-15-all-products-shard-{1..4}/`
+  (gitignored, `591` screenshots + JSON/markdown reports per shard).
+  **Remaining scope**: firefox/webkit and full-catalog runs at this size are
+  untried; the 3 already-documented fixture-catalog gaps and the new
+  landing-page one are content/seed-data debt, not visual-consistency
+  findings, so nothing here blocks calling the *mechanism* itself proven.
 - **E-10 Discovery measurement — residual** · P1 · NOW+MEASURE — more capture
   already exists than expected: `SearchEvent` (server-written, every real
   search) plus the client `search_performed` `AnalyticsEvent` beacon
