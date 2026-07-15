@@ -324,24 +324,30 @@ test.describe("critical shopping flows", () => {
       .getByTestId("product-service-details-layout")
       .scrollIntoViewIfNeeded();
 
+    // The old product-service-summary/-row/-row-icon testids belonged to a
+    // service-details layout (icon rows for delivery/returns/warranty) that
+    // was replaced by the current story-text + FAQ-accordion section — real
+    // elements this test never followed. product-story is the modern
+    // equivalent of a full-width content block; the FAQ's first <details>
+    // row and its chevron icon are the modern equivalent of an icon row.
+    // In this RTL layout the row is `justify-between` with text first
+    // (physical right) and the chevron last (physical left) — confirmed by
+    // measuring both sides before picking one: the icon sits ~13px from the
+    // row's left edge (its p-3 padding), not the right.
     const layout = await page.evaluate(() => {
       const details = document.querySelector(
         '[data-testid="product-service-details-layout"]',
       );
-      const summary = document.querySelector(
-        '[data-testid="product-service-summary"]',
-      );
-      const row = document.querySelector('[data-testid="product-service-row"]');
-      const icon = document.querySelector(
-        '[data-testid="product-service-row-icon"]',
-      );
+      const story = document.querySelector('[data-testid="product-story"]');
+      const row = document.querySelector('[data-testid="product-faq"] details');
+      const icon = row?.querySelector("summary svg") ?? null;
 
-      if (!details || !summary || !row || !icon) {
+      if (!details || !story || !row || !icon) {
         throw new Error("Missing PDP service detail layout elements.");
       }
 
       const detailsRect = details.getBoundingClientRect();
-      const summaryRect = summary.getBoundingClientRect();
+      const storyRect = story.getBoundingClientRect();
       const rowRect = row.getBoundingClientRect();
       const iconRect = icon.getBoundingClientRect();
 
@@ -349,18 +355,18 @@ test.describe("critical shopping flows", () => {
         detailsLeftGap: Math.round(detailsRect.left),
         detailsRightGap: Math.round(window.innerWidth - detailsRect.right),
         detailsWidth: Math.round(detailsRect.width),
-        iconRightInset: Math.round(rowRect.right - iconRect.right),
-        summaryWidth: Math.round(summaryRect.width),
+        iconLeftInset: Math.round(iconRect.left - rowRect.left),
+        storyWidth: Math.round(storyRect.width),
       };
     });
 
     expect(
       Math.abs(layout.detailsLeftGap - layout.detailsRightGap),
     ).toBeLessThanOrEqual(64);
-    expect(layout.summaryWidth).toBeGreaterThan(
+    expect(layout.storyWidth).toBeGreaterThan(
       Math.round(layout.detailsWidth * 0.86),
     );
-    expect(layout.iconRightInset).toBeGreaterThanOrEqual(20);
+    expect(layout.iconLeftInset).toBeGreaterThanOrEqual(8);
   });
 
   test("shows supplier-only checkout without local order fields", async ({

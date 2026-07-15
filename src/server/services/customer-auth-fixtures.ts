@@ -68,10 +68,20 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
   const shippedAt = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000);
 
   return db.$transaction(async (tx) => {
+    // Was hardcoded to product slug "hera-bracelet" — that slug has never
+    // existed as a real seeded product (prisma/seed.ts / seed-catalog.ts);
+    // it is a display-only fixture in catalog-fixtures.ts (E2E_CATALOG_
+    // FIXTURES), a separate system from this real-DB-write fixture. That
+    // mismatch made this endpoint 500 on any freshly seeded database. Query
+    // any real seeded OWN-source variant instead — nothing below depends on
+    // which specific product it is, only that it's real and priced —
+    // ordered by sku for a reproducible pick across runs.
     const variant = await tx.productVariant.findFirst({
+      orderBy: { sku: "asc" },
       where: {
         product: {
-          slug: "hera-bracelet",
+          source: "OWN",
+          status: "ACTIVE",
         },
       },
       include: {
@@ -91,7 +101,7 @@ export async function createCustomerAuthFixture(input: unknown = {}) {
 
     if (!variant) {
       throw new Error(
-        "Customer auth fixture requires the seeded hera-bracelet variant.",
+        "Customer auth fixture requires at least one seeded, active, OWN-source product variant.",
       );
     }
 

@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -62,5 +65,31 @@ describe("customer auth fixture controls", () => {
       shopifyOrderId: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderId,
       shopifyOrderName: CUSTOMER_AUTH_FIXTURE_DEFAULTS.shopifyOrderName,
     });
+  });
+
+  it("never depends on a hardcoded product slug that isn't in the real seed data (regression)", () => {
+    // Real bug, not hypothetical: this queried product.slug === "hera-bracelet"
+    // directly against the database, but that slug has never existed in
+    // prisma/seed.ts or prisma/seed-catalog.ts — it is a display-only
+    // in-memory fixture (catalog-fixtures.ts, E2E_CATALOG_FIXTURES), a
+    // separate system. Any freshly seeded database 500'd on this endpoint,
+    // breaking three real e2e tests (this file's callers, plus the admin
+    // refund test) with no signal beyond an opaque 500. Confirmed neither
+    // seed file ever defines this slug, and the fixture source no longer
+    // hardcodes any single product.
+    const source = readFileSync(
+      path.join(process.cwd(), "src/server/services/customer-auth-fixtures.ts"),
+      "utf8",
+    );
+    const seedFiles = [
+      readFileSync(path.join(process.cwd(), "prisma/seed.ts"), "utf8"),
+      readFileSync(path.join(process.cwd(), "prisma/seed-catalog.ts"), "utf8"),
+    ];
+
+    expect(source).not.toContain('slug: "hera-bracelet"');
+    expect(source).toContain('source: "OWN"');
+    for (const seedFile of seedFiles) {
+      expect(seedFile).not.toContain("hera-bracelet");
+    }
   });
 });

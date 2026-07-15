@@ -790,17 +790,42 @@ demo catalog's media as a defect to fix.
   restraint) — but that's a new, separate call if it comes up.
   Implementation still open: wire actual email routing per class (today
   everything goes to the single `OPERATIONS_EMAIL`).
-- **NEW — Two pre-existing e2e failures found 2026-07-15, not caused by
-  this session, not yet investigated** · P1 · flagged — found while
-  verifying an unrelated I-06 change (confirmed pre-existing via
-  `git stash` against clean `main`, not a regression from anything
-  touched today): (1) `keeps desktop PDP service details centered with
-  inset icons` fails with "Missing PDP service detail layout elements."
-  (2) `refunding an order is a real write, recorded in the audit log and
-  outbox` fails — its setup API call returns `500` instead of `200`,
-  meaning the actual refund flow was never reached. The second one in
-  particular touches real money/checkout territory and deserves its own
-  investigation pass, not a guess folded into this one.
+- **Two pre-existing e2e failures — closed 2026-07-15**, both real root
+  causes found and fixed, not guessed at:
+  1. **`refunding an order...` / `authenticated-account.spec.ts`'s two
+     customer-fixture tests (3 tests, 1 root cause)**:
+     `createCustomerAuthFixture` (`src/server/services/customer-auth-fixtures.ts`)
+     hardcoded `where: { product: { slug: "hera-bracelet" } } }` against
+     the real database — but "hera-bracelet" has **never** existed in
+     `prisma/seed.ts` or `prisma/seed-catalog.ts`; it is a display-only
+     in-memory fixture in `catalog-fixtures.ts` (`E2E_CATALOG_FIXTURES`),
+     a completely separate system. Any freshly seeded DB 500'd on
+     `/api/e2e/customer-auth`. Fixed by querying any real, active,
+     OWN-source variant instead (ordered by `sku` for a reproducible
+     pick) — nothing downstream depends on which specific product it is.
+     Verified: a new regression test
+     (`customer-auth-fixtures.test.ts`) confirms the source never
+     hardcodes that slug and both seed files still don't define it;
+     `pnpm exec playwright test tests/e2e/authenticated-account.spec.ts
+     tests/e2e/critical-flows.spec.ts` — 70/70 passing (3 intentionally
+     skipped), including the two other tests this same bug was silently
+     breaking.
+  2. **`keeps desktop PDP service details centered with inset icons`**:
+     the test targeted `product-service-summary`/`product-service-row`/
+     `product-service-row-icon` testids from an old icon-row service-details
+     layout that was replaced by the current story-text + FAQ-accordion
+     section (`src/app/product/[slug]/page.tsx`) — a stale test, not a
+     real product regression. Rewritten against the current real DOM
+     (`product-story`, the FAQ's first `<details>`/`<summary>`/chevron
+     icon). Measured the actual geometry before picking thresholds rather
+     than guessing: in this RTL `justify-between` row the chevron sits
+     ~13px from the row's **left** edge, not the right (text is
+     physical-right, icon is physical-left) — the old test's "icon inset
+     from the right" check would have silently never matched this layout
+     even with correct testids. Proved the rewritten test actually
+     catches a regression, not just passes vacuously: temporarily removed
+     the row's padding, confirmed the test correctly failed
+     (13px → 1px), then restored it and confirmed green again.
 - **K-05 Inventory correctness testing — residual** · P1 · MEASURE — the
   correctness work is shipped and evidenced (docs/QA_EVIDENCE.md →
   `k-05-inventory-correctness`): the checkout oversell guard is a proven

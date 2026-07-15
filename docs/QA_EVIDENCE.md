@@ -98,6 +98,7 @@ Sections: 64
 - [release-scorecard-l1-l2-merge](#evidence-release-scorecard-l1-l2-merge)
 - [h-03-b-07-media-governance-admin-ui](#evidence-h-03-b-07-media-governance-admin-ui)
 - [g-06-checkout-state-matrix](#evidence-g-06-checkout-state-matrix)
+- [pre-existing-e2e-fixture-and-stale-test-fixes](#evidence-pre-existing-e2e-fixture-and-stale-test-fixes)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 
@@ -8158,3 +8159,86 @@ local/own item (the dropship click-out drift path is separately covered
 under ADR 0012/G-11; the local-checkout equivalent isn't), conflict,
 failure, timeout (needs real CardCom credentials — EXTERNAL, G-04), and a
 checkout-specific mobile-keyboard pass. Full detail: `docs/TASKS.md` G-06.
+
+<a id="evidence-pre-existing-e2e-fixture-and-stale-test-fixes"></a>
+
+## Evidence: pre-existing-e2e-fixture-and-stale-test-fixes
+
+# Two Pre-Existing e2e Bugs, Root-Caused and Fixed
+
+Date: 2026-07-15.
+
+Scope: found while verifying an unrelated I-06 attempt (`pnpm exec
+playwright test`, not caused by that change — confirmed via `git stash`
+against clean `main` before touching either). The user asked to "implement
+what's unblocked," and these were the only genuinely unblocked, real,
+concrete items left in the backlog at that point.
+
+## Bug 1 — customer-auth fixture hardcoded a product slug that was never real
+
+`src/server/services/customer-auth-fixtures.ts`'s `createCustomerAuthFixture`
+queried `tx.productVariant.findFirst({ where: { product: { slug:
+"hera-bracelet" } } } })` against the **real** database. Traced, not
+assumed: grepped both `prisma/seed.ts` and `prisma/seed-catalog.ts` —
+neither has ever defined a product with this slug. "hera-bracelet" is a
+display-only in-memory fixture (`createFixtureHeraBraceletProduct` in
+`src/server/services/catalog-fixtures.ts`, gated on
+`E2E_CATALOG_FIXTURES`) — a completely separate system from this
+real-database-write fixture. Any freshly seeded local database therefore
+500'd on `POST /api/e2e/customer-auth`.
+
+**Blast radius, confirmed not assumed**: this endpoint is called directly
+by the `refunding an order...` test and, via the shared
+`signInCustomerWithFixture` helper (`tests/e2e/helpers/customer-auth.ts`),
+by both tests in `authenticated-account.spec.ts` — three real tests
+silently broken by one root cause, not one.
+
+**Fix**: query any real, active, `OWN`-source product variant instead of
+a hardcoded slug, ordered by `sku` for a reproducible pick across runs.
+Nothing downstream of the query (order/payment/shipment/wishlist fixture
+rows) depends on which specific product it resolves to.
+
+**Verification**:
+- New regression test (`customer-auth-fixtures.test.ts`): asserts the
+  source never contains `slug: "hera-bracelet"`, does filter on
+  `source: "OWN"`, and both seed files still don't define that slug —
+  so a future accidental re-hardcoding, or a future real seeding of that
+  exact slug, both surface here rather than as a silent 500 discovered
+  by chance again.
+- `pnpm exec playwright test tests/e2e/authenticated-account.spec.ts
+  tests/e2e/critical-flows.spec.ts --project=chromium-desktop` — 70/70
+  passing (3 intentionally viewport-skipped), including all three
+  previously-broken tests. Confirmed all three were failing identically
+  on clean `main` first (`git stash`), so this is a real fix, not a
+  coincidence of local state.
+
+## Bug 2 — a stale e2e test targeted testids from a layout that no longer exists
+
+`keeps desktop PDP service details centered with inset icons` queried
+`product-service-summary`/`product-service-row`/`product-service-row-icon`
+— none of which exist anywhere in `src` anymore (grepped to confirm).
+The section they described (icon rows for delivery/returns/warranty) was
+replaced at some point by the current story-text + FAQ-accordion section
+in `src/app/product/[slug]/page.tsx`; the test was never updated. Not a
+product regression — a stale test.
+
+**Fix**: rewrote against the current real DOM: `product-story` (the
+full-width content block, replacing the old "summary" width check) and
+the FAQ's first `<details>`/`<summary>`/chevron-icon (replacing the old
+"icon row" check).
+
+**Got the geometry wrong on the first pass, caught it before shipping**:
+initially reused the old check's shape (`rowRect.right - iconRect.right`).
+Measured the actual values instead of trusting the port: the gap came
+back ~1187px — nonsensical for an "inset" check. The FAQ row is a
+`justify-between` flex with Hebrew text first (physical-right in RTL) and
+the chevron last (physical-left) — the icon actually sits ~13px from the
+row's **left** edge, the opposite side the old check measured. Fixed to
+measure `iconRect.left - rowRect.left`.
+
+**Proved the rewritten test can actually fail, not just pass by
+construction**: temporarily removed the row's `p-3` padding, re-ran —
+inset dropped from 13px to 1px and the test correctly failed against its
+`>= 8` threshold. Restored the padding, confirmed green again. Full
+`pnpm check` green throughout (one pre-existing unrelated ESLint
+warning).
