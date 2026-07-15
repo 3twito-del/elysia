@@ -103,6 +103,17 @@ const corpus: CatalogProduct[] = [
     stone: "יהלום",
     price: 3100,
   }),
+  // Latin-transliterated name, matching the real fixture convention of
+  // bilingual product names (e.g. "טבעת Venus Line" in catalog-fixtures.ts).
+  product({
+    slug: "bracelet-aurora-gold",
+    name: "צמיד Aurora זהב",
+    categorySlug: "bracelets",
+    categoryName: "צמידים",
+    material: "זהב צהוב 14K",
+    price: 980,
+    tags: ["צמיד"],
+  }),
 ];
 
 const cases: SearchEvaluationCase[] = [
@@ -162,6 +173,60 @@ const cases: SearchEvaluationCase[] = [
     label: "reversed multi-token query misses (documented limitation)",
     input: { query: "יהלום טבעת" },
     expectZeroResults: true,
+  },
+  // --- E-02 residual: morphology / transliteration depth ---
+  {
+    // Succeeds, but not from word-level stemming: every ring's joined search
+    // text includes categoryName "טבעות" (the real Hebrew category name,
+    // already plural), so a plural category term matches by coincidence, not
+    // because "טבעת" was stemmed to "טבעות". Kept distinct from the next case
+    // to make that distinction measurable, not assumed.
+    label: "plural category term matches via categoryName, not stemming",
+    input: { query: "טבעות" },
+    relevantSlugs: [
+      "ring-gold-diamond",
+      "ring-silver",
+      "ring-rose-gold-sapphire",
+    ],
+  },
+  {
+    // Documented limitation: unlike the category name, no product's *material
+    // or stone* field carries a plural form, so a plural stone term does not
+    // retrieve the singular-stone products that are the obvious intended
+    // match. No stemming/morphological normalization exists on this path.
+    label: "plural stone term misses singular-stone products (documented limitation)",
+    input: { query: "יהלומים" },
+    expectZeroResults: true,
+  },
+  {
+    // Documented limitation: Hebrew's attached prefix letters (ב/ו/ה/ל/מ)
+    // are not stripped before matching, so a grammatically ordinary prefixed
+    // query ("with a ring") never substring-matches "טבעת".
+    label: "attached prefix letter blocks an otherwise obvious match (documented limitation)",
+    input: { query: "בטבעת" },
+    expectZeroResults: true,
+  },
+  {
+    // Documented limitation: construct-plural phrasing ("diamond-ring", stone
+    // pluralized and reordered) doesn't match the product's actual singular,
+    // differently-ordered name ("טבעת יהלום זהב").
+    label: "construct-plural phrase misses a differently-ordered singular name (documented limitation)",
+    input: { query: "טבעת יהלומים" },
+    expectZeroResults: true,
+  },
+  {
+    // Latin-transliterated product names (the real fixture convention, e.g.
+    // "טבעת Venus Line" in catalog-fixtures.ts) retrieve correctly — the
+    // match is plain case-insensitive substring, so script mixing itself is
+    // not a limitation, only Hebrew morphology is.
+    label: "Latin transliterated name matches case-insensitively",
+    input: { query: "aurora" },
+    relevantSlugs: ["bracelet-aurora-gold"],
+  },
+  {
+    label: "Latin transliterated name matches regardless of query case",
+    input: { query: "AURORA" },
+    relevantSlugs: ["bracelet-aurora-gold"],
   },
 ];
 

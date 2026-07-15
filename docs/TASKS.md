@@ -231,9 +231,18 @@ have been deleted; partially done items state only their remaining scope.
   every navigation and filter term.
 - **E-02 Semantic search evaluation — residual** · P1 · NOW+MEASURE — the
   deterministic-path harness and labeled Hebrew corpus exist
-  (`src/server/adapters/search-evaluation.ts`); remaining scope:
-  transliteration/morphology corpus depth, semantic/AI path evaluation, and
-  runs against the real catalog.
+  (`src/server/adapters/search-evaluation.ts`). Deepened the corpus
+  (`search-evaluation.test.ts`): 7 new measured cases covering plural
+  category terms (passes, but via `categoryName` coincidence — labeled
+  distinctly from real stemming), plural stone/material terms, attached
+  Hebrew prefix letters (ב/ו/ה/ל/מ), construct-plural phrase reordering (all
+  four: documented, real, zero-result limitations — no stemmer exists on
+  this path), and Latin-transliterated product names (passes cleanly,
+  case-insensitive — script mixing itself is not a limitation). All measured
+  against the real `filterCatalogProducts` behavior, not asserted from a
+  guess. Remaining scope: semantic/AI path evaluation, and runs against the
+  real catalog (blocked on I-341 remediation for a real catalog to run
+  against).
 - **E-03 Merchandiser-aware ranking — residual** · P1 · NOW — the Typesense
   path already blended `_text_match` relevance with `popularityScore`
   (`buildTypesenseSort`); the **local/degraded path had none** — a real
