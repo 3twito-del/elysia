@@ -6817,6 +6817,34 @@ fixed and verified stable across two independent clean runs. L-02 stays open
 — not deleted — because of the four newly-found items above and because
 sharding (`--shard=i/n`) remains unexercised.
 
+## L-02 status (2026-07-16): CLOSED — all four residual items resolved in later, separate passes
+
+Found while looking for a small, well-scoped backlog item: this row's four
+"newly found" items were each already fixed, just never reflected back into
+this file or `docs/TASKS.md`. Traced via `git log`/`git show`, not assumed:
+
+1. **PDP layout test on the supplier product** ("keeps desktop PDP service
+   details centered with inset icons") — fixed in `5f3a915` (2026-07-15),
+   see `pre-existing-e2e-fixture-and-stale-test-fixes` below.
+2. **Admin "archiving a product" ambiguous row selector** — fixed in
+   `6ed73f4` (2026-07-15, the H-03/B-07 commit): scoped the row lookup to
+   `getByTestId("admin-catalog-products-table")` before filtering by SKU
+   text, so it no longer collides with the C-08 catalog-quality rollup
+   table's sample-SKU mentions.
+3. **Admin "refunding an order" 500 on setup** and 4. **`customer-auth-fixtures.ts`'s
+   real-DB `hera-bracelet` dependency** — both were the same root cause,
+   fixed in `5f3a915`: `createCustomerAuthFixture` no longer requires that
+   slug at all — it queries any real, active, `OWN`-source variant instead,
+   which sidesteps the owner-decision-needed "how do we represent a
+   first-party seed product" question entirely rather than answering it.
+
+**Re-verified 2026-07-16, not trusted from the old commit messages alone**:
+`pnpm exec playwright test tests/e2e/critical-flows.spec.ts
+tests/e2e/authenticated-account.spec.ts --project=chromium-desktop` —
+**70 passed, 0 failed, 3 skipped** (mobile-viewport-only tests correctly
+skipped on the desktop project), ~3.0 minutes. `docs/TASKS.md`'s L-02 row
+updated to closed.
+
 ---
 
 <a id="evidence-l-03-visual-regression-human-approval"></a>
