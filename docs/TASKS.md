@@ -906,11 +906,17 @@ demo catalog's media as a defect to fix.
   `admin-integrations.ts`'s dashboard summary still only checks
   configuration presence, not real connectivity — its `createIntegrationSummary`
   helper is synchronous and would need a real refactor to thread an async
-  probe through, named here rather than rushed; (3) wiring the new
-  `unreachable` signal into the operational-alert sweep itself (this fix
-  only makes `/api/health` accurate — nothing currently reads it
-  automatically) is the concrete remaining scope for this item's own
-  mirror-staleness-alerting line above.
+  probe through, named here rather than rushed. (3) **Fixed 2026-07-16**:
+  wired the `unreachable` signal into the operational-alert sweep itself —
+  `sweepOperationalInvariants` (`operational-alerts.ts`) now calls
+  `checkTypesenseConnectivity` directly and raises a P1 `SYSTEM` alert
+  (`search-provider-unreachable`) only when the provider is configured but
+  dead, same pattern as the existing Shopify-drift wiring; stays quiet for
+  `reachable` and `not-configured` (local fallback by design). Verified: 3
+  new unit tests for the pure violation-builder, `pnpm check` green
+  (1720 tests). Mirror-staleness alerting against the 12h freshness SLO
+  (needs the 6h cadence unlocked by Fact B) remains the item's one genuine
+  MEASURE-blocked gap.
 - **K-07 Backups and recovery** · P0 · EXTERNAL+MEASURE — restore drill meets
   RPO/RTO. (ADR 0008: PITR is a launch requirement; drill is acceptance;
   blocked on owner Fact A — Postgres provider/tier.)

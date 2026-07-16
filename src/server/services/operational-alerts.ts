@@ -13,6 +13,7 @@ import {
   checkShopifyIntegrationDrift,
   type ShopifyIntegrationDriftReport,
 } from "~/server/services/shopify-integration-drift";
+import { checkTypesenseConnectivity } from "~/server/adapters/search";
 
 export const ALERT_SWEEP_JOB_NAME = "operational-alert-sweep";
 
@@ -224,6 +225,31 @@ export function buildShopifyDriftViolations(
   return violations;
 }
 
+/**
+ * Pure: turns Typesense reachability (K-06) into an alert violation. Only
+ * "unreachable" (configured but dead -- credentials present, provider not
+ * responding) is a real, silent degradation worth surfacing; "reachable" and
+ * "not-configured" (local fallback by design) both stay quiet.
+ */
+export function buildSearchProviderViolations(
+  status: "reachable" | "unreachable" | "not-configured",
+): AlertViolation[] {
+  if (status !== "unreachable") return [];
+
+  return [
+    {
+      alertKey: "search-provider-unreachable",
+      class: "SYSTEM",
+      severity: "P1",
+      invariant: "search-provider-reachable-when-configured",
+      message:
+        "Typesense is configured (host/API key present) but unreachable -- every search request is silently running on the local fallback path.",
+      remediationHint:
+        "Check the Typesense Cloud dashboard/cluster status and TYPESENSE_HOST DNS resolution; see docs/RUNBOOKS.md's Typesense outage runbook.",
+    },
+  ];
+}
+
 function outboxAlertClass(eventClass: string): OperationalAlertClass {
   if (eventClass === "CUSTOMER_COMMUNICATION") {
     return "CUSTOMER_COMMUNICATION";
@@ -390,6 +416,13 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
 
   violations.push(...buildShopifyDriftViolations(shopifyDrift));
 
+  // 6. Search provider reachability (K-06): a configured Typesense that has
+  //    gone unreachable is invisible to customers (local fallback covers it)
+  //    but is a real, silent degradation ops needs to know about.
+  const searchStatus = await checkTypesenseConnectivity();
+
+  violations.push(...buildSearchProviderViolations(searchStatus));
+
   // Raise / refresh all violated invariants, then auto-resolve cleared ones.
   for (const violation of violations) {
     await raiseOperationalAlert(violation, now);
@@ -406,6 +439,7 @@ export async function sweepOperationalInvariants(now: Date = new Date()) {
       "security-admin-login-failures",
       "shopify-webhook-drift:",
       "shopify-scope-drift",
+      "search-provider-unreachable",
     ],
   });
 

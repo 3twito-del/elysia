@@ -7469,10 +7469,32 @@ the truth visible to a manual check.
    integration card) still only checks configuration presence — its
    `createIntegrationSummary` helper is synchronous; threading a real async
    probe through it is a real refactor, not attempted here.
-3. Nothing currently reads `/api/health` automatically — wiring the new
+3. ~~Nothing currently reads `/api/health` automatically — wiring the new
    `unreachable` signal into the operational-alert sweep (ADR 0007) is the
    concrete remaining scope named on K-06's own row for exactly this kind of
-   provider-down detection.
+   provider-down detection.~~ **Fixed 2026-07-16**, see below.
+
+## Follow-up (2026-07-16): wired into the operational-alert sweep
+
+Residual item 3 above closed. `sweepOperationalInvariants`
+(`src/server/services/operational-alerts.ts`) now calls
+`checkTypesenseConnectivity()` directly as its own step (alongside the
+existing outbox/money/inventory/security/Shopify-drift checks) and a new
+pure `buildSearchProviderViolations` function raises a P1 `SYSTEM` alert
+(`search-provider-unreachable`) only for the `"unreachable"` state — stays
+quiet for `"reachable"` and `"not-configured"` (local fallback is a design
+choice, not an incident), same shape as the existing
+`buildShopifyDriftViolations` wiring. `search-provider-unreachable` was
+added to `resolveClearedAlerts`'s scope list so it auto-resolves once
+Typesense is reachable again. Verified: 3 new unit tests
+(`operational-alerts.test.ts`) covering all three states;
+`pnpm check` green (341 test files, 1720 tests). Not unit-tested
+end-to-end (matches this repo's established pattern for `sweepOperationalInvariants`
+itself, which has no DB-mocked test — no test-DB wiring exists, and every
+other branch in that function is source-verified the same way).
+
+Residual items 1 and 2 above are unchanged (still EXTERNAL/OWNER and a
+real refactor, respectively).
 
 ---
 

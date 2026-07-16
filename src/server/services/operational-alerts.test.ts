@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   ALERT_ESCALATION_COOLDOWNS_MS,
+  buildSearchProviderViolations,
   buildShopifyDriftViolations,
   evaluateOutboxInvariants,
   nextNotificationDelayMs,
@@ -264,5 +265,27 @@ describe("buildShopifyDriftViolations (K-06)", () => {
       measuredValue: "1",
     });
     expect(violations[2]?.message).toContain("read_orders");
+  });
+});
+
+describe("buildSearchProviderViolations (K-06)", () => {
+  it("stays quiet when Typesense isn't configured (local fallback by design)", () => {
+    expect(buildSearchProviderViolations("not-configured")).toEqual([]);
+  });
+
+  it("stays quiet when Typesense is reachable", () => {
+    expect(buildSearchProviderViolations("reachable")).toEqual([]);
+  });
+
+  it("raises a P1 SYSTEM violation when configured but unreachable", () => {
+    const violations = buildSearchProviderViolations("unreachable");
+
+    expect(violations).toHaveLength(1);
+    expect(violations[0]).toMatchObject({
+      alertKey: "search-provider-unreachable",
+      class: "SYSTEM",
+      severity: "P1",
+      invariant: "search-provider-reachable-when-configured",
+    });
   });
 });
