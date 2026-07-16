@@ -18,6 +18,7 @@ export const ACCOUNT = {
   LANDED_COST_CLEARING: "2060",
   VAT_OUTPUT: "2100",
   PAYROLL_LIABILITIES: "2200",
+  WITHHOLDING_TAX_PAYABLE: "2210",
   GIFT_CARD_LIABILITY: "2300",
   EQUITY: "3000",
   RETAINED_EARNINGS: "3100",
@@ -100,6 +101,12 @@ export const DEFAULT_CHART_OF_ACCOUNTS: ChartOfAccountsEntry[] = [
   {
     code: ACCOUNT.PAYROLL_LIABILITIES,
     name: "התחייבויות שכר (ניכויים)",
+    type: "LIABILITY",
+    normalSide: "CREDIT",
+  },
+  {
+    code: ACCOUNT.WITHHOLDING_TAX_PAYABLE,
+    name: "ניכוי מס במקור לתשלום (רשות המסים)",
     type: "LIABILITY",
     normalSide: "CREDIT",
   },

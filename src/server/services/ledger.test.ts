@@ -197,6 +197,43 @@ describe("buildVendorPaymentJournalLines", () => {
     expect(lines.find((line) => line.accountCode === ACCOUNT.CASH)?.credit).toBe(
       295,
     );
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.WITHHOLDING_TAX_PAYABLE),
+    ).toBeUndefined();
+  });
+
+  it("clears AP for the gross amount but only moves net cash when tax is withheld", () => {
+    const lines = buildVendorPaymentJournalLines({
+      amount: 1000,
+      withheldTax: 100,
+    });
+    assertBalanced(lines);
+
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.ACCOUNTS_PAYABLE)
+        ?.debit,
+    ).toBe(1000);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.CASH)?.credit,
+    ).toBe(900);
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.WITHHOLDING_TAX_PAYABLE)
+        ?.credit,
+    ).toBe(100);
+  });
+
+  it("omits the cash line when the entire amount is withheld", () => {
+    const lines = buildVendorPaymentJournalLines({
+      amount: 500,
+      withheldTax: 500,
+    });
+    assertBalanced(lines);
+
+    expect(lines.find((line) => line.accountCode === ACCOUNT.CASH)).toBeUndefined();
+    expect(
+      lines.find((line) => line.accountCode === ACCOUNT.WITHHOLDING_TAX_PAYABLE)
+        ?.credit,
+    ).toBe(500);
   });
 });
 

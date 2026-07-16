@@ -368,6 +368,21 @@ export async function recordVendorPayment(input: {
   }
 
   return db.$transaction(async (tx) => {
+    for (const allocation of input.allocations) {
+      const openRunLine = await tx.paymentRunLine.findFirst({
+        where: {
+          vendorInvoiceId: allocation.vendorInvoiceId,
+          paymentRun: { status: { in: ["DRAFT", "PENDING_APPROVAL", "APPROVED"] } },
+        },
+        select: { id: true },
+      });
+      if (openRunLine) {
+        throw new Error(
+          "חשבונית זו משויכת לריצת תשלומים פתוחה; יש לבטל את השיוך או לשלם דרך הריצה.",
+        );
+      }
+    }
+
     const payment = await tx.vendorPayment.create({
       data: {
         vendorId: input.vendorId,
@@ -409,10 +424,14 @@ export async function recordVendorPayment(input: {
       });
     }
 
+    const requiredCodes =
+      withheldTax > 0
+        ? [ACCOUNT.ACCOUNTS_PAYABLE, ACCOUNT.CASH, ACCOUNT.WITHHOLDING_TAX_PAYABLE]
+        : [ACCOUNT.ACCOUNTS_PAYABLE, ACCOUNT.CASH];
     const ledgerReady = await tx.ledgerAccount.count({
-      where: { code: { in: [ACCOUNT.ACCOUNTS_PAYABLE, ACCOUNT.CASH] } },
+      where: { code: { in: requiredCodes } },
     });
-    if (ledgerReady >= 2 && amount > 0) {
+    if (ledgerReady >= requiredCodes.length && amount > 0) {
       await postJournalEntry(
         {
           entryDate: input.paidAt ?? new Date(),
@@ -422,7 +441,7 @@ export async function recordVendorPayment(input: {
           aggregateType: "VendorPayment",
           aggregateId: payment.id,
           postedById: input.postedById,
-          lines: buildVendorPaymentJournalLines({ amount }),
+          lines: buildVendorPaymentJournalLines({ amount, withheldTax }),
         },
         tx,
       );

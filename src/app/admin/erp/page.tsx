@@ -5,6 +5,7 @@ import {
   ClipboardList,
   Factory,
   GaugeCircle,
+  Landmark,
   PackageCheck,
   ReceiptText,
   Search,
@@ -50,6 +51,12 @@ import {
   issueVendorPortalTokenAction,
   recordVendorPaymentAction,
   revokeVendorPortalTokenAction,
+  addInvoiceToPaymentRunAction,
+  approvePaymentRunAction,
+  cancelPaymentRunAction,
+  executePaymentRunAction,
+  rejectPaymentRunAction,
+  submitPaymentRunAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -99,6 +106,11 @@ import {
   listLandedCosts,
   listReceivedPurchaseOrdersForLandedCost,
 } from "~/server/services/landed-cost";
+import {
+  listDraftPaymentRunsForSelect,
+  listOpenPaymentRunInvoiceIds,
+  listPaymentRuns,
+} from "~/server/services/payment-run";
 
 export const metadata = {
   title: "ERP | Admin",
@@ -167,6 +179,27 @@ const requisitionStatusVariant: Record<
   APPROVED: "secondary",
   REJECTED: "destructive",
   CONVERTED: "secondary",
+};
+
+const paymentRunStatusLabel: Record<string, string> = {
+  DRAFT: "טיוטה",
+  PENDING_APPROVAL: "ממתין לאישור",
+  APPROVED: "מאושר לביצוע",
+  REJECTED: "נדחה",
+  PAID: "שולם",
+  CANCELLED: "בוטל",
+};
+
+const paymentRunStatusVariant: Record<
+  string,
+  "secondary" | "outline" | "destructive"
+> = {
+  DRAFT: "outline",
+  PENDING_APPROVAL: "outline",
+  APPROVED: "secondary",
+  REJECTED: "destructive",
+  PAID: "secondary",
+  CANCELLED: "destructive",
 };
 
 const transferStatusLabel: Record<string, string> = {
@@ -247,6 +280,13 @@ export default async function AdminErpPage({
   ]);
 
   const documentExtractions = await listDocumentExtractions().catch(() => []);
+
+  const [paymentRuns, draftPaymentRuns, openPaymentRunInvoiceIds] =
+    await Promise.all([
+      listPaymentRuns().catch(() => []),
+      listDraftPaymentRunsForSelect().catch(() => []),
+      listOpenPaymentRunInvoiceIds().catch(() => new Set<string>()),
+    ]);
 
   const resolvedSearchParams = await searchParams;
   const atpSku = firstParam(resolvedSearchParams.atpSku);
@@ -1664,54 +1704,238 @@ export default async function AdminErpPage({
                     <TableCell>{formatPrice(invoice.total)}</TableCell>
                     <TableCell>{formatPrice(invoice.outstanding)}</TableCell>
                     <TableCell>
+                      {openPaymentRunInvoiceIds.has(invoice.id) ? (
+                        <Badge variant="outline">בריצת תשלום פתוחה</Badge>
+                      ) : (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <form action={approveVendorInvoiceAction}>
+                            <input
+                              name="invoiceId"
+                              type="hidden"
+                              value={invoice.id}
+                            />
+                            <input name="force" type="hidden" value="1" />
+                            <Button size="sm" type="submit" variant="outline">
+                              אשר
+                            </Button>
+                          </form>
+                          <form
+                            action={recordVendorPaymentAction}
+                            className="flex items-center gap-1"
+                          >
+                            <input
+                              name="invoiceId"
+                              type="hidden"
+                              value={invoice.id}
+                            />
+                            <input
+                              name="vendorId"
+                              type="hidden"
+                              value={invoice.vendorId}
+                            />
+                            <Input
+                              aria-label="סכום תשלום"
+                              className="h-8 w-24"
+                              defaultValue={
+                                invoice.outstanding > 0
+                                  ? String(invoice.outstanding)
+                                  : ""
+                              }
+                              inputMode="numeric"
+                              name="amount"
+                            />
+                            <Input
+                              aria-label="ניכוי מס במקור"
+                              className="h-8 w-20"
+                              inputMode="numeric"
+                              name="withheldTax"
+                              placeholder="ניכוי"
+                            />
+                            <Button size="sm" type="submit">
+                              שלם
+                            </Button>
+                          </form>
+                          {["APPROVED", "PARTIALLY_PAID"].includes(
+                            invoice.status,
+                          ) && invoice.outstanding > 0 ? (
+                            <form
+                              action={addInvoiceToPaymentRunAction}
+                              className="flex items-center gap-1"
+                            >
+                              <input
+                                name="vendorInvoiceId"
+                                type="hidden"
+                                value={invoice.id}
+                              />
+                              <select
+                                aria-label="ריצת תשלום"
+                                autoComplete="off"
+                                className="glass-control h-8 rounded-md border px-2 text-xs"
+                                defaultValue=""
+                                name="paymentRunId"
+                              >
+                                <option value="">ריצה חדשה</option>
+                                {draftPaymentRuns.map((run) => (
+                                  <option key={run.id} value={run.id}>
+                                    {run.runNumber}
+                                  </option>
+                                ))}
+                              </select>
+                              <Input
+                                aria-label="ניכוי מס במקור לריצה"
+                                className="h-8 w-20"
+                                inputMode="numeric"
+                                name="withheldTax"
+                                placeholder="ניכוי"
+                              />
+                              <Button
+                                size="sm"
+                                type="submit"
+                                variant="ghost"
+                              >
+                                הוסף לריצה
+                              </Button>
+                            </form>
+                          ) : null}
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Landmark aria-hidden="true" className="size-5" />
+            ריצות תשלום מקובצות (P2P-007)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            הוסיפו חשבוניות לריצה מהטבלה למעלה (״הוסף לריצה״), הגישו לאישור,
+            ולאחר אישור בצעו תשלום — תשלום אחד לכל ספק, עם רישום יומן וניכוי
+            מס במקור.
+          </p>
+
+          <Table className="min-w-[760px]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>ריצה</TableHead>
+                <TableHead>ספקים</TableHead>
+                <TableHead>שורות</TableHead>
+                <TableHead>סה״כ</TableHead>
+                <TableHead>ניכוי במקור</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>פעולות</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paymentRuns.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={7}
+                  description="ריצות תשלום שתיצרו (מהטבלה למעלה) יופיעו כאן."
+                  icon={Landmark}
+                  title="אין ריצות תשלום"
+                />
+              ) : (
+                paymentRuns.map((run) => (
+                  <TableRow key={run.id}>
+                    <TableCell className="font-medium">
+                      {run.runNumber}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {run.vendorNames.join(", ") || "—"}
+                    </TableCell>
+                    <TableCell>{run.lineCount}</TableCell>
+                    <TableCell>{formatPrice(run.totalAmount)}</TableCell>
+                    <TableCell>{formatPrice(run.totalWithheld)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          paymentRunStatusVariant[run.status] ?? "outline"
+                        }
+                      >
+                        {paymentRunStatusLabel[run.status] ?? run.status}
+                      </Badge>
+                      {run.status === "REJECTED" && run.rejectedReason ? (
+                        <p className="text-muted-foreground mt-1 text-xs">
+                          {run.rejectedReason}
+                        </p>
+                      ) : null}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex flex-wrap items-center gap-2">
-                        <form action={approveVendorInvoiceAction}>
-                          <input
-                            name="invoiceId"
-                            type="hidden"
-                            value={invoice.id}
-                          />
-                          <input name="force" type="hidden" value="1" />
-                          <Button size="sm" type="submit" variant="outline">
-                            אשר
-                          </Button>
-                        </form>
-                        <form
-                          action={recordVendorPaymentAction}
-                          className="flex items-center gap-1"
-                        >
-                          <input
-                            name="invoiceId"
-                            type="hidden"
-                            value={invoice.id}
-                          />
-                          <input
-                            name="vendorId"
-                            type="hidden"
-                            value={invoice.vendorId}
-                          />
-                          <Input
-                            aria-label="סכום תשלום"
-                            className="h-8 w-24"
-                            defaultValue={
-                              invoice.outstanding > 0
-                                ? String(invoice.outstanding)
-                                : ""
-                            }
-                            inputMode="numeric"
-                            name="amount"
-                          />
-                          <Input
-                            aria-label="ניכוי מס במקור"
-                            className="h-8 w-20"
-                            inputMode="numeric"
-                            name="withheldTax"
-                            placeholder="ניכוי"
-                          />
-                          <Button size="sm" type="submit">
-                            שלם
-                          </Button>
-                        </form>
+                        {run.status === "DRAFT" ? (
+                          <form action={submitPaymentRunAction}>
+                            <input
+                              name="paymentRunId"
+                              type="hidden"
+                              value={run.id}
+                            />
+                            <Button size="sm" type="submit" variant="outline">
+                              הגש לאישור
+                            </Button>
+                          </form>
+                        ) : null}
+                        {run.status === "PENDING_APPROVAL" ? (
+                          <>
+                            <form action={approvePaymentRunAction}>
+                              <input
+                                name="paymentRunId"
+                                type="hidden"
+                                value={run.id}
+                              />
+                              <Button size="sm" type="submit">
+                                אשר
+                              </Button>
+                            </form>
+                            <form action={rejectPaymentRunAction}>
+                              <input
+                                name="paymentRunId"
+                                type="hidden"
+                                value={run.id}
+                              />
+                              <Button
+                                size="sm"
+                                type="submit"
+                                variant="outline"
+                              >
+                                דחה
+                              </Button>
+                            </form>
+                          </>
+                        ) : null}
+                        {run.status === "APPROVED" ? (
+                          <form action={executePaymentRunAction}>
+                            <input
+                              name="paymentRunId"
+                              type="hidden"
+                              value={run.id}
+                            />
+                            <Button size="sm" type="submit">
+                              בצע תשלום
+                            </Button>
+                          </form>
+                        ) : null}
+                        {["DRAFT", "PENDING_APPROVAL", "APPROVED"].includes(
+                          run.status,
+                        ) ? (
+                          <form action={cancelPaymentRunAction}>
+                            <input
+                              name="paymentRunId"
+                              type="hidden"
+                              value={run.id}
+                            />
+                            <Button size="sm" type="submit" variant="ghost">
+                              בטל
+                            </Button>
+                          </form>
+                        ) : null}
                       </div>
                     </TableCell>
                   </TableRow>

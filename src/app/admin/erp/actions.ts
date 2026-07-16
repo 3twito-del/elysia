@@ -16,6 +16,14 @@ import {
   recordVendorPayment,
 } from "~/server/services/accounts-payable";
 import {
+  addInvoiceToPaymentRun,
+  approvePaymentRun,
+  cancelPaymentRun,
+  executePaymentRun,
+  rejectPaymentRun,
+  submitPaymentRun,
+} from "~/server/services/payment-run";
+import {
   cancelInventoryCount,
   completeInventoryCount,
   createInventoryCount,
@@ -140,6 +148,83 @@ export async function recordVendorPaymentAction(formData: FormData) {
     postedById: admin.id,
     allocations: [{ vendorInvoiceId: invoiceId, amount }],
   });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function addInvoiceToPaymentRunAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const vendorInvoiceId = stringValue(formData.get("vendorInvoiceId"));
+  if (!vendorInvoiceId) throw new Error("חסר מזהה חשבונית.");
+
+  const paymentRunId = optionalString(formData.get("paymentRunId"));
+  const withheldTaxRaw = stringValue(formData.get("withheldTax")).trim();
+
+  await addInvoiceToPaymentRun({
+    paymentRunId,
+    vendorInvoiceId,
+    withheldTax: withheldTaxRaw ? Number(withheldTaxRaw) || 0 : 0,
+    createdById: admin.id,
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function submitPaymentRunAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const paymentRunId = stringValue(formData.get("paymentRunId"));
+  if (!paymentRunId) throw new Error("חסר מזהה ריצת תשלום.");
+
+  await submitPaymentRun({ paymentRunId });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function approvePaymentRunAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const paymentRunId = stringValue(formData.get("paymentRunId"));
+  if (!paymentRunId) throw new Error("חסר מזהה ריצת תשלום.");
+
+  await approvePaymentRun({ paymentRunId, approvedById: admin.id });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function rejectPaymentRunAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const paymentRunId = stringValue(formData.get("paymentRunId"));
+  if (!paymentRunId) throw new Error("חסר מזהה ריצת תשלום.");
+
+  await rejectPaymentRun({
+    paymentRunId,
+    reason: optionalString(formData.get("reason")),
+  });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function executePaymentRunAction(formData: FormData) {
+  const admin = await requireAdmin("ERP_WRITE");
+
+  const paymentRunId = stringValue(formData.get("paymentRunId"));
+  if (!paymentRunId) throw new Error("חסר מזהה ריצת תשלום.");
+
+  await executePaymentRun({ paymentRunId, postedById: admin.id });
+
+  revalidatePath("/admin/erp");
+}
+
+export async function cancelPaymentRunAction(formData: FormData) {
+  await requireAdmin("ERP_WRITE");
+
+  const paymentRunId = stringValue(formData.get("paymentRunId"));
+  if (!paymentRunId) throw new Error("חסר מזהה ריצת תשלום.");
+
+  await cancelPaymentRun({ paymentRunId });
 
   revalidatePath("/admin/erp");
 }

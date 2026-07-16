@@ -8844,3 +8844,155 @@ in one session. Updated only the live one; not fixed, out of scope.
   amount (crossing into OMS-006 territory) or just leaves it pending
   admin follow-up. Not a simple engineering call; named here rather than
   guessed at.
+
+## Evidence: p2p-007-batched-payment-run
+
+# P2P-007 — Batched Vendor Payment Run
+
+Date: 2026-07-16.
+
+Scope: the blueprint listed P2P-007 as `[M] 🟡` — "Payment run: batching,
+approval, GL, withholding tax (withholding-at-payment already built;
+batched payment run remains)." Investigated before building: withholding
+tax turned out to be less "built" than the blueprint text implied.
+`computeWithholding`/`getWithholdingRate`/`effectiveWithholdingRate`
+(`israeli-tax.ts`) existed but were **never called anywhere outside their
+own tests** — the admin just typed a `withheldTax` number by hand into
+`recordVendorPaymentAction`'s form. Worse, `buildVendorPaymentJournalLines`
+posted the *entire* payment amount to Cash regardless of `withheldTax` —
+the withheld amount was stored on `VendorPayment` (feeding form 856
+correctly) but never actually reduced the GL's Cash outflow, silently
+overstating cash paid whenever withholding was used. This is a real,
+pre-existing correctness gap, not something this feature introduced —
+found while reading the existing payment path before adding batching.
+
+## Design decision: keep withholding entry manual, fix its GL treatment
+
+The blueprint's own text says withholding-at-payment is "already built" —
+building an auto-computed vendor-category withholding on top of it (which
+would also require a new `Vendor.withholdingCategory` field with no admin
+UI anywhere to set it, since Vendor has no CRUD UI in this codebase at
+all) is a bigger, separate feature not asked for here. Kept the exact same
+manual per-line `withheldTax` entry the single-payment flow already has,
+just batched across invoices/vendors — and fixed the GL split, since "GL"
+and "withholding tax" are both explicitly named in P2P-007's own scope.
+
+## Schema (additive-only migration `20260716030000_payment_run`)
+
+- New `PaymentRun` (`runNumber`, `status` DRAFT/PENDING_APPROVAL/APPROVED/
+  REJECTED/PAID/CANCELLED, `totalAmount`, `totalWithheld`, `createdById`,
+  `approvedById`, `rejectedReason`, `paidAt`) — mirrors
+  `PurchaseRequisition`'s (P2P-001) DRAFT→PENDING_APPROVAL→APPROVED shape.
+- New `PaymentRunLine` (`paymentRunId`, `vendorId`, `vendorInvoiceId`,
+  `amount`, `withheldTax`, `vendorPaymentId`) — one row per invoice in the
+  run; `vendorPaymentId` is filled in on execution once the vendor's
+  `VendorPayment` exists. `@@unique([paymentRunId, vendorInvoiceId])`
+  prevents a duplicate line *within* one run; the cross-run "already held
+  by another open run" invariant is enforced in service code (see below),
+  since a unique index can't express "not in any other non-terminal run."
+- New ledger account `WITHHOLDING_TAX_PAYABLE` (2210, LIABILITY/CREDIT).
+  Seeded via an `INSERT ... ON CONFLICT (code) DO NOTHING` in the migration
+  itself (not just `prisma/seed.ts`) so `migrate deploy` alone is
+  sufficient — this repo's chart of accounts is normally seeded by a
+  script that isn't safe to blindly re-run against production.
+
+Verified the hand-written migration SQL byte-for-byte against the live
+local DB's `information_schema`/`pg_constraint`/`pg_indexes` after a
+`db push`, same discipline as OMS-006/OMS-002.
+
+## The GL fix (`ledger.ts`, `accounts-payable.ts`)
+
+`buildVendorPaymentJournalLines` now takes an optional `withheldTax` and
+splits the entry three ways when it's positive: AP debited for the full
+gross `amount` (clears the vendor's invoiced liability in full — unchanged
+from before), Cash credited for `amount - withheldTax` (the real bank
+outflow), and the new `WITHHOLDING_TAX_PAYABLE` account credited for
+`withheldTax` (a real liability owed to the Tax Authority, to be remitted
+separately — form 856 already reports it, this just makes the GL agree
+with it). `withheldTax` defaults to 0, so every existing call with no
+withholding produces byte-identical output to before. `recordVendorPayment`
+(the pre-existing single-invoice payment path) got the same fix — the bug
+predated this feature and would otherwise have kept misstating Cash for
+every future withheld payment, batched or not.
+
+## Workflow (`payment-run.ts`) — mirrors P2P-001's requisition pattern
+
+- `addInvoiceToPaymentRun` — creates a DRAFT run on first call or appends
+  to an existing DRAFT one; rejects invoices that are already fully paid,
+  and rejects (in the same transaction) any invoice already held by
+  *another* non-terminal run (DRAFT/PENDING_APPROVAL/APPROVED) — the
+  double-pay guard the unique index alone couldn't express.
+- `submitPaymentRun` — auto-approves below `PAYMENT_RUN_APPROVAL_THRESHOLD`
+  (default ₪10,000, same env-override pattern as
+  `PROCUREMENT_APPROVAL_THRESHOLD`), else PENDING_APPROVAL.
+- `approvePaymentRun` — reuses `violatesSoD` (P2P-009) directly: the admin
+  who created the run cannot approve it.
+- `executePaymentRun` — one transaction for the whole run: re-validates
+  every line's invoice is still payable at the approved amount (rejects
+  the *entire* run, atomically, if any invoice went stale — e.g. paid
+  through another route since approval — rather than silently paying a
+  different amount than what was approved); groups lines by vendor and
+  posts exactly one `VendorPayment` + one GL entry per vendor, even when
+  a run batches multiple invoices for the same vendor.
+- `recordVendorPayment` (the older single-invoice path) now also rejects
+  an invoice that's held by an open run — a payment run "reserves" its
+  invoices against being paid twice through the other door.
+
+## Verification
+
+**Unit tests** (pure functions only, this repo's established pattern for
+DB-touching services with no test-DB wiring): `requiresPaymentRunApproval`
+threshold behavior; `buildVendorPaymentJournalLines` — no-withholding
+(unchanged), partial-withholding (AP=1000, Cash=900, WHT=100, balanced),
+full-withholding (Cash line omitted entirely, still balanced).
+
+**End-to-end verified against the real local DB** (throwaway script,
+deleted after use): 3 invoices across 2 vendors batched into one run
+(₪12,000 total, ₪800 withheld on one line) —
+- Adding an already-held invoice to a second run: rejected.
+- Paying an already-held invoice directly via `recordVendorPayment`:
+  rejected.
+- Submitting the ₪12,000 run: correctly routed to PENDING_APPROVAL
+  (above the ₪10,000 default threshold).
+- The creator approving their own run: rejected (SoD).
+- A different admin approving: succeeded.
+- Executing: exactly one `VendorPayment` for the 2-invoice vendor
+  (amount=11000, withheldTax=800) and one for the 1-invoice vendor
+  (amount=1000); all 3 invoices flipped to PAID; the posted journal entry
+  balanced (11000=11000) with AP debited 11000, Cash credited 10200, and
+  `WITHHOLDING_TAX_PAYABLE` credited 800 — confirming the GL fix.
+- Re-executing or cancelling the now-PAID run: both rejected.
+- Cleanup: `JournalEntry` rows for the test could **not** be deleted —
+  `ELYSIA_IMMUTABLE: JournalEntry rows cannot be deleted; post a reversal
+  entry instead (ADR 0004)`, a DB trigger firing exactly as designed. Left
+  those rows in place (real, if small, ledger history) and cleaned up
+  every other test row.
+
+**Live browser verified** (real local dev server, real DB, no fixtures):
+logged in as a fixture admin, created a real disposable vendor + approved
+invoice, and drove the actual UI — filled the "ניכוי" field and clicked
+"הוסף לריצה" (created a real DRAFT run), clicked "הגש לאישור" (correctly
+auto-approved, ₪4,500 being under the threshold), clicked "בצע תשלום". The
+invoice row's badge correctly changed to "בריצת תשלום פתוחה" while the run
+was open (hiding the pay/add-to-run controls so the invoice can't be
+double-actioned), and back to a normal "שולם" status once the run
+completed. Confirmed via direct DB query that execution had, in fact,
+succeeded (`status: "PAID"`, `paidAt` set) even on the one screenshot where
+the page hadn't visually caught up yet — a Next.js router-cache staleness
+quirk in this app already documented from the CRM-SAL-001 investigation,
+not a functional bug. A fresh navigation showed the correct final state.
+
+## Explicitly out of scope, not rushed
+
+- **Auto-computed withholding by vendor/category** — would need a new
+  `Vendor.withholdingCategory` field and, since Vendor has no admin CRUD
+  UI anywhere in this codebase, a new UI surface to set it. The blueprint
+  names only batching/approval/GL/withholding-GL as remaining for
+  P2P-007; auto-suggestion is a separate, larger feature.
+- **Per-line partial amounts within a run** — a run pays each invoice's
+  full outstanding balance; partial payment of a single invoice still
+  goes through the pre-existing single-invoice "שלם" form (unaffected
+  except that it's now blocked while that invoice sits in an open run).
+  Combining "batch several invoices" with "partially pay each one" in the
+  same action was judged unnecessary complexity for what the blueprint
+  actually asks for.

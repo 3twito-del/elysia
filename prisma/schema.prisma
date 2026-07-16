@@ -3251,6 +3251,7 @@ model Vendor {
   payments       VendorPayment[]
   portalTokens   VendorPortalToken[]
   requisitions   PurchaseRequisition[]
+  paymentRunLines PaymentRunLine[]
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
 
@@ -3631,6 +3632,7 @@ model VendorInvoice {
   purchaseOrder   PurchaseOrder?            @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
   lines           VendorInvoiceLine[]
   allocations     VendorPaymentAllocation[]
+  paymentRunLines PaymentRunLine[]
   createdAt       DateTime                  @default(now())
   updatedAt       DateTime                  @updatedAt
 
@@ -3667,6 +3669,7 @@ model VendorPayment {
   notes       String?
   vendor      Vendor                    @relation(fields: [vendorId], references: [id], onDelete: Restrict)
   allocations VendorPaymentAllocation[]
+  paymentRunLines PaymentRunLine[]
   createdAt   DateTime                  @default(now())
 
   @@index([vendorId, paidAt])
@@ -3682,6 +3685,59 @@ model VendorPaymentAllocation {
   vendorInvoice   VendorInvoice @relation(fields: [vendorInvoiceId], references: [id], onDelete: Restrict)
 
   @@index([vendorPaymentId])
+  @@index([vendorInvoiceId])
+}
+
+/// A batched vendor payment run (P2P-007): groups invoice payments from one or
+/// more vendors into a single approval + execution unit. Below the approval
+/// threshold a run auto-approves on submission (mirrors PurchaseRequisition,
+/// P2P-001). Execution is atomic: one VendorPayment per vendor in the run,
+/// posted to the GL in the same transaction, or the whole run fails.
+model PaymentRun {
+  id             String           @id @default(cuid())
+  runNumber      String           @unique
+  /// DRAFT | PENDING_APPROVAL | APPROVED | REJECTED | PAID | CANCELLED
+  status         String           @default("DRAFT")
+  currency       String           @default("ILS")
+  scheduledAt    DateTime?
+  totalAmount    Decimal          @default(0) @db.Decimal(14, 2)
+  totalWithheld  Decimal          @default(0) @db.Decimal(14, 2)
+  notes          String?
+  createdById    String?
+  approvedById   String?
+  approvedAt     DateTime?
+  rejectedReason String?
+  paidAt         DateTime?
+  lines          PaymentRunLine[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([status, createdAt])
+}
+
+/// One vendor-invoice line within a PaymentRun. withheldTax is entered by the
+/// admin when adding the line (same manual capture as the single-invoice
+/// payment flow) and is summed into the vendor's VendorPayment on execution.
+/// A given invoice may only sit in one non-terminal run at a time (enforced in
+/// service code, not just the unique index below, since the same invoice must
+/// never be paid twice).
+model PaymentRunLine {
+  id              String         @id @default(cuid())
+  paymentRunId    String
+  vendorId        String
+  vendorInvoiceId String
+  amount          Decimal        @db.Decimal(14, 2)
+  withheldTax     Decimal        @default(0) @db.Decimal(14, 2)
+  vendorPaymentId String?
+  paymentRun      PaymentRun     @relation(fields: [paymentRunId], references: [id], onDelete: Cascade)
+  vendor          Vendor         @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  vendorInvoice   VendorInvoice  @relation(fields: [vendorInvoiceId], references: [id], onDelete: Restrict)
+  vendorPayment   VendorPayment? @relation(fields: [vendorPaymentId], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+
+  @@unique([paymentRunId, vendorInvoiceId])
+  @@index([paymentRunId])
+  @@index([vendorId])
   @@index([vendorInvoiceId])
 }
 

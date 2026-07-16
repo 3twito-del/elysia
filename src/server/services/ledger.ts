@@ -302,29 +302,53 @@ export function buildVendorInvoiceJournalLines(input: {
   return lines;
 }
 
-/** Lines for paying a vendor: Accounts Payable (debit) / Cash (credit). */
+/**
+ * Lines for paying a vendor: Accounts Payable clears for the full (gross)
+ * amount; Cash only moves for the net amount actually wired. Any tax withheld
+ * at source becomes a liability owed to the Tax Authority rather than
+ * vanishing from Cash (ניכוי מס במקור). Always balances.
+ */
 export function buildVendorPaymentJournalLines(input: {
   amount: number;
+  withheldTax?: number;
   branchId?: string;
 }): JournalLineInput[] {
   const amount = round2(input.amount);
+  const withheldTax = Math.max(0, round2(input.withheldTax ?? 0));
+  const cash = round2(amount - withheldTax);
+  const branchId = input.branchId;
 
-  return [
+  const lines: JournalLineInput[] = [
     {
       accountCode: ACCOUNT.ACCOUNTS_PAYABLE,
       debit: amount,
       credit: 0,
       memo: "תשלום לספק",
-      branchId: input.branchId,
-    },
-    {
-      accountCode: ACCOUNT.CASH,
-      debit: 0,
-      credit: amount,
-      memo: "תשלום לספק",
-      branchId: input.branchId,
+      branchId,
     },
   ];
+
+  if (cash > 0) {
+    lines.push({
+      accountCode: ACCOUNT.CASH,
+      debit: 0,
+      credit: cash,
+      memo: "תשלום לספק",
+      branchId,
+    });
+  }
+
+  if (withheldTax > 0) {
+    lines.push({
+      accountCode: ACCOUNT.WITHHOLDING_TAX_PAYABLE,
+      debit: 0,
+      credit: withheldTax,
+      memo: "ניכוי מס במקור",
+      branchId,
+    });
+  }
+
+  return lines;
 }
 
 /** Lines for a customer receipt: Cash (debit) / Accounts Receivable (credit). */
