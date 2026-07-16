@@ -286,7 +286,10 @@ export function getQaRouteInventory({
 
   entries.push(
     routeEntry({
+      expectedStatuses: [404],
       kind: "public",
+      notes:
+        "No LandingPage row with this slug is seeded anywhere (the CMS builder is real-DB-only, no fixture system) — the 404 is the true, documented state until a real page is published, same shape as /category/not-a-real-category.",
       path: "/p/sample-landing",
       source: "cms-landing-page",
       template: "/p/[slug]",

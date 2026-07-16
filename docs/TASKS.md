@@ -349,15 +349,21 @@ demo catalog's media as a defect to fix.
   directly, independent of `E2E_CATALOG_FIXTURES`); (3) 3 failures on
   `elysia-supplier-silver-halo-ring` are expected per the tool's own route
   notes (needs fixtures mode or a real DB-backed supplier product, neither
-  active in this run); (4) 3 failures on `/p/sample-landing` are a new,
-  minor, same-shape finding — a hardcoded example CMS landing-page slug
+  active in this run); (4) 3 failures on `/p/sample-landing` were a
+  same-shape finding — a hardcoded example CMS landing-page slug
   (`scripts/qa-route-inventory.ts`) with no matching seeded `LandingPage`
-  row. Artifacts: `artifacts/qa/2026-07-15-all-products-shard-{1..4}/`
+  row (the CMS builder, `src/server/services/landing-pages.ts`, is
+  real-DB-only — no fixture system exists for it, unlike catalog/blog).
+  **Fixed 2026-07-16**: rather than fabricate a seeded page, marked the
+  404 as the documented expected state (`expectedStatuses: [404]`), the
+  same pattern this file already uses for `/category/not-a-real-category` —
+  verified live against a real `pnpm dev` server that the route genuinely
+  404s. Artifacts: `artifacts/qa/2026-07-15-all-products-shard-{1..4}/`
   (gitignored, `591` screenshots + JSON/markdown reports per shard).
   **Remaining scope**: firefox/webkit and full-catalog runs at this size are
-  untried; the 3 already-documented fixture-catalog gaps and the new
-  landing-page one are content/seed-data debt, not visual-consistency
-  findings, so nothing here blocks calling the *mechanism* itself proven.
+  untried; the 3 remaining fixture-catalog gaps (item 2) are content/seed-data
+  debt, not visual-consistency findings, so nothing here blocks calling the
+  *mechanism* itself proven.
 - **E-10 Discovery measurement — residual** · P1 · NOW+MEASURE — more capture
   already exists than expected: `SearchEvent` (server-written, every real
   search) plus the client `search_performed` `AnalyticsEvent` beacon
