@@ -20,7 +20,19 @@ for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
 }
 
 try {
-  await runNextCommand(["build"]);
+  // --webpack: matches scripts/build.mjs's real production build. Turbopack
+  // (this Next.js version's default) has a known nonce-propagation bug for
+  // dynamically-loaded script/RSC chunks (vercel/next.js#64037,
+  // docs/QA_EVIDENCE.md -> g-11-turbopack-csp-nonce-incident) that this
+  // script was silently exempt from fixing -- e2e was building its own
+  // server with `next build` directly, bypassing build.mjs's --webpack
+  // fix entirely, so e2e has been validating a different, buggier bundler
+  // than what's actually deployed. Found via a real, reproducible failure:
+  // any Server Action + revalidatePath round trip on /admin/crm (a heavy
+  // page needing many client chunks) aborted client-side after the server
+  // had already committed the mutation -- silent under Turbopack, gone
+  // under webpack.
+  await runNextCommand(["build", "--webpack"]);
 
   serverProcess = spawn(process.execPath, [nextCli, "start", "-p", port], {
     detached: !isWindows,

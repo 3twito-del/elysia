@@ -28,6 +28,8 @@ import {
   convertLeadToOpportunity,
   createLead,
   setOpportunityStage,
+  updateLead,
+  updateOpportunityDetails,
 } from "~/server/services/crm-sales";
 import {
   CONSENT_CHANNELS,
@@ -49,6 +51,27 @@ export async function createLeadAction(formData: FormData) {
   if (!name) throw new Error("שם הליד הוא שדה חובה.");
 
   await createLead({
+    name,
+    email: optionalString(formData.get("email")),
+    phone: optionalString(formData.get("phone")),
+    source: optionalString(formData.get("source")),
+    notes: optionalString(formData.get("notes")),
+    adminUserId: admin.id,
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function updateLeadAction(formData: FormData) {
+  const admin = await requireAdmin("CRM_WRITE");
+
+  const leadId = stringValue(formData.get("leadId"));
+  const name = stringValue(formData.get("name")).trim();
+  if (!leadId) throw new Error("חסר ליד לעדכון.");
+  if (!name) throw new Error("שם הליד הוא שדה חובה.");
+
+  await updateLead({
+    leadId,
     name,
     email: optionalString(formData.get("email")),
     phone: optionalString(formData.get("phone")),
@@ -85,6 +108,27 @@ export async function setOpportunityStageAction(formData: FormData) {
   await setOpportunityStage({
     opportunityId,
     stage: stringValue(formData.get("stage")),
+    adminUserId: admin.id,
+  });
+
+  revalidatePath("/admin/crm");
+}
+
+export async function updateOpportunityAction(formData: FormData) {
+  const admin = await requireAdmin("CRM_WRITE");
+
+  const opportunityId = stringValue(formData.get("opportunityId"));
+  const title = stringValue(formData.get("title")).trim();
+  if (!opportunityId) throw new Error("חסרה הזדמנות לעדכון.");
+  if (!title) throw new Error("כותרת ההזדמנות היא שדה חובה.");
+
+  const expectedCloseDate = optionalString(formData.get("expectedCloseDate"));
+
+  await updateOpportunityDetails({
+    opportunityId,
+    title,
+    amount: Number(formData.get("amount") ?? 0) || 0,
+    expectedCloseDate: expectedCloseDate ? new Date(expectedCloseDate) : null,
     adminUserId: admin.id,
   });
 

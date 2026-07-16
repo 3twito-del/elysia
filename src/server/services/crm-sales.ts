@@ -112,6 +112,39 @@ export async function createLead(input: {
   });
 }
 
+export async function updateLead(input: {
+  leadId: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  source?: string;
+  notes?: string;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const lead = await tx.lead.update({
+      where: { id: input.leadId },
+      data: {
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        source: input.source,
+        notes: input.notes,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "lead_updated",
+      entity: "Lead",
+      entityId: lead.id,
+      metadata: { name: lead.name },
+    });
+
+    return lead;
+  });
+}
+
 export async function convertLeadToOpportunity(input: {
   leadId: string;
   title: string;
@@ -190,6 +223,44 @@ export async function setOpportunityStage(input: {
   });
 }
 
+/**
+ * Edits an opportunity's own details (title/amount/expected close date) —
+ * kept separate from `setOpportunityStage`, which owns stage/status/
+ * probability, so correcting a deal's value never accidentally moves it
+ * through the pipeline.
+ */
+export async function updateOpportunityDetails(input: {
+  opportunityId: string;
+  title: string;
+  amount: number;
+  expectedCloseDate?: Date | null;
+  adminUserId: string;
+}) {
+  return db.$transaction(async (tx) => {
+    const opportunity = await tx.opportunity.update({
+      where: { id: input.opportunityId },
+      data: {
+        title: input.title,
+        amount: input.amount,
+        expectedCloseDate: input.expectedCloseDate ?? null,
+      },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "opportunity_details_updated",
+      entity: "Opportunity",
+      entityId: opportunity.id,
+      metadata: {
+        title: opportunity.title,
+        amount: String(opportunity.amount),
+      },
+    });
+
+    return opportunity;
+  });
+}
+
 /** Pipeline overview for the CRM dashboard: open value, weighted forecast, win rate. */
 export async function getSalesPipelineOverview() {
   const opportunities = await db.opportunity.findMany({
@@ -229,6 +300,7 @@ export async function listRecentLeads(limit = 20) {
       phone: true,
       source: true,
       status: true,
+      notes: true,
       createdAt: true,
     },
   });

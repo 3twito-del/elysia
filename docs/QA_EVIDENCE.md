@@ -102,6 +102,7 @@ Sections: 64
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 - [k-04-per-class-alert-email-routing](#evidence-k-04-per-class-alert-email-routing)
+- [crm-sal-001-lead-opportunity-edit-mutations](#evidence-crm-sal-001-lead-opportunity-edit-mutations)
 
 ---
 
@@ -8362,4 +8363,126 @@ the taxonomy already lined up with the ownership split.
 
 `docs/TASKS.md`'s K-04 row updated to closed — this was its one remaining
 open piece.
-warning).
+
+---
+
+<a id="evidence-crm-sal-001-lead-opportunity-edit-mutations"></a>
+
+## Evidence: crm-sal-001-lead-opportunity-edit-mutations
+
+# CRM-SAL-001 — Lead/Opportunity Edit Mutations, and a Real e2e Harness Gap Found Along the Way
+
+Date: 2026-07-16.
+
+Scope: `docs/ERP_CRM_MASTER_BLUEPRINT.md` §4.B listed CRM-SAL-001 as
+`[M] 🟡` with "backend built in full; remaining: mutations in UI (create/
+edit)." Investigated before building anything, per this session's
+established discipline of tracing before trusting a backlog line.
+
+## Finding: the blueprint text was already stale
+
+`git log` shows the create/convert/stage-update UI (`createLeadAction`/
+`convertLeadAction`/`setOpportunityStageAction`, wired into `/admin/crm`)
+shipped 2026-06-25 — hours after the backend-only commit the blueprint's
+own "remaining" note was written against, and **weeks** before the
+2026-07-08 doc-consolidation pass that carried the stale "still open" text
+forward unchanged. So half of "mutations ב-UI" (creation) was already
+done; only editing (correcting a lead's contact details, or an
+opportunity's amount/title/close date after the fact) was genuinely
+missing — no dedicated `update` path existed for either model, confirmed
+by grepping for `lead.update`/`opportunity.update` call sites (only the
+internal side-effects inside `convertLeadToOpportunity`/
+`setOpportunityStage` existed).
+
+## Built
+
+- `src/server/services/crm-sales.ts`: `updateLead` (name/email/phone/
+  source/notes) and `updateOpportunityDetails` (title/amount/
+  expectedCloseDate) — kept deliberately separate from
+  `setOpportunityStage`, which owns stage/status/probability, so
+  correcting a deal's value can never accidentally move it through the
+  pipeline. Both write `writeAdminAudit` inside the same transaction,
+  matching every other CRM mutation's K-14 audit pattern.
+- `src/app/admin/crm/actions.ts`: `updateLeadAction`/
+  `updateOpportunityAction` Server Actions, same `requireAdmin("CRM_WRITE")`
+  + `revalidatePath` shape as the existing lead/opportunity actions.
+- `src/app/admin/crm/page.tsx`: a `<details>`/`<summary>` "ערוך פרטי
+  ליד"/"ערוך פרטי הזדמנות" disclosure per lead card and per opportunity
+  row (a new sibling `<TableRow>`, since the edit fields don't fit the
+  existing compact row), pre-filled via `defaultValue`. New test ids
+  (`crm-create-lead-form`, `crm-lead-card`, `crm-opportunity-row`) added
+  for reliable e2e scoping — the create-lead form and every lead's edit
+  form share several placeholder strings, which would otherwise collide.
+
+## Verification
+
+- 5 new unit tests: 2 for the audit-trail source-shape check (extending
+  the existing `K-14 audit coverage` test in `crm-sales.test.ts` to also
+  cover `updateLead`/`updateOpportunityDetails`).
+- One new real e2e test (`critical-flows.spec.ts`, "editing a lead and its
+  converted opportunity is a real write, recorded in the audit log
+  (CRM-SAL-001)"): creates a lead through the real form, edits its phone,
+  converts it to an opportunity, edits the opportunity's amount/close
+  date — asserting real DB state and a real `AuditLog` row after each
+  step, then cleans up both rows.
+
+## A real, pre-existing e2e harness gap found while writing that test
+
+The new test initially failed consistently — but only when run through the
+**local production e2e harness** (`pnpm exec playwright test`, which
+builds and runs a real `next build` + `next start` via
+`scripts/playwright-web-server.mjs`), never under `next dev`. Root-caused
+before writing it off as a flake:
+
+1. **Not specific to this feature.** A completely untouched, pre-existing
+   form on the same page (`createJourneyAction`, never touched by this
+   change) reproduced the identical symptom: the Server Action's mutation
+   always committed to the real database (confirmed by querying it
+   directly — a real `Lead`/`Journey` row exists every time), but the
+   in-page SPA update after the action never rendered, and the
+   browser reported the POST as `net::ERR_ABORTED` a few hundred
+   milliseconds after issuing it.
+2. **No existing e2e test had ever submitted a form on `/admin/crm`
+   before this one** (grepped `tests/e2e/*.ts` for `admin/crm` — the only
+   two prior references check page-access gating, never a mutation) — so
+   this gap was real but silent until now.
+3. Ruled out, in order, with a direct reproduction for each: the bundler
+   (`scripts/playwright-web-server.mjs` called raw `next build`, which
+   defaults to Turbopack, unlike `scripts/build.mjs`'s `--webpack` fix for
+   the G-11 CSP-nonce incident — forcing `--webpack` here too did not fix
+   it, though it's a real, independent fidelity gap worth keeping fixed:
+   e2e was silently validating a different bundler than what's actually
+   deployed); CSP `'unsafe-eval'` (added unconditionally as a test — no
+   change); prefetch-request connection contention from the admin
+   sidebar's ~40 links (blocked all `_rsc=` prefetch traffic via
+   `page.route()` — no change); a slow full-page GET (measured directly:
+   149ms for the full authenticated `/admin/crm` render, not a factor); a
+   pure timing race (waited 20s after the click — still never resolved).
+   Replaying the exact captured request (headers + multipart body) via a
+   plain Node `fetch()` outside the browser, bypassing the browser's own
+   RSC-stream handling entirely, returned a clean `200` with a complete,
+   valid ~354KB RSC payload every time — so the server-side response
+   itself is not malformed; something in the browser's own handling of
+   that response, specific to this one heavy page, aborts it. The true
+   client-side root cause was not identified within the time this
+   deserved relative to the actual feature.
+4. **Fix applied to the test itself, not the app**: `page.goto("/admin/crm")`
+   (a fresh navigation, proven reliable via the timing check above) after
+   each form submission, replacing reliance on the in-page SPA transition.
+   Verified stable across three consecutive full runs of the new test plus
+   a full run of `critical-flows.spec.ts` + `authenticated-account.spec.ts`
+   (71 passed, 3 skipped, 0 failed).
+
+**Kept**: the `--webpack` fix in `scripts/playwright-web-server.mjs` (a
+real testing-fidelity gap, independent of whether it explains this
+specific bug) — updated the source-shape test in
+`src/app/serwist-route.test.ts` that pins the exact build-invocation
+string.
+
+**Not attempted**: fixing the app itself for this reliability gap, since
+the root cause is still unknown and `/admin/crm`'s specific combination of
+page weight + local `next start` (plain HTTP, no HTTP/2) may not even
+reproduce on real Vercel production infrastructure. If another e2e test
+ever needs to submit a form on this specific page, reuse the
+`page.goto()`-after-submit pattern above rather than re-diagnosing from
+scratch — this section records everything already ruled out.

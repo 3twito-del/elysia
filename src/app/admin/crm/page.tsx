@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import {
   AlertTriangle,
   ContactRound,
@@ -42,6 +43,8 @@ import {
   sendQuoteAction,
   setOpportunityStageAction,
   togglePriceRuleAction,
+  updateLeadAction,
+  updateOpportunityAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -393,6 +396,7 @@ export default async function AdminCrmPage() {
             <form
               action={createLeadAction}
               className="grid gap-2 sm:grid-cols-2"
+              data-testid="crm-create-lead-form"
             >
               <Input name="name" placeholder="שם הליד" required />
               <Input
@@ -420,12 +424,11 @@ export default async function AdminCrmPage() {
                 </p>
               ) : (
                 leads.map((lead) => (
-                  <form
-                    action={convertLeadAction}
+                  <div
                     className="grid gap-2 rounded-md border p-3"
+                    data-testid="crm-lead-card"
                     key={lead.id}
                   >
-                    <input name="leadId" type="hidden" value={lead.id} />
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium">{lead.name}</span>
                       <Badge variant="outline">{lead.source}</Badge>
@@ -433,7 +436,63 @@ export default async function AdminCrmPage() {
                     <p className="text-muted-foreground text-xs">
                       {lead.email ?? lead.phone ?? "—"}
                     </p>
-                    <div className="grid gap-2 sm:grid-cols-[1fr_110px_auto]">
+
+                    <details className="text-sm">
+                      <summary className="text-muted-foreground cursor-pointer select-none">
+                        ערוך פרטי ליד
+                      </summary>
+                      <form
+                        action={updateLeadAction}
+                        className="mt-2 grid gap-2 sm:grid-cols-2"
+                      >
+                        <input name="leadId" type="hidden" value={lead.id} />
+                        <Input
+                          defaultValue={lead.name}
+                          name="name"
+                          placeholder="שם הליד"
+                          required
+                        />
+                        <Input
+                          defaultValue={lead.phone ?? ""}
+                          dir="ltr"
+                          inputMode="tel"
+                          name="phone"
+                          placeholder="טלפון"
+                        />
+                        <Input
+                          defaultValue={lead.email ?? ""}
+                          dir="ltr"
+                          name="email"
+                          placeholder="אימייל"
+                          type="email"
+                        />
+                        <Input
+                          defaultValue={lead.source}
+                          name="source"
+                          placeholder="מקור (web/referral)"
+                        />
+                        <Textarea
+                          className="sm:col-span-2"
+                          defaultValue={lead.notes ?? ""}
+                          name="notes"
+                          placeholder="הערות"
+                        />
+                        <Button
+                          className="sm:col-span-2"
+                          size="sm"
+                          type="submit"
+                          variant="outline"
+                        >
+                          שמור פרטים
+                        </Button>
+                      </form>
+                    </details>
+
+                    <form
+                      action={convertLeadAction}
+                      className="grid gap-2 sm:grid-cols-[1fr_110px_auto]"
+                    >
+                      <input name="leadId" type="hidden" value={lead.id} />
                       <Input
                         defaultValue={`הזדמנות — ${lead.name}`}
                         name="title"
@@ -447,8 +506,8 @@ export default async function AdminCrmPage() {
                       <Button size="sm" type="submit">
                         המר
                       </Button>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 ))
               )}
             </div>
@@ -482,59 +541,107 @@ export default async function AdminCrmPage() {
                   />
                 ) : (
                   opportunities.map((opportunity) => (
-                    <TableRow key={opportunity.id}>
-                      <TableCell className="font-medium">
-                        {opportunity.title}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            opportunity.status === "WON"
-                              ? "secondary"
-                              : opportunity.status === "LOST"
-                                ? "destructive"
-                                : "outline"
-                          }
-                        >
-                          {stageLabel[opportunity.stage] ?? opportunity.stage}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{formatPrice(opportunity.amount)}</TableCell>
-                      <TableCell>
-                        <form
-                          action={setOpportunityStageAction}
-                          className="flex gap-2"
-                        >
-                          <input
-                            name="opportunityId"
-                            type="hidden"
-                            value={opportunity.id}
-                          />
-                          <select
-                            aria-label="עדכון שלב הזדמנות"
-                            autoComplete="off"
-                            className="glass-control h-9 rounded-md border px-2 text-sm"
-                            defaultValue={opportunity.stage}
-                            name="stage"
+                    <Fragment key={opportunity.id}>
+                      <TableRow data-testid="crm-opportunity-row">
+                        <TableCell className="font-medium">
+                          {opportunity.title}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              opportunity.status === "WON"
+                                ? "secondary"
+                                : opportunity.status === "LOST"
+                                  ? "destructive"
+                                  : "outline"
+                            }
                           >
-                            {[
-                              "QUALIFIED",
-                              "PROPOSAL",
-                              "NEGOTIATION",
-                              "WON",
-                              "LOST",
-                            ].map((stage) => (
-                              <option key={stage} value={stage}>
-                                {stageLabel[stage] ?? stage}
-                              </option>
-                            ))}
-                          </select>
-                          <Button size="sm" type="submit">
-                            עדכן
-                          </Button>
-                        </form>
-                      </TableCell>
-                    </TableRow>
+                            {stageLabel[opportunity.stage] ?? opportunity.stage}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{formatPrice(opportunity.amount)}</TableCell>
+                        <TableCell>
+                          <form
+                            action={setOpportunityStageAction}
+                            className="flex gap-2"
+                          >
+                            <input
+                              name="opportunityId"
+                              type="hidden"
+                              value={opportunity.id}
+                            />
+                            <select
+                              aria-label="עדכון שלב הזדמנות"
+                              autoComplete="off"
+                              className="glass-control h-9 rounded-md border px-2 text-sm"
+                              defaultValue={opportunity.stage}
+                              name="stage"
+                            >
+                              {[
+                                "QUALIFIED",
+                                "PROPOSAL",
+                                "NEGOTIATION",
+                                "WON",
+                                "LOST",
+                              ].map((stage) => (
+                                <option key={stage} value={stage}>
+                                  {stageLabel[stage] ?? stage}
+                                </option>
+                              ))}
+                            </select>
+                            <Button size="sm" type="submit">
+                              עדכן
+                            </Button>
+                          </form>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="pt-0" colSpan={4}>
+                          <details className="text-sm">
+                            <summary className="text-muted-foreground cursor-pointer select-none">
+                              ערוך פרטי הזדמנות
+                            </summary>
+                            <form
+                              action={updateOpportunityAction}
+                              className="mt-2 grid gap-2 sm:grid-cols-[1fr_140px_160px_auto]"
+                            >
+                              <input
+                                name="opportunityId"
+                                type="hidden"
+                                value={opportunity.id}
+                              />
+                              <Input
+                                defaultValue={opportunity.title}
+                                name="title"
+                                placeholder="כותרת"
+                                required
+                              />
+                              <Input
+                                defaultValue={String(opportunity.amount)}
+                                inputMode="numeric"
+                                name="amount"
+                                placeholder="סכום"
+                              />
+                              <Input
+                                aria-label="תאריך סגירה צפוי"
+                                defaultValue={
+                                  opportunity.expectedCloseDate
+                                    ? opportunity.expectedCloseDate
+                                        .toISOString()
+                                        .slice(0, 10)
+                                    : ""
+                                }
+                                name="expectedCloseDate"
+                                type="date"
+                              />
+                              <Button size="sm" type="submit" variant="outline">
+                                שמור
+                              </Button>
+                            </form>
+                          </details>
+                        </TableCell>
+                      </TableRow>
+                    </Fragment>
                   ))
                 )}
               </TableBody>

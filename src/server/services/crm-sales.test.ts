@@ -62,7 +62,7 @@ describe("winRate", () => {
 });
 
 describe("K-14 audit coverage", () => {
-  it("createLead, convertLeadToOpportunity, and setOpportunityStage write an AuditLog row", () => {
+  it("createLead, convertLeadToOpportunity, setOpportunityStage, updateLead, and updateOpportunityDetails write an AuditLog row", () => {
     const source = readFileSync(
       path.join(process.cwd(), "src/server/services/crm-sales.ts"),
       "utf8",
@@ -72,6 +72,8 @@ describe("K-14 audit coverage", () => {
       "createLead",
       "convertLeadToOpportunity",
       "setOpportunityStage",
+      "updateLead",
+      "updateOpportunityDetails",
     ]) {
       const start = source.indexOf(`export async function ${operation}`);
       const next = source.indexOf("\nexport async function ", start + 1);

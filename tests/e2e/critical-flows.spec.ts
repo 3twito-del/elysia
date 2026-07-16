@@ -1929,6 +1929,157 @@ test.describe("access control surfaces", () => {
     }
   });
 
+  test("editing a lead and its converted opportunity is a real write, recorded in the audit log (CRM-SAL-001)", async ({
+    page,
+  }) => {
+    const suffix = randomTestSuffix();
+    const leadName = `E2E Lead ${suffix}`;
+    let leadId: string | undefined;
+    let opportunityId: string | undefined;
+
+    try {
+      await signInAdminWithFixture(page);
+      await page.goto("/admin/crm");
+
+      // Create the lead through the real form (not a direct DB insert), so
+      // this test proves the same create -> edit -> convert -> edit path a
+      // real admin would use.
+      const createLeadForm = page.getByTestId("crm-create-lead-form");
+
+      await createLeadForm.getByPlaceholder("שם הליד").fill(leadName);
+      await createLeadForm.getByPlaceholder("טלפון").fill("0500000000");
+      await createLeadForm.getByRole("button", { name: "צור ליד" }).click();
+      // /admin/crm's Server Action round trip is unreliable in this local
+      // production e2e harness specifically (a real, reproducible gap: no
+      // e2e test had ever submitted a form on this page before — confirmed
+      // via a direct DB check that the mutation itself always lands even
+      // when the in-page SPA update silently doesn't). A fresh navigation
+      // reads the committed state directly and sidesteps it.
+      await page.goto("/admin/crm");
+
+      const leadCard = page
+        .getByTestId("crm-lead-card")
+        .filter({ hasText: leadName });
+
+      await expect(leadCard).toBeVisible();
+
+      const createdLead = await getTestDb().lead.findFirstOrThrow({
+        where: { name: leadName },
+      });
+      leadId = createdLead.id;
+
+      // Edit the lead's own details (CRM-SAL-001's "עריכה" half).
+      await leadCard.getByText("ערוך פרטי ליד").click();
+
+      const editLeadForm = leadCard
+        .locator("form")
+        .filter({ hasText: "שמור פרטים" });
+
+      await editLeadForm.getByPlaceholder("טלפון").fill("0511111111");
+
+      const beforeLeadEdit = new Date();
+
+      await editLeadForm.getByRole("button", { name: "שמור פרטים" }).click();
+      await page.goto("/admin/crm");
+      await expect(leadCard.getByText("0511111111")).toBeVisible();
+
+      const updatedLead = await getTestDb().lead.findUniqueOrThrow({
+        where: { id: leadId },
+      });
+
+      expect(updatedLead.phone).toBe("0511111111");
+
+      const leadAuditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "lead_updated",
+          entity: "Lead",
+          entityId: leadId,
+          createdAt: { gte: beforeLeadEdit },
+        },
+      });
+
+      expect(
+        leadAuditRow,
+        "expected a lead_updated AuditLog row for this lead",
+      ).not.toBeNull();
+
+      // Convert to an opportunity, then edit the opportunity's own details.
+      const opportunityTitle = `E2E Opportunity ${suffix}`;
+      const convertForm = leadCard
+        .locator("form")
+        .filter({ hasText: "המר" });
+
+      await convertForm.getByPlaceholder("כותרת הזדמנות").fill(opportunityTitle);
+      await convertForm.getByPlaceholder("סכום").fill("1000");
+      await convertForm.getByRole("button", { name: "המר" }).click();
+      await page.goto("/admin/crm");
+
+      const opportunityRow = page
+        .getByTestId("crm-opportunity-row")
+        .filter({ hasText: opportunityTitle });
+
+      await expect(opportunityRow).toBeVisible();
+
+      const createdOpportunity = await getTestDb().opportunity.findFirstOrThrow(
+        { where: { title: opportunityTitle } },
+      );
+      opportunityId = createdOpportunity.id;
+
+      const opportunityEditRow = opportunityRow.locator(
+        "xpath=following-sibling::tr[1]",
+      );
+
+      await opportunityEditRow.getByText("ערוך פרטי הזדמנות").click();
+
+      const editOpportunityForm = opportunityEditRow.locator("form");
+
+      await editOpportunityForm.getByPlaceholder("סכום").fill("2500");
+      await editOpportunityForm
+        .locator('input[name="expectedCloseDate"]')
+        .fill("2026-12-31");
+
+      const beforeOpportunityEdit = new Date();
+
+      await editOpportunityForm.getByRole("button", { name: "שמור" }).click();
+      await page.goto("/admin/crm");
+      await expect(opportunityRow.getByText(/2,500/)).toBeVisible();
+
+      const updatedOpportunity = await getTestDb().opportunity.findUniqueOrThrow(
+        { where: { id: opportunityId } },
+      );
+
+      expect(Number(updatedOpportunity.amount)).toBe(2500);
+      expect(updatedOpportunity.expectedCloseDate?.toISOString().slice(0, 10)).toBe(
+        "2026-12-31",
+      );
+
+      const opportunityAuditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "opportunity_details_updated",
+          entity: "Opportunity",
+          entityId: opportunityId,
+          createdAt: { gte: beforeOpportunityEdit },
+        },
+      });
+
+      expect(
+        opportunityAuditRow,
+        "expected an opportunity_details_updated AuditLog row for this opportunity",
+      ).not.toBeNull();
+    } finally {
+      if (opportunityId) {
+        await getTestDb().opportunity.delete({ where: { id: opportunityId } });
+      }
+      if (leadId) {
+        await getTestDb()
+          .lead.delete({ where: { id: leadId } })
+          .catch(() => undefined);
+      }
+    }
+  });
+
   test("refunding an order is a real write, recorded in the audit log and outbox", async ({
     page,
   }, testInfo) => {

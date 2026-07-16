@@ -102,7 +102,7 @@ describe("Serwist route", () => {
     expect(globalSetupSource).toContain("playwright-web-server.mjs");
     expect(globalTeardownSource).toContain("taskkill");
     expect(webServerSource).toContain("process.execPath");
-    expect(webServerSource).toContain('runNextCommand(["build"])');
+    expect(webServerSource).toContain('runNextCommand(["build", "--webpack"])');
     expect(webServerSource).toContain('"start", "-p", port');
   });
 
