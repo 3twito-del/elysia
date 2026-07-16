@@ -101,6 +101,7 @@ Sections: 64
 - [pre-existing-e2e-fixture-and-stale-test-fixes](#evidence-pre-existing-e2e-fixture-and-stale-test-fixes)
 - [i-05-wishlist-price-change-cue](#evidence-i-05-wishlist-price-change-cue)
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
+- [k-04-per-class-alert-email-routing](#evidence-k-04-per-class-alert-email-routing)
 
 ---
 
@@ -8291,4 +8292,74 @@ construction**: temporarily removed the row's `p-3` padding, re-ran —
 inset dropped from 13px to 1px and the test correctly failed against its
 `>= 8` threshold. Restored the padding, confirmed green again. Full
 `pnpm check` green throughout (one pre-existing unrelated ESLint
+warning).
+
+---
+
+<a id="evidence-k-04-per-class-alert-email-routing"></a>
+
+## Evidence: k-04-per-class-alert-email-routing
+
+# K-04 — Per-Class Alert Email Routing
+
+Date: 2026-07-16.
+
+Scope: K-04's per-class alert ownership decision (Ariel Twito for
+technical/site classes, Shimon Twito for customer-facing service
+escalation) was owner-confirmed 2026-07-15, but implementation stayed
+open — `deliverDueAlertNotifications` routed every alert, regardless of
+class, to the single `OPERATIONS_EMAIL`. The blocker was real addresses:
+this pass had no email for either person until the owner supplied
+`ariel@elysia-jewellery.com` and `shimon@elysia-jewellery.com` directly.
+
+## Fix
+
+- `src/env.js`/`.env.example`: two new optional env vars,
+  `TECHNICAL_ALERT_EMAIL` and `CUSTOMER_SERVICE_ALERT_EMAIL`. Both
+  optional so routing degrades to the pre-existing single-address
+  behavior if either is ever unset, rather than going silent.
+- `src/server/services/operational-alerts.ts`: a new pure
+  `resolveAlertNotificationEmail({ alertClass, customerServiceEmail,
+  operationsEmail, technicalEmail })` — `CUSTOMER_COMMUNICATION` (stuck
+  transactional emails, e.g. order/shipment/refund notifications retried
+  through the outbox) routes to the customer-service address; every other
+  `OperationalAlertClass` (`MONEY`/`INVENTORY`/`SECURITY`/`OUTBOX`/
+  `ANALYTICS`/`SYSTEM`) routes to the technical address; either falls
+  back to `OPERATIONS_EMAIL` when its own dedicated address isn't
+  configured. `deliverDueAlertNotifications` now calls this per alert
+  instead of using one fixed destination, and only skips entirely when
+  none of the three addresses are configured at all.
+- Real production values set directly via `vercel env add
+  TECHNICAL_ALERT_EMAIL production` / `... CUSTOMER_SERVICE_ALERT_EMAIL
+  production` (confirmed via `vercel env ls production`), so the next
+  deploy picks them up immediately — no separate manual step needed.
+
+## Why this mapping
+
+Matches K-04's own recorded ownership text exactly: Ariel owns "uptime,
+provider drift, payment-webhook failures, security" — all of which
+already map onto the non-`CUSTOMER_COMMUNICATION` alert classes (`SYSTEM`
+for uptime/provider drift like the K-06 Shopify/Typesense checks,
+`SECURITY` for admin-login-failure alerts, `MONEY`/`OUTBOX` for
+payment/outbox convergence issues, `INVENTORY`/`ANALYTICS` likewise
+technical). Shimon owns "customer-facing service escalation," which is
+exactly what the existing `CUSTOMER_COMMUNICATION` class already models
+(stuck `email.requested` outbox events) — no new alert class was needed,
+the taxonomy already lined up with the ownership split.
+
+## Verification
+
+- 4 new unit tests (`operational-alerts.test.ts`,
+  `resolveAlertNotificationEmail (K-04)`): `CUSTOMER_COMMUNICATION` routes
+  to Shimon; every other class routes to Ariel; each falls back to
+  `OPERATIONS_EMAIL` independently when its own address is unset; returns
+  `null` (skip, not throw) when nothing at all is configured.
+- `pnpm check` green: `copy:check`/`copy:sync` synced, `eslint` clean
+  (one pre-existing unrelated warning), `tsc --noEmit` clean, full unit
+  suite — 341 test files, 1724 tests, all passing.
+- `vercel env ls production` confirms both new vars present, `Encrypted`,
+  `Production` scope, matching the existing `OPERATIONS_EMAIL` pattern.
+
+`docs/TASKS.md`'s K-04 row updated to closed — this was its one remaining
+open piece.
 warning).

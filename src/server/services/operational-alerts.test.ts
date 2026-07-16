@@ -6,6 +6,7 @@ import {
   buildShopifyDriftViolations,
   evaluateOutboxInvariants,
   nextNotificationDelayMs,
+  resolveAlertNotificationEmail,
   shouldNotifyAlert,
 } from "./operational-alerts";
 
@@ -265,6 +266,69 @@ describe("buildShopifyDriftViolations (K-06)", () => {
       measuredValue: "1",
     });
     expect(violations[2]?.message).toContain("read_orders");
+  });
+});
+
+describe("resolveAlertNotificationEmail (K-04)", () => {
+  const addresses = {
+    customerServiceEmail: "shimon@elysia-jewellery.com",
+    operationsEmail: "ops@elysia-jewellery.com",
+    technicalEmail: "ariel@elysia-jewellery.com",
+  };
+
+  it("routes CUSTOMER_COMMUNICATION to the customer-service address", () => {
+    expect(
+      resolveAlertNotificationEmail({
+        alertClass: "CUSTOMER_COMMUNICATION",
+        ...addresses,
+      }),
+    ).toBe("shimon@elysia-jewellery.com");
+  });
+
+  it("routes every other class to the technical address", () => {
+    for (const alertClass of [
+      "MONEY",
+      "INVENTORY",
+      "SECURITY",
+      "OUTBOX",
+      "ANALYTICS",
+      "SYSTEM",
+    ]) {
+      expect(
+        resolveAlertNotificationEmail({ alertClass, ...addresses }),
+      ).toBe("ariel@elysia-jewellery.com");
+    }
+  });
+
+  it("falls back to the shared operations address when the dedicated one is unset", () => {
+    expect(
+      resolveAlertNotificationEmail({
+        alertClass: "CUSTOMER_COMMUNICATION",
+        customerServiceEmail: undefined,
+        operationsEmail: "ops@elysia-jewellery.com",
+        technicalEmail: "ariel@elysia-jewellery.com",
+      }),
+    ).toBe("ops@elysia-jewellery.com");
+
+    expect(
+      resolveAlertNotificationEmail({
+        alertClass: "SECURITY",
+        customerServiceEmail: "shimon@elysia-jewellery.com",
+        operationsEmail: "ops@elysia-jewellery.com",
+        technicalEmail: undefined,
+      }),
+    ).toBe("ops@elysia-jewellery.com");
+  });
+
+  it("returns null when nothing is configured at all", () => {
+    expect(
+      resolveAlertNotificationEmail({
+        alertClass: "SECURITY",
+        customerServiceEmail: undefined,
+        operationsEmail: undefined,
+        technicalEmail: undefined,
+      }),
+    ).toBeNull();
   });
 });
 

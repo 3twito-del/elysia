@@ -36,6 +36,13 @@ export const env = createEnv({
     STORE_FROM_EMAIL: z.string().email().optional(),
     STORE_FROM_NAME: z.string().optional(),
     OPERATIONS_EMAIL: z.string().email().optional(),
+    // K-04: per-class alert ownership (docs/TASKS.md) -- technical/site
+    // alerts (uptime, provider drift, payment-webhook failures, security)
+    // route to Ariel; customer-facing service escalation routes to Shimon.
+    // Each falls back to OPERATIONS_EMAIL when unset, so routing degrades
+    // to the pre-existing single-address behavior rather than going silent.
+    TECHNICAL_ALERT_EMAIL: z.string().email().optional(),
+    CUSTOMER_SERVICE_ALERT_EMAIL: z.string().email().optional(),
     RESEND_API_KEY: z.string().optional(),
     SMS_PROVIDER_API_KEY: z.string().optional(),
     CRON_SECRET: z.string().optional(),
@@ -123,6 +130,8 @@ export const env = createEnv({
     STORE_FROM_EMAIL: process.env.STORE_FROM_EMAIL,
     STORE_FROM_NAME: process.env.STORE_FROM_NAME,
     OPERATIONS_EMAIL: process.env.OPERATIONS_EMAIL,
+    TECHNICAL_ALERT_EMAIL: process.env.TECHNICAL_ALERT_EMAIL,
+    CUSTOMER_SERVICE_ALERT_EMAIL: process.env.CUSTOMER_SERVICE_ALERT_EMAIL,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     SMS_PROVIDER_API_KEY: process.env.SMS_PROVIDER_API_KEY,
     CRON_SECRET: process.env.CRON_SECRET,

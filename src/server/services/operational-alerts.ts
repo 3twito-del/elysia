@@ -541,15 +541,39 @@ async function resolveClearedAlerts(input: {
 }
 
 /**
- * Severity-aware delivery over existing channels (ADR 0007 §3): email to the
- * operations address; the admin dashboard shows everything unconditionally.
+ * Pure: K-04 per-class alert ownership. `CUSTOMER_COMMUNICATION` (stuck
+ * transactional emails) routes to the customer-facing service escalation
+ * address; every other class is technical/site and routes to the technical
+ * address. Each falls back to the shared operations address when its own
+ * dedicated one isn't configured, so routing degrades to the old
+ * single-address behavior rather than going silent.
+ */
+export function resolveAlertNotificationEmail(input: {
+  alertClass: string;
+  customerServiceEmail: string | undefined;
+  operationsEmail: string | undefined;
+  technicalEmail: string | undefined;
+}): string | null {
+  const dedicated =
+    input.alertClass === "CUSTOMER_COMMUNICATION"
+      ? input.customerServiceEmail
+      : input.technicalEmail;
+
+  return dedicated ?? input.operationsEmail ?? null;
+}
+
+/**
+ * Severity-aware delivery over existing channels (ADR 0007 §3), routed
+ * per-class (K-04); the admin dashboard shows everything unconditionally.
  * Failures are logged and retried on the next tick — delivery never masks
  * detection.
  */
 export async function deliverDueAlertNotifications(now: Date = new Date()) {
   const operationsEmail = env.OPERATIONS_EMAIL;
+  const technicalEmail = env.TECHNICAL_ALERT_EMAIL;
+  const customerServiceEmail = env.CUSTOMER_SERVICE_ALERT_EMAIL;
 
-  if (!operationsEmail) {
+  if (!operationsEmail && !technicalEmail && !customerServiceEmail) {
     return { delivered: 0, skipped: "no-operations-email" as const };
   }
 
@@ -574,9 +598,18 @@ export async function deliverDueAlertNotifications(now: Date = new Date()) {
       continue;
     }
 
+    const to = resolveAlertNotificationEmail({
+      alertClass: alert.class,
+      customerServiceEmail,
+      operationsEmail,
+      technicalEmail,
+    });
+
+    if (!to) continue;
+
     try {
       await notificationProvider.sendEmail({
-        to: operationsEmail,
+        to,
         subject: `[Elysia ${alert.severity} ${alert.class}] ${alert.invariant}`,
         body: [
           alert.message,

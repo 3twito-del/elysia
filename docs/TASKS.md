@@ -789,25 +789,35 @@ demo catalog's media as a defect to fix.
 
 ### K — Operations, admin, security, reliability
 
-- **K-04 SLOs and alert ownership — residual** · P1 · OWNER — the alert model,
-  event-class SLOs, escalating email delivery to `OPERATIONS_EMAIL`, and the
-  invariant sweep are shipped (ADR 0003/0007). **Owner-confirmed
-  2026-07-15**: per-class ownership — Ariel Twito (אריאל טויטו) owns
-  technical/site alert classes (uptime, provider drift, payment-webhook
-  failures, security). Shimon Twito owns customer-facing service escalation
-  (complaints/consultation, matching his H-01 role). **Surname-display
-  decision (owner explicitly delegated this one)**: this is internal
-  escalation routing (`OPERATIONS_EMAIL`/runbook contact, not a rendered
-  public page) — use the full name internally for genuine accountability.
-  Do not publish either name on any customer-facing surface under this
-  item; a public-facing named contact (e.g. the still-open accessibility
-  coordinator in `src/lib/legal-content.ts`) is a separate decision to make
-  on its own terms, not inherited from this one. If a public "technical
-  support" contact is ever wanted, default to first-name-only there,
-  matching the confirmed brand voice (sparse, warm not cold,
-  restraint) — but that's a new, separate call if it comes up.
-  Implementation still open: wire actual email routing per class (today
-  everything goes to the single `OPERATIONS_EMAIL`).
+- **K-04 SLOs and alert ownership — closed 2026-07-16** · P1 — the alert
+  model, event-class SLOs, escalating email delivery, and the invariant
+  sweep are shipped (ADR 0003/0007). **Owner-confirmed 2026-07-15**:
+  per-class ownership — Ariel Twito (אריאל טויטו) owns technical/site alert
+  classes (uptime, provider drift, payment-webhook failures, security).
+  Shimon Twito owns customer-facing service escalation (complaints/
+  consultation, matching his H-01 role). **Surname-display decision (owner
+  explicitly delegated this one)**: this is internal escalation routing
+  (`OPERATIONS_EMAIL`/runbook contact, not a rendered public page) — use the
+  full name internally for genuine accountability. Do not publish either
+  name on any customer-facing surface under this item; a public-facing
+  named contact (e.g. the still-open accessibility coordinator in
+  `src/lib/legal-content.ts`) is a separate decision to make on its own
+  terms, not inherited from this one. If a public "technical support"
+  contact is ever wanted, default to first-name-only there, matching the
+  confirmed brand voice (sparse, warm not cold, restraint) — but that's a
+  new, separate call if it comes up. **Implementation closed 2026-07-16**:
+  owner supplied real addresses (`ariel@elysia-jewellery.com`,
+  `shimon@elysia-jewellery.com`). `deliverDueAlertNotifications`
+  (`operational-alerts.ts`) now routes per class via a new pure
+  `resolveAlertNotificationEmail` — `CUSTOMER_COMMUNICATION` (stuck
+  transactional emails) to Shimon's address, every other class (`MONEY`/
+  `INVENTORY`/`SECURITY`/`OUTBOX`/`ANALYTICS`/`SYSTEM`) to Ariel's, each
+  falling back to the shared `OPERATIONS_EMAIL` when its own dedicated
+  address isn't configured (degrades to the old single-address behavior
+  rather than going silent). New env vars `TECHNICAL_ALERT_EMAIL`/
+  `CUSTOMER_SERVICE_ALERT_EMAIL` added to `src/env.js`/`.env.example` and
+  set as real Vercel production values. Verified: 4 new unit tests for the
+  routing function; `pnpm check` green (1724 tests).
 - **Two pre-existing e2e failures — closed 2026-07-15**, both real root
   causes found and fixed, not guessed at:
   1. **`refunding an order...` / `authenticated-account.spec.ts`'s two
