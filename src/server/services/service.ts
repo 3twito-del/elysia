@@ -25,7 +25,7 @@ import {
   appendServiceRequestReceivedEvent,
   appendServiceRequestStatusChangedEvent,
 } from "~/server/services/service-case-timeline";
-import { slaStatus } from "~/server/services/service-sla";
+import { computePausedMs, slaStatus } from "~/server/services/service-sla";
 
 const defaultServiceSettings = {
   id: "default",
@@ -353,13 +353,20 @@ export async function listAdminServiceRequests(input: ServiceRequestListInput) {
       message: request.message,
       adminNotes: request.adminNotes,
       priority: request.priority,
-      slaStatus: slaStatus({
-        createdAt: request.createdAt,
-        priority: request.priority,
-        status: request.status,
-        firstRespondedAt: request.firstRespondedAt,
-        resolvedAt: request.resolvedAt,
-      }),
+      slaStatus: slaStatus(
+        {
+          createdAt: request.createdAt,
+          priority: request.priority,
+          status: request.status,
+          firstRespondedAt: request.firstRespondedAt,
+          resolvedAt: request.resolvedAt,
+        },
+        new Date(),
+        computePausedMs(
+          request,
+          request.events.filter((event) => event.kind === "STATUS_CHANGED"),
+        ),
+      ),
       firstRespondedAt: request.firstRespondedAt,
       resolvedAt: request.resolvedAt,
       createdAt: request.createdAt,

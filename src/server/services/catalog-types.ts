@@ -64,6 +64,9 @@ export type CatalogProduct = {
   compareAt?: number;
   createdAt: Date | string;
   popularityScore: number;
+  /// CMS-003: admin-set rank that pins this product ahead of organic
+  /// popularity in its category's default listing. Null/absent = unpinned.
+  merchandisingPinRank?: number | null;
   material: string;
   stone?: string;
   collection: string;

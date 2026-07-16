@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  computePausedMs,
   computeSlaDeadlines,
   isFirstResponseBreached,
   isResolutionBreached,
@@ -21,6 +22,54 @@ describe("computeSlaDeadlines", () => {
     const deadlines = computeSlaDeadlines(base, "URGENT");
     expect(deadlines.firstResponseDueAt).toEqual(at(1));
     expect(deadlines.resolutionDueAt).toEqual(at(8));
+  });
+
+  it("shifts both deadlines forward by the paused duration", () => {
+    const pausedMs = 5 * 60 * 60 * 1000; // 5h
+    const deadlines = computeSlaDeadlines(base, "NORMAL", pausedMs);
+    expect(deadlines.firstResponseDueAt).toEqual(at(13));
+    expect(deadlines.resolutionDueAt).toEqual(at(77));
+  });
+});
+
+describe("computePausedMs", () => {
+  const request = { createdAt: base };
+
+  it("is zero with no status-change events", () => {
+    expect(computePausedMs(request, [], at(10))).toBe(0);
+  });
+
+  it("counts time spent in WAITING_FOR_CUSTOMER between two events", () => {
+    const events = [
+      { status: "WAITING_FOR_CUSTOMER", createdAt: at(2) },
+      { status: "IN_REVIEW", createdAt: at(5) },
+    ];
+    expect(computePausedMs(request, events, at(10))).toBe(3 * 60 * 60 * 1000);
+  });
+
+  it("counts an still-open WAITING_FOR_CUSTOMER segment up to asOf", () => {
+    const events = [{ status: "WAITING_FOR_CUSTOMER", createdAt: at(2) }];
+    expect(computePausedMs(request, events, at(6))).toBe(4 * 60 * 60 * 1000);
+  });
+
+  it("ignores non-WAITING_FOR_CUSTOMER segments and null-status events", () => {
+    const events = [
+      { status: null, createdAt: at(1) }, // e.g. RECEIVED
+      { status: "IN_REVIEW", createdAt: at(2) },
+      { status: "WAITING_FOR_CUSTOMER", createdAt: at(4) },
+      { status: "RESOLVED", createdAt: at(7) },
+    ];
+    expect(computePausedMs(request, events, at(10))).toBe(3 * 60 * 60 * 1000);
+  });
+
+  it("sums multiple separate paused segments", () => {
+    const events = [
+      { status: "WAITING_FOR_CUSTOMER", createdAt: at(1) },
+      { status: "IN_REVIEW", createdAt: at(2) }, // 1h paused
+      { status: "WAITING_FOR_CUSTOMER", createdAt: at(5) },
+      { status: "IN_REVIEW", createdAt: at(8) }, // 3h paused
+    ];
+    expect(computePausedMs(request, events, at(20))).toBe(4 * 60 * 60 * 1000);
   });
 });
 
@@ -94,5 +143,13 @@ describe("slaStatus", () => {
     expect(
       slaStatus({ ...open, status: "RESOLVED", resolvedAt: at(50) }, at(73)),
     ).toBe("MET");
+  });
+
+  it("a paused case is not BREACHED past the un-paused deadline", () => {
+    // Without the 48h pause this would be past the 72h NORMAL resolution
+    // target (and BREACHED); with it, the effective deadline is 120h and
+    // there's still comfortably more than 25% of the window left.
+    expect(slaStatus(open, at(75))).toBe("BREACHED");
+    expect(slaStatus(open, at(75), 48 * 60 * 60 * 1000)).toBe("ON_TRACK");
   });
 });

@@ -1,4 +1,9 @@
-import { GalleryHorizontalEnd, Image as ImageIcon } from "lucide-react";
+import {
+  GalleryHorizontalEnd,
+  Image as ImageIcon,
+  ListOrdered,
+  Pin,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -9,7 +14,10 @@ import { getAdminPageAccess } from "../_lib/access";
 import {
   createBannerAction,
   deleteBannerAction,
+  setProductPinAction,
   toggleBannerAction,
+  unpinProductAction,
+  updateCategorySortOrderAction,
 } from "./actions";
 import { MetricCard } from "~/components/metric-card";
 import { Badge } from "~/components/ui/badge";
@@ -29,6 +37,9 @@ import {
   BANNER_PLACEMENTS,
   getBannersSummary,
   listBanners,
+  listCategoriesForMerchandising,
+  listPinnedProducts,
+  listProductsForMerchandisingSelect,
 } from "~/server/services/merchandising";
 
 export const metadata = {
@@ -54,6 +65,11 @@ export default async function AdminMerchandisingPage() {
   if (!summary) return <AdminDatabaseFallback />;
 
   const banners = await listBanners().catch(() => []);
+  const [categories, pinnedProducts, productOptions] = await Promise.all([
+    listCategoriesForMerchandising().catch(() => []),
+    listPinnedProducts().catch(() => []),
+    listProductsForMerchandisingSelect().catch(() => []),
+  ]);
 
   return (
     <AdminShell
@@ -169,6 +185,159 @@ export default async function AdminMerchandisingPage() {
                           </Button>
                         </form>
                       </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ListOrdered aria-hidden="true" className="size-5" />
+            סדר קטגוריות
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-muted-foreground text-sm">
+            סדר ההצגה החנותי-רחב של הקטגוריות (בניווט ובמסנני קטגוריה); מספר
+            נמוך יותר מוצג ראשון.
+          </p>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>קטגוריה</TableHead>
+                <TableHead>סדר הצגה</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={3}
+                  description="קטגוריות יופיעו כאן."
+                  icon={ListOrdered}
+                  title="אין קטגוריות"
+                />
+              ) : (
+                categories.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell className="text-sm font-medium">
+                      {category.name}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {category.sortOrder}
+                    </TableCell>
+                    <TableCell>
+                      <form
+                        action={updateCategorySortOrderAction}
+                        className="flex items-center gap-1"
+                      >
+                        <input
+                          name="categoryId"
+                          type="hidden"
+                          value={category.id}
+                        />
+                        <Input
+                          aria-label={`סדר הצגה עבור ${category.name}`}
+                          className="h-8 w-20"
+                          defaultValue={category.sortOrder}
+                          inputMode="numeric"
+                          name="sortOrder"
+                        />
+                        <Button size="sm" type="submit" variant="outline">
+                          עדכן
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Pin aria-hidden="true" className="size-5" />
+            קיבוע מוצרים (Pin-boost)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-[1fr_1.5fr]">
+          <form action={setProductPinAction} className="grid gap-2">
+            <p className="text-muted-foreground text-sm">
+              קיבוע מוצר לראש רשימת &quot;מומלצים&quot; בקטגוריה שלו (עוקף
+              פופולריות אורגנית). דירוג נמוך יותר מוצג ראשון.
+            </p>
+            <select
+              aria-label="מוצר"
+              autoComplete="off"
+              className="glass-control h-10 rounded-md border px-3 text-sm"
+              defaultValue=""
+              name="productId"
+            >
+              <option disabled value="">
+                בחר מוצר
+              </option>
+              {productOptions.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.categoryName} — {product.name} ({product.sku})
+                </option>
+              ))}
+            </select>
+            <Input inputMode="numeric" name="pinRank" placeholder="דירוג קיבוע (למשל 1)" />
+            <Button className="w-fit" size="sm" type="submit">
+              קבע מוצר
+            </Button>
+          </form>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>דירוג</TableHead>
+                <TableHead>מוצר</TableHead>
+                <TableHead>קטגוריה</TableHead>
+                <TableHead />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pinnedProducts.length === 0 ? (
+                <TableEmptyRow
+                  colSpan={4}
+                  description="מוצרים מקובעים יופיעו כאן."
+                  icon={Pin}
+                  title="אין מוצרים מקובעים"
+                />
+              ) : (
+                pinnedProducts.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="text-sm font-medium">
+                      {product.pinRank}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {product.name}
+                      <span className="text-muted-foreground"> ({product.sku})</span>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground text-sm">
+                      {product.categoryName}
+                    </TableCell>
+                    <TableCell>
+                      <form action={unpinProductAction}>
+                        <input
+                          name="productId"
+                          type="hidden"
+                          value={product.id}
+                        />
+                        <Button size="sm" type="submit" variant="ghost">
+                          בטל קיבוע
+                        </Button>
+                      </form>
                     </TableCell>
                   </TableRow>
                 ))

@@ -8996,3 +8996,148 @@ not a functional bug. A fresh navigation showed the correct final state.
   Combining "batch several invoices" with "partially pay each one" in the
   same action was judged unnecessary complexity for what the blueprint
   actually asks for.
+
+## Evidence: crm-svc-002-sla-stop-clock
+
+# CRM-SVC-002 — SLA Clock Pause on WAITING_FOR_CUSTOMER
+
+Date: 2026-07-16.
+
+Scope: `service-sla.ts`'s own top-of-file comment already named the exact
+gap — "Simplification: WAITING_FOR_CUSTOMER does not pause the clock yet."
+Targets, breach detection and the admin dashboard aggregate were already
+built; only the pause was missing.
+
+## No schema change needed
+
+`ServiceRequestEvent` already logs a `STATUS_CHANGED` row (status +
+timestamp) every time `updateAdminServiceRequest` actually changes a
+case's status (`if (current.status !== updated.status)`,
+`service.ts`) — this predates the feature and was already being fetched
+by the admin case list query (`events: { orderBy: { createdAt: "asc" } }`
+in `service.ts`'s `listAdminServiceRequests`). So the total time spent in
+WAITING_FOR_CUSTOMER can be **replayed** from existing data instead of
+tracked with a new column: `computePausedMs` walks the STATUS_CHANGED
+history (a case implicitly starts NEW at `createdAt`), summing every
+segment whose status was WAITING_FOR_CUSTOMER, including a still-open
+final segment up to `asOf`. Every deadline/breach pure function
+(`computeSlaDeadlines`, `isFirstResponseBreached`, `isResolutionBreached`,
+`slaStatus`) gained an optional trailing `pausedMs = 0` parameter that
+shifts both the response and resolution deadlines forward — defaulting
+to 0 means every pre-existing call site (and the pre-existing unit tests)
+is unaffected unless it explicitly opts in.
+
+## Wiring
+
+- `service.ts`'s `listAdminServiceRequests` already had the event array in
+  hand; it now filters to `kind === "STATUS_CHANGED"` and feeds
+  `computePausedMs` into `slaStatus`.
+- `getServiceSlaOverview` (`service-sla.ts`, the admin dashboard's
+  aggregate counts) added `events: { where: { kind: "STATUS_CHANGED" },
+  select: { status, createdAt } }` to its existing query and does the same.
+- No admin UI change — the case list already shows each request's real
+  `status` (including a Hebrew "ממתין ללקוח" label for
+  WAITING_FOR_CUSTOMER), so a paused case's SLA badge simply stops
+  climbing toward BREACHED while that status holds; no separate "paused"
+  indicator was judged necessary on top of the existing status column.
+
+## Verification
+
+**Unit tests**: `computePausedMs` — zero with no events, a closed
+WAITING_FOR_CUSTOMER→IN_REVIEW segment, a still-open segment up to `asOf`,
+non-WAITING/null-status events ignored, multiple separate paused segments
+summed. `computeSlaDeadlines` shifts both deadlines by `pausedMs`.
+`slaStatus`: the same case is BREACHED at 75h with no pause but ON_TRACK
+at 75h with a 48h pause (effective deadline 120h) — the actual behavior
+change this feature exists to make.
+
+**DB-integration verified** (throwaway script, deleted after use): created
+a real `ServiceRequest` + `ServiceRequestEvent` rows (one RECEIVED, two
+STATUS_CHANGED) directly, then ran the exact Prisma query shape
+`getServiceSlaOverview`/`listAdminServiceRequests` use — confirmed the
+`where: { kind: "STATUS_CHANGED" }` filter correctly excludes the RECEIVED
+row, leaving exactly the two rows `computePausedMs` needs.
+
+## Evidence: cms-003-category-order-and-pin-boost
+
+# CMS-003 — Category Display Order + Product Pin-Boost
+
+Date: 2026-07-16.
+
+Scope: blueprint said banners + A/B were built; remaining was "סדר
+קטגוריות/pin-boost" (category order / pin-boost). Investigated before
+building: `Category.sortOrder` already existed on the schema and every
+catalog query already ordered by it
+(`getCatalogCategoriesCached`: `orderBy: [{ sortOrder: "asc" }, { name:
+"asc" }]`) — but **no admin mutation anywhere in the codebase ever wrote
+to it** (Category has zero create/update mutations at all, grep-confirmed
+across every service file). So category ordering was fully wired on the
+read side with no way for a merchandiser to actually set it. Product
+pin-boost had no equivalent of any kind — no field, no sort hook.
+
+## Category order: an admin UI for a field that already worked
+
+No schema change. Added `listCategoriesForMerchandising` /
+`updateCategorySortOrder` (`merchandising.ts`) — the **first** Category
+write mutation in this codebase — and a table in `/admin/merchandising`
+with a per-row numeric input + "עדכן" button. `revalidateCatalogMutation`
+is called after the update so the storefront's cached category list picks
+it up.
+
+## Pin-boost: additive schema + a sort-order hook
+
+- `Product.merchandisingPinRank Int?` (additive migration
+  `20260716040000_product_merchandising_pin`) — null means unpinned, the
+  default for every existing row.
+- `sortCategoryProducts` (`category-filter-state.ts`) only touches the
+  **default** "מומלצים"/popular sort — a pinned product sorts first by
+  ascending rank, unpinned products keep their existing popularity/newest
+  ordering among themselves. Explicit "מחיר: נמוך לגבוה" / "גבוה לנמוך" /
+  "חדשים" sorts are untouched — a customer who asks for real price order
+  should get real price order, not a merchandising override.
+- `CatalogProduct.merchandisingPinRank` added as **optional** (same
+  precedent as OMS-002's `backorderEnabled`) so the dozens of existing
+  fixture-built `CatalogProduct` objects across the test suite don't need
+  updating.
+- Admin UI: a product `<select>` (grouped by category, matching the scale
+  of other large selects like vendors elsewhere in admin) + a rank number
+  input to pin, and a table of currently-pinned products (rank, product,
+  category) each with an "בטל קיבוע" unpin button.
+
+## A real pre-existing test-fixture bug found and fixed
+
+Writing the pin-boost sort tests exposed a latent bug in
+`category-filter-state.test.ts`'s `makeProduct` helper: its signature
+promised `Partial<CatalogProduct>` passthrough for any override, but the
+implementation cherry-picked specific named fields into the returned
+object literal and silently **dropped everything else** — so a test
+passing `popularityScore: 100` or (new) `merchandisingPinRank: 1` had it
+silently ignored, and every product ended up with the hardcoded default
+(`popularityScore: 1`, unpinned) regardless. No existing test before this
+change happened to override `popularityScore`, so the bug was latent, not
+already causing false passes. Fixed by computing the slug/categorySlug-
+derived defaults first and spreading `...overrides` last (explicit
+overrides win, matching the type signature's promise).
+
+## Verification
+
+**Unit tests**: `sortCategoryProducts` — pinned products sort first by
+ascending rank ahead of a higher-popularity unpinned product; unpinned
+products still fall back to popularity/newest among themselves; pin-boost
+does **not** apply to explicit price-asc/price-desc/newest sorts.
+
+**DB-integration verified** (throwaway script, deleted after use): set,
+queried (via the exact `not: null` shape `listPinnedProducts` uses), and
+cleared a real product's `merchandisingPinRank`; updated and restored a
+real category's `sortOrder`.
+
+**Live browser verified** (real local dev server, real DB): logged in as
+a fixture admin, screenshotted the new "סדר קטגוריות" table (5 real
+categories, each with an editable rank + "עדכן" button) and the empty
+"קיבוע מוצרים" table, then actually selected a real product from the
+`<select>`, set rank 1, submitted, and confirmed on a fresh page load that
+it now appears in the pinned table with the correct product name, SKU,
+category and rank, plus a working unpin button. Cleared the test pin
+afterward via a direct DB update (no throwaway rows were left behind — the
+pinned product itself is real catalog data, only its pin state was
+touched and reverted).

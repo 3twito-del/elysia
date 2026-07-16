@@ -7,6 +7,7 @@ import type {
 import {
   createCategoryFilterQueryString,
   getCategoryRouteState,
+  sortCategoryProducts,
   toCategoryFilterPayload,
 } from "./category-filter-state";
 
@@ -188,6 +189,83 @@ describe("getCategoryRouteState", () => {
   });
 });
 
+describe("sortCategoryProducts", () => {
+  it("sorts pinned products first, by ascending rank, ahead of popularity", () => {
+    const unpinnedPopular = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "unpinned-popular",
+      popularityScore: 100,
+    });
+    const pinnedRankTwo = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "pinned-2",
+      merchandisingPinRank: 2,
+      popularityScore: 1,
+    });
+    const pinnedRankOne = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "pinned-1",
+      merchandisingPinRank: 1,
+      popularityScore: 1,
+    });
+
+    const sorted = sortCategoryProducts(
+      [unpinnedPopular, pinnedRankTwo, pinnedRankOne],
+      "popular",
+    );
+
+    expect(sorted.map((product) => product.slug)).toEqual([
+      "pinned-1",
+      "pinned-2",
+      "unpinned-popular",
+    ]);
+  });
+
+  it("falls back to popularity/newest among unpinned products", () => {
+    const lowPopularity = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "low",
+      popularityScore: 1,
+    });
+    const highPopularity = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "high",
+      popularityScore: 50,
+    });
+
+    expect(
+      sortCategoryProducts([lowPopularity, highPopularity], "popular").map(
+        (product) => product.slug,
+      ),
+    ).toEqual(["high", "low"]);
+  });
+
+  it("does not apply pin-boost to explicit price/newest sorts", () => {
+    const pinned = makeProduct({
+      categorySlug: "rings",
+      price: 1300,
+      slug: "pinned-expensive",
+      merchandisingPinRank: 1,
+    });
+    const unpinnedCheap = makeProduct({
+      categorySlug: "rings",
+      price: 900,
+      slug: "unpinned-cheap",
+    });
+
+    expect(
+      sortCategoryProducts([pinned, unpinnedCheap], "price-asc").map(
+        (product) => product.slug,
+      ),
+    ).toEqual(["unpinned-cheap", "pinned-expensive"]);
+  });
+});
+
 function makeCategory(slug: string): CatalogCategory {
   return {
     description: "Description",
@@ -205,7 +283,6 @@ function makeProduct(
   return {
     availabilityMode: "READY_TO_ORDER",
     categoryName: overrides.categorySlug,
-    categorySlug: overrides.categorySlug,
     collection: "classic",
     collections: ["classic"],
     commerceHighlights: [],
@@ -214,18 +291,22 @@ function makeProduct(
     image: "/product.png",
     images: ["/product.png"],
     inventory: { online: 1 },
-    material: overrides.material ?? "gold",
+    material: "gold",
     metalColors: [],
     name: overrides.slug,
     popularityScore: 1,
-    price: overrides.price,
     shortDescription: "Short description",
     sizes: [],
     sku: overrides.slug.toUpperCase(),
-    slug: overrides.slug,
     requiresSeparateCheckout: false,
     stone: "diamond",
     tags: [],
     variants: [],
+    // Spread last: any field explicitly passed above wins over the default
+    // (this previously cherry-picked specific fields and silently dropped
+    // the rest, so a caller-provided popularityScore/merchandisingPinRank/
+    // etc. was ignored despite the Partial<CatalogProduct> type promising
+    // it would be honored).
+    ...overrides,
   };
 }

@@ -231,11 +231,22 @@ export function sortCategoryProducts(
     );
   }
 
-  return sorted.sort(
-    (first, second) =>
+  // Default ("popular"/מומלצים): CMS-003 pin-boost lets merchandising pull
+  // specific products ahead of organic popularity — lower rank sorts first,
+  // unpinned products always fall after any pinned one.
+  return sorted.sort((first, second) => {
+    const firstPin = first.merchandisingPinRank ?? null;
+    const secondPin = second.merchandisingPinRank ?? null;
+
+    if (firstPin !== null && secondPin !== null) return firstPin - secondPin;
+    if (firstPin !== null) return -1;
+    if (secondPin !== null) return 1;
+
+    return (
       (second.popularityScore ?? 0) - (first.popularityScore ?? 0) ||
-      getProductCreatedAtTime(second) - getProductCreatedAtTime(first),
-  );
+      getProductCreatedAtTime(second) - getProductCreatedAtTime(first)
+    );
+  });
 }
 
 export function createCategoryPageHref(

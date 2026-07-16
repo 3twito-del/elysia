@@ -13,6 +13,8 @@ import {
   createBanner,
   deleteBanner,
   setBannerActive,
+  setProductMerchandisingPin,
+  updateCategorySortOrder,
 } from "~/server/services/merchandising";
 
 export async function createBannerAction(formData: FormData) {
@@ -58,6 +60,50 @@ export async function deleteBannerAction(formData: FormData) {
   if (!bannerId) throw new Error("חסר מזהה באנר.");
 
   await deleteBanner({ bannerId });
+
+  revalidatePath("/admin/merchandising");
+}
+
+export async function updateCategorySortOrderAction(formData: FormData) {
+  await requireAdmin("CATALOG_WRITE");
+
+  const categoryId = stringValue(formData.get("categoryId"));
+  if (!categoryId) throw new Error("חסר מזהה קטגוריה.");
+
+  const sortOrder = Number(stringValue(formData.get("sortOrder")));
+  if (!Number.isInteger(sortOrder)) {
+    throw new Error("סדר הצגה חייב להיות מספר שלם.");
+  }
+
+  await updateCategorySortOrder({ categoryId, sortOrder });
+
+  revalidatePath("/admin/merchandising");
+}
+
+export async function setProductPinAction(formData: FormData) {
+  await requireAdmin("CATALOG_WRITE");
+
+  const productId = stringValue(formData.get("productId"));
+  if (!productId) throw new Error("יש לבחור מוצר.");
+
+  const pinRankRaw = stringValue(formData.get("pinRank")).trim();
+  const pinRank = pinRankRaw ? Number(pinRankRaw) : null;
+  if (pinRank !== null && (!Number.isInteger(pinRank) || pinRank <= 0)) {
+    throw new Error("דירוג קיבוע חייב להיות מספר שלם חיובי.");
+  }
+
+  await setProductMerchandisingPin({ productId, pinRank });
+
+  revalidatePath("/admin/merchandising");
+}
+
+export async function unpinProductAction(formData: FormData) {
+  await requireAdmin("CATALOG_WRITE");
+
+  const productId = stringValue(formData.get("productId"));
+  if (!productId) throw new Error("חסר מזהה מוצר.");
+
+  await setProductMerchandisingPin({ productId, pinRank: null });
 
   revalidatePath("/admin/merchandising");
 }

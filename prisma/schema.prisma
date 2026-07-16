@@ -338,6 +338,10 @@ model Product {
   /// J-10 content governance: when this policy verification must be re-reviewed.
   policyVerificationExpiresAt DateTime?
   tags                        String[]
+  /// CMS-003 merchandising pin-boost: when set, this product sorts first
+  /// (ascending rank) within its category's default "מומלצים" listing,
+  /// ahead of organic popularityScore ordering. Null = no override.
+  merchandisingPinRank        Int?
   category                    Category                 @relation(fields: [categoryId], references: [id])
   material                    Material                 @relation(fields: [materialId], references: [id])
   stone                       Stone?                   @relation(fields: [stoneId], references: [id])

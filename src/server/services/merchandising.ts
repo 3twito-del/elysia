@@ -1,9 +1,12 @@
 import { db } from "~/server/db";
+import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 
 /**
- * Merchandising banners (CMS-003): scheduled, prioritized banners per storefront
- * placement. `selectActiveBanners` (date-window + priority ordering) is pure so
- * the storefront can pick the right banner deterministically.
+ * Merchandising (CMS-003): scheduled/prioritized banners per storefront
+ * placement, admin-controlled category display order, and per-product
+ * pin-boost within a category's default listing. `selectActiveBanners`
+ * (date-window + priority ordering) is pure so the storefront can pick the
+ * right banner deterministically.
  */
 
 export const BANNER_PLACEMENTS = [
@@ -120,4 +123,105 @@ export async function getBannersSummary() {
     db.banner.count({ where: { isActive: true } }),
   ]);
   return { total, active };
+}
+
+// ---- category display order ----
+
+/** Every category with its current display-order rank, for the admin editor. */
+export async function listCategoriesForMerchandising() {
+  return db.category.findMany({
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: { id: true, slug: true, name: true, sortOrder: true },
+  });
+}
+
+/** Sets a category's display-order rank (lower sorts first storefront-wide). */
+export async function updateCategorySortOrder(input: {
+  categoryId: string;
+  sortOrder: number;
+}) {
+  if (!Number.isInteger(input.sortOrder)) {
+    throw new Error("סדר הצגה חייב להיות מספר שלם.");
+  }
+
+  const category = await db.category.update({
+    where: { id: input.categoryId },
+    data: { sortOrder: input.sortOrder },
+  });
+
+  revalidateCatalogMutation({ categorySlugs: [category.slug] });
+
+  return category;
+}
+
+// ---- product pin-boost ----
+
+/** Products currently pinned within their category's default listing. */
+export async function listPinnedProducts() {
+  const products = await db.product.findMany({
+    where: { merchandisingPinRank: { not: null } },
+    orderBy: { merchandisingPinRank: "asc" },
+    select: {
+      id: true,
+      sku: true,
+      name: true,
+      merchandisingPinRank: true,
+      category: { select: { name: true, slug: true } },
+    },
+  });
+
+  return products.map((product) => ({
+    id: product.id,
+    sku: product.sku,
+    name: product.name,
+    categoryName: product.category.name,
+    pinRank: product.merchandisingPinRank!,
+  }));
+}
+
+/** Active products for the "pin a product" select. */
+export async function listProductsForMerchandisingSelect(limit = 500) {
+  const products = await db.product.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: [{ category: { name: "asc" } }, { name: "asc" }],
+    take: limit,
+    select: {
+      id: true,
+      sku: true,
+      name: true,
+      category: { select: { name: true } },
+    },
+  });
+
+  return products.map((product) => ({
+    id: product.id,
+    sku: product.sku,
+    name: product.name,
+    categoryName: product.category.name,
+  }));
+}
+
+/** Sets (or clears, with `pinRank: null`) a product's pin-boost rank. */
+export async function setProductMerchandisingPin(input: {
+  productId: string;
+  pinRank: number | null;
+}) {
+  if (input.pinRank !== null) {
+    if (!Number.isInteger(input.pinRank) || input.pinRank <= 0) {
+      throw new Error("דירוג קיבוע חייב להיות מספר שלם חיובי.");
+    }
+  }
+
+  const product = await db.product.update({
+    where: { id: input.productId },
+    data: { merchandisingPinRank: input.pinRank },
+    include: { category: true },
+  });
+
+  revalidateCatalogMutation({
+    productSlugs: [product.slug],
+    categorySlugs: [product.category.slug],
+  });
+
+  return product;
 }

@@ -786,6 +786,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     compareAt: getCompareAt(defaultVariant),
     createdAt: record.createdAt,
     popularityScore: record._count.viewEvents + record._count.clickEvents * 2,
+    merchandisingPinRank: record.merchandisingPinRank,
     material: displayMaterial ?? "",
     stone: displayStone,
     collection: displayCollection,
