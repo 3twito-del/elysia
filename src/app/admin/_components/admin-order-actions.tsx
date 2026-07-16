@@ -37,6 +37,13 @@ import { api } from "~/trpc/react";
 
 type AdminOrderActionsProps = {
   fulfillmentMethod: string;
+  items: Array<{
+    id: string;
+    name: string;
+    quantity: number;
+    refundedQuantity: number;
+    unitPrice: number;
+  }>;
   orderId: string;
   returns: Array<{
     id: string;
@@ -55,6 +62,7 @@ const terminalStatuses = new Set(["COMPLETED", "CANCELLED", "REFUNDED"]);
 
 export function AdminOrderActions({
   fulfillmentMethod,
+  items,
   orderId,
   returns,
   shipment,
@@ -96,7 +104,12 @@ export function AdminOrderActions({
       {fulfillmentMethod === "DELIVERY" ? (
         <AdminShipmentForm orderId={orderId} shipment={shipment} />
       ) : null}
-      <AdminRefundForm orderId={orderId} returns={returns} status={status} />
+      <AdminRefundForm
+        items={items}
+        orderId={orderId}
+        returns={returns}
+        status={status}
+      />
     </div>
   );
 }
@@ -201,10 +214,12 @@ function AdminShipmentForm({
 }
 
 function AdminRefundForm({
+  items,
   orderId,
   returns,
   status,
 }: {
+  items: AdminOrderActionsProps["items"];
   orderId: string;
   returns: AdminOrderActionsProps["returns"];
   status: string;
@@ -214,6 +229,12 @@ function AdminRefundForm({
   const [restockItems, setRestockItems] = useState(false);
   const [feedback, setFeedback] = useState<AdminMutationFeedback>();
   const [fieldErrors, setFieldErrors] = useState<FormFieldErrors>({});
+  // OMS-006: unchecked = refund every remaining item in full (the original,
+  // simplest one-click behavior); checking specific items scopes the refund
+  // to just those lines/quantities.
+  const [selectedLines, setSelectedLines] = useState<
+    Record<string, number | undefined>
+  >({});
   const mutation = api.admin.refundOrder.useMutation({
     onError: (error) => setFeedback({ message: error.message, tone: "error" }),
     onMutate: () => setFeedback(undefined),
@@ -232,15 +253,37 @@ function AdminRefundForm({
     "SHIPPED",
     "COMPLETED",
   ].includes(status);
+  const refundableItems = items.filter(
+    (item) => item.quantity > item.refundedQuantity,
+  );
 
-  if (!refundable) return null;
+  if (!refundable || refundableItems.length === 0) return null;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
   }
 
+  function toggleLine(itemId: string, remaining: number, checked: boolean) {
+    setSelectedLines((current) => {
+      const next = { ...current };
+      if (checked) {
+        next[itemId] = remaining;
+      } else {
+        delete next[itemId];
+      }
+      return next;
+    });
+  }
+
+  function setLineQuantity(itemId: string, quantity: number) {
+    setSelectedLines((current) => ({ ...current, [itemId]: quantity }));
+  }
+
   function submitRefund() {
     const trimmedReason = reason.trim();
+    const lines = Object.entries(selectedLines)
+      .filter((entry): entry is [string, number] => entry[1] !== undefined)
+      .map(([orderItemId, quantity]) => ({ orderItemId, quantity }));
 
     const parsed = refundAdminOrderInputSchema.safeParse({
       orderId,
@@ -250,6 +293,7 @@ function AdminRefundForm({
           : (activeReturn?.reason ?? "זיכוי אדמין"),
       restockItems,
       returnRequestId: activeReturn?.id,
+      lines: lines.length > 0 ? lines : undefined,
     });
 
     if (!parsed.success) {
@@ -277,6 +321,55 @@ function AdminRefundForm({
           {activeReturn.reason}
         </p>
       ) : null}
+      <div className="grid gap-1.5 rounded-md border p-2">
+        <p className="text-muted-foreground text-xs">
+          ללא סימון פריטים — הזיכוי יחול על כל הכמות שנותרה בכל הפריטים.
+          לזיכוי חלקי, סמני פריטים ספציפיים וכמות.
+        </p>
+        {refundableItems.map((item) => {
+          const remaining = item.quantity - item.refundedQuantity;
+          const checked = selectedLines[item.id] !== undefined;
+
+          return (
+            <label
+              className="flex items-center gap-2 text-xs"
+              key={item.id}
+            >
+              <input
+                checked={checked}
+                disabled={mutation.isPending}
+                onChange={(event) =>
+                  toggleLine(item.id, remaining, event.currentTarget.checked)
+                }
+                type="checkbox"
+              />
+              <span className="flex-1 truncate">{item.name}</span>
+              <span className="text-muted-foreground">
+                נותר {remaining} מתוך {item.quantity}
+              </span>
+              {checked ? (
+                <Input
+                  className="h-7 w-16"
+                  disabled={mutation.isPending}
+                  max={remaining}
+                  min={1}
+                  onChange={(event) =>
+                    setLineQuantity(
+                      item.id,
+                      Math.min(
+                        remaining,
+                        Math.max(1, Number(event.currentTarget.value) || 1),
+                      ),
+                    )
+                  }
+                  type="number"
+                  value={selectedLines[item.id]}
+                />
+              ) : null}
+            </label>
+          );
+        })}
+      </div>
       <Textarea
         aria-invalid={Boolean(fieldErrors.reason)}
         className="min-h-16"
@@ -312,8 +405,10 @@ function AdminRefundForm({
           <AlertDialogHeader>
             <AlertDialogTitle>לאשר זיכוי להזמנה {orderId}?</AlertDialogTitle>
             <AlertDialogDescription>
-              הפעולה תעדכן את סטטוס ההזמנה והתשלומים לזיכוי, ותיצור אירוע הודעה
-              ללקוח. החזרת מלאי תתבצע רק אם האפשרות סומנה.
+              הפעולה תעדכן את התשלומים לזיכוי (חלקי או מלא, לפי הפריטים
+              שנבחרו) ותיצור אירוע הודעה ללקוח. סטטוס ההזמנה יעבור ל&quot;זוכתה&quot;
+              רק כשכל הפריטים זוכו במלואם. החזרת מלאי תתבצע רק אם האפשרות
+              סומנה.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

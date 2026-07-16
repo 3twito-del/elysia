@@ -287,12 +287,24 @@ export const upsertAdminShipmentInputSchema = z.object({
   status: requiredText("יש לבחור סטטוס משלוח.", 80).default("SHIPPED"),
 });
 
+// OMS-006: an explicit line refunds only that item/quantity; omitting `lines`
+// entirely keeps the original full-order behavior (every item's remaining
+// unrefunded quantity), so existing callers need no change.
+const refundLineInputSchema = z.object({
+  orderItemId: requiredId("חסר פריט הזמנה לזיכוי."),
+  quantity: z.number().int("הכמות לזיכוי חייבת להיות מספר שלם.").positive("הכמות לזיכוי חייבת להיות חיובית."),
+});
+
 export const refundAdminOrderInputSchema = z.object({
   orderId: requiredId("חסרה הזמנה לזיכוי."),
   returnRequestId: requiredId().optional(),
   reason: z.string().trim().min(3, "יש להזין סיבת זיכוי.").max(500),
   notes: optionalTrimmedString(1000, "הערות הזיכוי ארוכות מדי."),
   restockItems: z.boolean().default(false),
+  lines: z
+    .array(refundLineInputSchema)
+    .max(50, "יותר מדי שורות לזיכוי בפעולה אחת.")
+    .optional(),
 });
 
 export const updateAdminAppointmentStatusInputSchema = z.object({

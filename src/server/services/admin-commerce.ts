@@ -19,6 +19,7 @@ import {
   canRefundOrderStatus,
   createSearchReindexEvent,
   releaseOutstandingReservationsForRefund,
+  resolveRefundLines,
   shouldRestockRefundedOrder,
   writeAdminAudit,
 } from "~/server/services/admin-commerce-workflow";
@@ -186,6 +187,31 @@ export async function refundAdminOrder(input: {
       throw new Error("Order status is not refundable.");
     }
 
+    // OMS-006: an explicit `lines` selection refunds only those items/
+    // quantities; omitting it refunds every item's remaining unrefunded
+    // quantity — the exact previous full-order behavior.
+    const refundLines = resolveRefundLines({
+      items: order.items.map((item) => ({
+        id: item.id,
+        variantId: item.variantId,
+        quantity: item.quantity,
+        refundedQuantity: item.refundedQuantity,
+        unitPrice: Number(item.unitPrice),
+      })),
+      requestedLines: parsed.lines,
+    });
+
+    if (refundLines.length === 0) {
+      throw new Error("אין פריטים לזיכוי — כל הפריטים כבר זוכו במלואם.");
+    }
+
+    const refundGrossTotal = round2(
+      refundLines.reduce(
+        (sum, line) => sum + line.quantity * line.unitPrice,
+        0,
+      ),
+    );
+
     const returnRequest = parsed.returnRequestId
       ? await tx.returnRequest.update({
           where: { id: parsed.returnRequestId },
@@ -203,6 +229,22 @@ export async function refundAdminOrder(input: {
           },
         });
 
+    await tx.returnRequestLine.createMany({
+      data: refundLines.map((line) => ({
+        returnRequestId: returnRequest.id,
+        orderItemId: line.orderItemId,
+        quantity: line.quantity,
+        amount: round2(line.quantity * line.unitPrice),
+      })),
+    });
+
+    for (const line of refundLines) {
+      await tx.orderItem.update({
+        where: { id: line.orderItemId },
+        data: { refundedQuantity: { increment: line.quantity } },
+      });
+    }
+
     await releaseOutstandingReservationsForRefund(tx, {
       orderId: order.id,
       orderNumber: order.orderNumber,
@@ -215,22 +257,22 @@ export async function refundAdminOrder(input: {
         restockItems: parsed.restockItems,
       })
     ) {
-      for (const item of order.items) {
+      for (const line of refundLines) {
         await tx.inventoryItem.updateMany({
           where: {
             branchId: order.branchId,
-            variantId: item.variantId,
+            variantId: line.variantId,
           },
           data: {
-            quantity: { increment: item.quantity },
+            quantity: { increment: line.quantity },
           },
         });
 
         await tx.inventoryLedger.create({
           data: {
             branchId: order.branchId,
-            variantId: item.variantId,
-            delta: item.quantity,
+            variantId: line.variantId,
+            delta: line.quantity,
             reason: "return_restocked",
             reference: order.orderNumber,
           },
@@ -238,27 +280,72 @@ export async function refundAdminOrder(input: {
       }
     }
 
-    await tx.payment.updateMany({
-      where: { orderId: order.id },
-      data: {
-        status: "REFUNDED",
-        providerStatus: "manual_refunded",
-        refundedAt: new Date(),
-      },
+    // Allocate the refund across payments in creation order, capping each
+    // payment at its own remaining refundable balance — supports multiple
+    // partial refunds against the same payment over time.
+    let remainingToAllocate = refundGrossTotal;
+    const paymentsOldestFirst = [...order.payments].sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    );
+    for (const payment of paymentsOldestFirst) {
+      if (remainingToAllocate <= 0) break;
+
+      const remainingOnPayment = round2(
+        Number(payment.amount) - Number(payment.refundedAmount),
+      );
+      if (remainingOnPayment <= 0) continue;
+
+      const allocate = round2(Math.min(remainingOnPayment, remainingToAllocate));
+      const newRefundedAmount = round2(
+        Number(payment.refundedAmount) + allocate,
+      );
+      const paymentFullyRefunded = newRefundedAmount >= Number(payment.amount);
+
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          refundedAmount: newRefundedAmount,
+          ...(paymentFullyRefunded
+            ? {
+                status: "REFUNDED",
+                providerStatus: "manual_refunded",
+                refundedAt: new Date(),
+              }
+            : {}),
+        },
+      });
+
+      remainingToAllocate = round2(remainingToAllocate - allocate);
+    }
+
+    // Only the order's own terminal status flips to REFUNDED once every
+    // item is fully refunded — a partial return leaves the order in its
+    // current status, which is the correct real-world shape (a partial
+    // return doesn't cancel the whole order).
+    const allItemsFullyRefunded = order.items.every((item) => {
+      const refundedThisPass =
+        refundLines.find((line) => line.orderItemId === item.id)?.quantity ??
+        0;
+      return item.refundedQuantity + refundedThisPass >= item.quantity;
     });
 
-    const updated = await tx.order.update({
-      where: { id: order.id },
-      data: {
-        status: "REFUNDED",
-        refundedAt: new Date(),
-      },
-    });
+    const updated = allItemsFullyRefunded
+      ? await tx.order.update({
+          where: { id: order.id },
+          data: { status: "REFUNDED", refundedAt: new Date() },
+        })
+      : order;
 
-    // Reverse the recognised revenue/VAT/COGS in the GL (best-effort, mirrors the
-    // graceful sale posting — a ledger gap must not block the operational refund).
+    // Reverse the recognised revenue/VAT/COGS in the GL, scoped to exactly
+    // these lines (best-effort, mirrors the graceful sale posting — a
+    // ledger gap must not block the operational refund).
     try {
-      await postOrderRefundToLedger(order.id, tx);
+      await postOrderRefundToLedger(order.id, tx, {
+        lines: refundLines.map((line) => ({
+          orderItemId: line.orderItemId,
+          quantity: line.quantity,
+        })),
+      });
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error("[admin] failed to post refund to ledger", error);
@@ -275,19 +362,29 @@ export async function refundAdminOrder(input: {
         reason: parsed.reason,
         restockItems: parsed.restockItems,
         returnRequestId: returnRequest.id,
+        partial: !allItemsFullyRefunded,
+        refundedGross: refundGrossTotal,
+        lines: refundLines.map((line) => ({
+          orderItemId: line.orderItemId,
+          quantity: line.quantity,
+        })),
       },
     });
 
+    // Keyed per return request (not per order): a partial refund is a new,
+    // distinct customer-facing event each time, not a one-time-ever email.
     await createOutboxEvent(tx, {
       type: BUSINESS_EVENTS.emailRequested,
       aggregateType: "Order",
       aggregateId: order.id,
-      idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:refund:${order.id}`,
+      idempotencyKey: `${BUSINESS_EVENTS.emailRequested}:refund:${order.id}:${returnRequest.id}`,
       payload: {
         orderId: order.id,
         orderNumber: order.orderNumber,
         customerEmail: order.email,
         template: "order_refunded",
+        partial: !allItemsFullyRefunded,
+        refundedGross: refundGrossTotal,
       },
     });
 
@@ -295,8 +392,14 @@ export async function refundAdminOrder(input: {
       orderId: updated.id,
       status: updated.status,
       returnRequestId: returnRequest.id,
+      refundedGross: refundGrossTotal,
+      partial: !allItemsFullyRefunded,
     };
   });
+}
+
+function round2(value: number) {
+  return Math.round(value * 100) / 100;
 }
 
 export async function updateAdminAppointmentStatus(input: {

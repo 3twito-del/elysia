@@ -366,13 +366,24 @@ export async function postOrderSaleToLedger(orderId: string) {
 /**
  * Posts the sales-return / refund entry that reverses an order's recognised
  * revenue, output VAT and COGS (FIN-GL-001). Only posts when the original sale
- * was recognised, is idempotent per order, and is skipped gracefully when the
- * chart of accounts is missing. Accepts a transaction client so it can run
- * inside the refund mutation.
+ * was recognised, and is skipped gracefully when the chart of accounts is
+ * missing. Accepts a transaction client so it can run inside the refund
+ * mutation.
+ *
+ * OMS-006 (partial/line-level RMA): `options.lines` scopes the reversal to
+ * specific order items/quantities instead of the whole order — each partial
+ * refund posts its own proportional entry (gross + COGS computed only from
+ * the given lines). Idempotency is no longer "at most one entry per order"
+ * (that assumed full-order-only refunds); instead every posting is capped so
+ * the *cumulative* reversed gross across all of an order's `sales_return`
+ * entries can never exceed the original sale's gross — the real invariant
+ * that matters once multiple partial refunds are possible. Omitting `lines`
+ * preserves the exact previous full-order behavior.
  */
 export async function postOrderRefundToLedger(
   orderId: string,
   client: Prisma.TransactionClient = db,
+  options?: { lines?: { orderItemId: string; quantity: number }[] },
 ) {
   const ledgerReady = await client.ledgerAccount.count({
     where: {
@@ -388,18 +399,6 @@ export async function postOrderRefundToLedger(
     select: { id: true },
   });
   if (!sale) return { posted: false as const, reason: "no_sale_entry" };
-
-  const existing = await client.journalEntry.findFirst({
-    where: { orderId, source: "sales_return" },
-    select: { id: true },
-  });
-  if (existing) {
-    return {
-      posted: false as const,
-      reason: "already_posted",
-      journalEntryId: existing.id,
-    };
-  }
 
   const order = await client.order.findUnique({
     where: { id: orderId },
@@ -429,9 +428,46 @@ export async function postOrderRefundToLedger(
     return { posted: false as const, reason: treatmentBlock };
   }
 
-  const grossTotal = Number(order.total);
+  const refundItems = options?.lines
+    ? options.lines
+        .map((line) => {
+          const item = order.items.find((i) => i.id === line.orderItemId);
+          return item ? { ...item, quantity: line.quantity } : null;
+        })
+        .filter((item): item is (typeof order.items)[number] => item !== null)
+    : order.items;
+
+  const grossTotal = options?.lines
+    ? round2(
+        refundItems.reduce(
+          (sum, item) => sum + item.quantity * Number(item.unitPrice),
+          0,
+        ),
+      )
+    : Number(order.total);
+
   if (grossTotal <= 0) {
     return { posted: false as const, reason: "non_positive_total" };
+  }
+
+  // Cumulative-reversal guard: never post more than was ever recognised as
+  // revenue for this order, across however many partial refunds it takes.
+  const priorReturns = await client.journalEntry.findMany({
+    where: { orderId, source: "sales_return" },
+    include: {
+      lines: { where: { account: { code: ACCOUNT.ACCOUNTS_RECEIVABLE } } },
+    },
+  });
+  const alreadyReversedGross = round2(
+    priorReturns.reduce(
+      (sum, prior) =>
+        sum + prior.lines.reduce((s, line) => s + Number(line.credit), 0),
+      0,
+    ),
+  );
+
+  if (round2(alreadyReversedGross + grossTotal) > round2(Number(order.total))) {
+    return { posted: false as const, reason: "exceeds_original_sale" };
   }
 
   const entry = await postJournalEntry(
@@ -447,7 +483,7 @@ export async function postOrderRefundToLedger(
       lines: buildSalesReturnJournalLines({
         grossTotal,
         vatRate: DEFAULT_VAT_RATE,
-        cogs: await computeOrderCogs(order.items),
+        cogs: await computeOrderCogs(refundItems),
         branchId: order.branchId ?? undefined,
       }),
     },
@@ -455,6 +491,10 @@ export async function postOrderRefundToLedger(
   );
 
   return { posted: true as const, journalEntryId: entry.id };
+}
+
+function round2(value: number) {
+  return Math.round(value * 100) / 100;
 }
 
 /**

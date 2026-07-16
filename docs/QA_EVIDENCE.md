@@ -103,6 +103,7 @@ Sections: 64
 - [wishlist-shortlist-decision-support-benchmark](#evidence-wishlist-shortlist-decision-support-benchmark)
 - [k-04-per-class-alert-email-routing](#evidence-k-04-per-class-alert-email-routing)
 - [crm-sal-001-lead-opportunity-edit-mutations](#evidence-crm-sal-001-lead-opportunity-edit-mutations)
+- [oms-006-partial-line-level-rma](#evidence-oms-006-partial-line-level-rma)
 
 ---
 
@@ -8486,3 +8487,165 @@ reproduce on real Vercel production infrastructure. If another e2e test
 ever needs to submit a form on this specific page, reuse the
 `page.goto()`-after-submit pattern above rather than re-diagnosing from
 scratch — this section records everything already ruled out.
+
+---
+
+<a id="evidence-oms-006-partial-line-level-rma"></a>
+
+## Evidence: oms-006-partial-line-level-rma
+
+# OMS-006 — Partial/Line-Level RMA
+
+Date: 2026-07-16.
+
+Scope: `docs/ERP_CRM_MASTER_BLUEPRINT.md` §4.E listed OMS-006 as `[M] 🟡` —
+"returns/refunds with restock and reversal, built at full-order level;
+remaining: partial/line-level." Investigated the actual gap before
+building anything: `refundAdminOrder`
+(`src/server/services/admin-commerce.ts`) always refunded every item,
+restocked every item, and flipped every payment to `REFUNDED`;
+`postOrderRefundToLedger` (`finance.ts`) was hard-idempotent per order —
+"does a `sales_return` journal entry already exist for this order at
+all" — meaning at most one refund, ever, for the whole order, no matter
+how it was invoked.
+
+## Why this needed a real schema migration, not just a service change
+
+Nothing in the schema could represent "how much of this line has already
+been refunded" or "how much of this payment has already been refunded" —
+`OrderItem`/`Payment` had no such fields, and `ReturnRequest` had no
+line-level breakdown at all. Flagged this to the user before starting
+(bigger, riskier scope than the other three items picked in this
+session's "do all four" round) — confirmed: full correctness now, not a
+simplified version.
+
+## Schema (additive-only migration
+`20260716010000_order_partial_refund_lines`)
+
+- `OrderItem.refundedQuantity Int @default(0)` — cumulative quantity
+  refunded across all return requests.
+- `Payment.refundedAmount Decimal @default(0)` — cumulative amount
+  refunded against this specific payment; its `status` only flips to
+  `REFUNDED` once this reaches `amount`, supporting multiple partial
+  refunds against the same payment over time.
+- New `ReturnRequestLine` (`returnRequestId`, `orderItemId`, `quantity`,
+  `amount`) — which items/quantities a specific return request covers.
+
+**A real local-DB gotcha hit while migrating, not a schema problem**:
+`pnpm db:migrate:dev` proposed adding missing indexes/FKs across
+*every* table and then asked to **reset** (drop) the entire local
+database — the local dev Postgres has no `_prisma_migrations` history
+table at all (confirmed: the table doesn't exist), meaning it was set up
+via `db push` at some point, not `migrate dev`, so `migrate dev` saw the
+whole DB as undocumented drift. **Did not run the reset** — it would have
+destroyed every seeded/e2e fixture this entire session's testing has
+relied on. Used `pnpm db:push` instead (a pure additive diff against
+actual DB structure, not migration history — applied cleanly, no
+destructive prompt) to sync locally, then hand-wrote `migration.sql`
+matching the DDL Prisma itself needs, and verified it byte-for-byte
+against the live DB's `information_schema`/`pg_constraint`/`pg_indexes`
+afterward (exact column types/precision/defaults, FK delete behavior,
+index names all matched).
+
+## Service changes
+
+- `src/server/services/admin-commerce-workflow.ts`: new pure
+  `resolveRefundLines({ items, requestedLines? })` — omitting
+  `requestedLines` refunds every item's remaining unrefunded quantity
+  (the original full-order behavior, byte-identical when nothing has
+  ever been partially refunded); an explicit selection validates each
+  line against that item's own remaining quantity, rejects duplicates and
+  unknown item ids. Unit tested directly (5 cases incl. both error paths).
+- `src/server/services/finance.ts`'s `postOrderRefundToLedger`: accepts
+  optional `{ lines }`; when given, computes gross/COGS from only those
+  lines (COGS reuses the existing `computeOrderCogs` unchanged — it
+  already reduces over an arbitrary items array, so passing
+  refund-quantity-adjusted items was enough, no COGS logic needed to
+  change). Idempotency changed from "at most one entry, ever" to
+  "cumulative reversed gross across all this order's `sales_return`
+  entries can never exceed the original sale's gross" — the real
+  invariant once multiple partial refunds are possible; omitting `lines`
+  preserves the exact previous full-order behavior and math.
+- `src/server/services/admin-commerce.ts`'s `refundAdminOrder`: resolves
+  lines, creates `ReturnRequestLine` rows, increments each line's
+  `OrderItem.refundedQuantity`, restocks only the selected
+  lines/quantities, allocates the refund gross across payments oldest-first
+  (capping each at its own remaining refundable balance — supports
+  multiple partial refunds against one payment), and flips the order to
+  `REFUNDED` only when every item is now fully refunded (a partial return
+  correctly leaves the order in its current status — it didn't cancel the
+  whole order). The customer-notification outbox event is now keyed per
+  `returnRequestId`, not per order — a partial refund is a new, distinct
+  customer-facing event each time, not a one-time-ever email (the old
+  per-order key would have silently collapsed a second partial refund's
+  email into the first via `createOutboxEvent`'s upsert-by-idempotencyKey).
+
+## Verification
+
+**End-to-end correctness, verified directly against the real local DB**
+(a throwaway script, not committed — this repo's established pattern for
+GL-touching logic, which has no test-DB wiring for either Vitest or
+Playwright to hook into): created a real two-item `OWN_SALE` order
+(items priced 100×2 and 50×1, gross 250), posted its real sale journal
+entry, then:
+1. Refunded 1 of 2 units of item A (gross 100) — order stayed
+   `COMPLETED` (correctly not terminal), `OrderItem.refundedQuantity` →
+   1, `Payment.refundedAmount` → 100 (`status` stayed `CAPTURED`), one
+   `ReturnRequestLine` row, one `sales_return` JournalEntry with the
+   *proportional* reversal (net 84.75 + VAT 15.25 = gross 100; COGS 40 —
+   correctly computed from 1 unit, not the original 2).
+2. Refunded the remaining 1 unit of item A + the 1 unit of item B (gross
+   150) — order flipped to `REFUNDED`, `Payment.refundedAmount` reached
+   250 (`status` → `REFUNDED`), a second `sales_return` JournalEntry
+   posted. **Total reversed gross across both partial refunds: exactly
+   250 — the original sale's full gross, not a cent more or less.**
+3. A third refund attempt on the now-fully-refunded order correctly threw
+   (`canRefundOrderStatus` rejects `REFUNDED`) — the existing order-status
+   guard already covers the over-refund case in the common path.
+
+**Automated regression coverage**:
+- 5 new unit tests for `resolveRefundLines` (`admin-commerce.test.ts`):
+  full-refund-defaults-to-remaining-quantity (fully-refunded items
+  correctly excluded), explicit partial selection, over-request rejected
+  with the real remaining count in the message, duplicate line id
+  rejected, unknown line id rejected. Updated the pre-existing
+  transaction-boundary source-shape test (`tx.payment.updateMany` →
+  `tx.payment.update`, matching the new per-payment allocation loop).
+- One new real e2e test (`critical-flows.spec.ts`, "partially refunding
+  one line of a multi-item order..."): a new disposable-order fixture
+  helper (`createDisposableAdminOrder`/`deleteDisposableAdminOrder`,
+  `tests/e2e/helpers/db.ts` — the shared customer-auth-fixture order is
+  deliberately single-item/quantity-1 and can't express a partial refund
+  at all) drives the real admin UI: checks one item's checkbox, sets its
+  quantity, submits, and asserts real DB state (order stays `COMPLETED`,
+  only the selected item's `refundedQuantity` moved, `Payment.refundedAmount`
+  is exactly proportional, the audit row's metadata has `partial: true`).
+  Stable across two consecutive runs; the full suite
+  (`critical-flows.spec.ts` + `authenticated-account.spec.ts`, chromium-desktop)
+  is 72 passed, 0 failed, 3 skipped — including the pre-existing
+  full-refund e2e test unchanged, confirming the omitted-`lines` path
+  still behaves exactly as before.
+- `pnpm check` green throughout: 341 test files, 1725 tests.
+
+## Admin UI (`admin-order-actions.tsx` + `orders/[id]/page.tsx`)
+
+Per-item checkbox + quantity input inside the existing refund form —
+unchecked (the default) refunds everything remaining in one click,
+exactly as before; checking specific items scopes the refund to just
+those lines/quantities. The items table on the order detail page gained
+a "זוכה" column showing `refundedQuantity / quantity` per line.
+
+## Dead code found, not touched
+
+While tracing which `getAdminOrderDetail` needed the new
+`refundedQuantity`/`refundedAmount` fields, found there are **two**
+independent functions with that exact name:
+`admin-operations.ts`'s (imported directly by the real order-detail Server
+Component page — live) and `admin-commerce-read.ts`'s (re-exported through
+`admin-commerce.ts`, wired into a tRPC `admin.orderDetail` query with
+**zero** frontend callers — grepped `api.admin.orderDetail` across
+`src/app`/`src/components`, nothing). Only updated the live one. Same
+shape as the K-02/K-14 "verify a live caller before treating a gap as
+active" lesson, now a further instance of it — not fixed here since
+deleting dead code was outside this item's scope, but worth a future
+cleanup pass.

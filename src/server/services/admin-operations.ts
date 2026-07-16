@@ -850,6 +850,7 @@ export async function getAdminOrderDetail(orderId: string) {
       payments: true,
       returns: {
         orderBy: { createdAt: "desc" },
+        include: { lines: true },
       },
       shipments: {
         orderBy: { shippedAt: "desc" },
@@ -924,6 +925,7 @@ export async function getAdminOrderDetail(orderId: string) {
       name: item.name,
       quantity: item.quantity,
       unitPrice: Number(item.unitPrice),
+      refundedQuantity: item.refundedQuantity,
     })),
     payments: order.payments.map((payment) => ({
       id: payment.id,
@@ -932,6 +934,7 @@ export async function getAdminOrderDetail(orderId: string) {
       providerStatus: payment.providerStatus,
       failureCode: payment.failureCode,
       amount: Number(payment.amount),
+      refundedAmount: Number(payment.refundedAmount),
       capturedAt: payment.capturedAt,
       refundedAt: payment.refundedAt,
     })),

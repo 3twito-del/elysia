@@ -143,6 +143,7 @@ export default async function AdminOrderDetailPage({
                     <TableHead>כמות</TableHead>
                     <TableHead>מחיר</TableHead>
                     <TableHead>סה״כ</TableHead>
+                    <TableHead>זוכה</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -154,6 +155,11 @@ export default async function AdminOrderDetailPage({
                       <TableCell>{formatPrice(item.unitPrice)}</TableCell>
                       <TableCell>
                         {formatPrice(item.unitPrice * item.quantity)}
+                      </TableCell>
+                      <TableCell>
+                        {item.refundedQuantity > 0
+                          ? `${item.refundedQuantity} מתוך ${item.quantity}`
+                          : "—"}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -285,6 +291,7 @@ export default async function AdminOrderDetailPage({
               <TRPCReactProvider>
                 <AdminOrderActions
                   fulfillmentMethod={order.fulfillmentMethod}
+                  items={order.items}
                   orderId={order.id}
                   returns={order.returns}
                   shipment={order.shipments[0] ?? null}

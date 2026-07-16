@@ -7,7 +7,9 @@ import {
   signInAdminWithFixture,
 } from "./helpers/admin-auth";
 import {
+  createDisposableAdminOrder,
   createDisposableAdminProduct,
+  deleteDisposableAdminOrder,
   deleteDisposableAdminProduct,
   getTestDb,
 } from "./helpers/db";
@@ -2077,6 +2079,89 @@ test.describe("access control surfaces", () => {
           .lead.delete({ where: { id: leadId } })
           .catch(() => undefined);
       }
+    }
+  });
+
+  test("partially refunding one line of a multi-item order is a real write, recorded in the audit log (OMS-006)", async ({
+    page,
+  }) => {
+    const fixture = await createDisposableAdminOrder();
+
+    try {
+      await signInAdminWithFixture(page);
+      await page.goto(`/admin/orders/${fixture.orderId}`);
+
+      await page.getByPlaceholder("סיבת זיכוי").fill("זיכוי חלקי — בדיקת E2E");
+
+      // Refund only 1 of item A's 2 units — item B stays untouched.
+      const itemARow = page
+        .locator("label")
+        .filter({ hasText: "נותר 2 מתוך 2" });
+
+      await itemARow.getByRole("checkbox").check();
+      await itemARow.getByRole("spinbutton").fill("1");
+
+      const before = new Date();
+
+      await page.getByRole("button", { name: /ביצוע זיכוי/ }).click();
+      await page.getByRole("button", { name: "אישור זיכוי" }).click();
+
+      await expect(
+        page.getByText("הזיכוי נשמר וההזמנה עודכנה."),
+      ).toBeVisible();
+
+      const updatedOrder = await getTestDb().order.findUniqueOrThrow({
+        where: { id: fixture.orderId },
+        include: { items: true, payments: true },
+      });
+
+      expect(
+        updatedOrder.status,
+        "a partial refund must not flip the order to REFUNDED",
+      ).toBe("COMPLETED");
+
+      const itemA = updatedOrder.items.find(
+        (item) => item.id === fixture.itemAId,
+      )!;
+      const itemB = updatedOrder.items.find(
+        (item) => item.id === fixture.itemBId,
+      )!;
+
+      expect(itemA.refundedQuantity).toBe(1);
+      expect(itemB.refundedQuantity, "item B was never selected").toBe(0);
+      expect(Number(updatedOrder.payments[0]!.refundedAmount)).toBe(100);
+      expect(
+        updatedOrder.payments[0]!.status,
+        "payment isn't fully refunded yet",
+      ).toBe("CAPTURED");
+
+      const auditRow = await getTestDb().auditLog.findFirst({
+        orderBy: { createdAt: "desc" },
+        where: {
+          action: "order_refunded",
+          entity: "Order",
+          entityId: fixture.orderId,
+          createdAt: { gte: before },
+        },
+      });
+
+      expect(
+        auditRow,
+        "expected an order_refunded AuditLog row for this partial refund",
+      ).not.toBeNull();
+      expect((auditRow?.metadata as { partial?: boolean } | null)?.partial).toBe(
+        true,
+      );
+
+      const returnRequestLine = await getTestDb().returnRequestLine.findFirst({
+        where: { orderItemId: fixture.itemAId },
+        orderBy: { id: "desc" },
+      });
+
+      expect(returnRequestLine?.quantity).toBe(1);
+      expect(Number(returnRequestLine?.amount)).toBe(100);
+    } finally {
+      await deleteDisposableAdminOrder(fixture);
     }
   });
 
