@@ -81,6 +81,8 @@ import {
 import { getBudgetVsActual } from "~/server/services/budgeting";
 import {
   getCostAccountingSummary,
+  getCustomerProfitability,
+  getProductProfitability,
   listCostCenters,
 } from "~/server/services/cost-accounting";
 import {
@@ -262,15 +264,18 @@ export default async function AdminFinancePage() {
     getBudgetVsActual().catch(() => null),
   ]);
 
-  const [costCenters, costSummary] = await Promise.all([
-    listCostCenters().catch(() => []),
-    getCostAccountingSummary().catch(() => ({
-      centers: 0,
-      revenue: 0,
-      expense: 0,
-      margin: 0,
-    })),
-  ]);
+  const [costCenters, costSummary, productProfitability, customerProfitability] =
+    await Promise.all([
+      listCostCenters().catch(() => []),
+      getCostAccountingSummary().catch(() => ({
+        centers: 0,
+        revenue: 0,
+        expense: 0,
+        margin: 0,
+      })),
+      getProductProfitability(finance.range).catch(() => null),
+      getCustomerProfitability(finance.range).catch(() => null),
+    ]);
   const currentPeriod = `${now.getUTCFullYear()}-${String(
     now.getUTCMonth() + 1,
   ).padStart(2, "0")}`;
@@ -2423,6 +2428,98 @@ export default async function AdminFinancePage() {
               )}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6 rounded-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp aria-hidden="true" className="size-5" />
+            רווחיות פר-מוצר ופר-לקוח (FIN-CO-001)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 lg:grid-cols-2">
+          <p className="text-muted-foreground text-sm lg:col-span-2">
+            {formatHebrewDate(finance.range.from)}–
+            {formatHebrewDate(finance.range.to)}. עלות ליחידה מוערכת מסנאפשוט
+            עלות אחרון (או 40% מהמחיר כברירת מחדל) — אותה שיטת הערכה
+            שהתמונה הפיננסית הכללית כבר משתמשת בה; רווחיות בספרי GL מדויקים
+            תלויה בהכרעת FIFO/ממוצע-משוקלל (D3, טרם הוכרעה).
+          </p>
+
+          <div className="grid gap-2">
+            <p className="text-sm font-medium">לפי מוצר</p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מוצר</TableHead>
+                  <TableHead>יח&apos;</TableHead>
+                  <TableHead>הכנסות</TableHead>
+                  <TableHead>רווחיות</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {!productProfitability || productProfitability.rows.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="מכירות בטווח התאריכים יופיעו כאן."
+                    icon={TrendingUp}
+                    title="אין נתונים"
+                  />
+                ) : (
+                  productProfitability.rows.map((row) => (
+                    <TableRow key={row.key}>
+                      <TableCell className="text-sm">{row.label}</TableCell>
+                      <TableCell className="text-sm">{row.unitsSold}</TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.revenue)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.margin)} ({row.marginPct}%)
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="grid gap-2">
+            <p className="text-sm font-medium">לפי לקוח</p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>לקוח</TableHead>
+                  <TableHead>יח&apos;</TableHead>
+                  <TableHead>הכנסות</TableHead>
+                  <TableHead>רווחיות</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {!customerProfitability || customerProfitability.rows.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={4}
+                    description="הזמנות לקוחות רשומים בטווח יופיעו כאן."
+                    icon={TrendingUp}
+                    title="אין נתונים"
+                  />
+                ) : (
+                  customerProfitability.rows.map((row) => (
+                    <TableRow key={row.key}>
+                      <TableCell className="text-sm">{row.label}</TableCell>
+                      <TableCell className="text-sm">{row.unitsSold}</TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.revenue)}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.margin)} ({row.marginPct}%)
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </AdminShell>

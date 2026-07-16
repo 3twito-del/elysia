@@ -9141,3 +9141,80 @@ category and rank, plus a working unpin button. Cleared the test pin
 afterward via a direct DB update (no throwaway rows were left behind — the
 pinned product itself is real catalog data, only its pin state was
 touched and reverted).
+
+## Evidence: fin-co-001-product-customer-profitability
+
+# FIN-CO-001 — Per-Product / Per-Customer Profitability
+
+Date: 2026-07-16.
+
+Scope: cost centers, budget variance and manual revenue/expense entries
+were already built (`cost-accounting.ts`); remaining was "רווחיות
+פר-מוצר/לקוח" — real profitability computed from actual order data, not
+the manually-entered CostCenter/CostEntry system (which models
+organizational cost centers like "Marketing," not products or customers).
+
+## Checked whether this was blocked by the pending FIFO/WA decision first
+
+`docs/ERP_CRM_MASTER_BLUEPRINT.md` explicitly defers "COGS-per-sale
+consumption" until accountant sign-off on the FIFO vs weighted-average
+valuation method (D3, INV-002). Before building anything, checked whether
+per-product profitability would need that same decision — it doesn't:
+`getFinanceOverview` (`finance.ts`) already computes a read-only COGS
+*estimate* for its KPIs today (latest `ProductCostSnapshot`, falling back
+to 40% of unit price) that is explicitly **not** the GL-posting-precision
+figure (`computeOrderCogs`'s weighted-average-over-cost-layers, used only
+by `postOrderSaleToLedger`) — the file's own comment says so: "the
+read-only overview keeps the lighter estimate." D3 blocks precise GL
+*postings*; it doesn't block a read-only report from reusing an estimate
+this codebase already ships and already labels as such. Reused that exact
+same estimate rather than inventing a third costing assumption.
+
+## What was built (`cost-accounting.ts`)
+
+- `resolveLineUnitCost` — the shared per-unit cost estimate (snapshot, else
+  40% of price), pure.
+- `aggregateProfitability` — refund-aware: nets `OrderItem.refundedQuantity`
+  (OMS-006) out of `quantity` before computing revenue/COGS per grouping
+  key, drops a line entirely once fully refunded, sums multiple lines
+  sharing a key, sorts by margin descending. Pure.
+- `getProductProfitability` / `getCustomerProfitability` — DB-backed,
+  grouping by product ID / customer ID respectively over a date range
+  (default last 30 days, reusing `finance.ts`'s own `normalizeFinanceRange`
+  — now exported rather than duplicated). Both filter to revenue-bearing
+  orders via `isRevenueOrder` (`crm.ts`) — "the single shared definition of
+  a revenue-bearing order (G3)" per its own comment — instead of
+  re-deriving a status list that could drift from the one every other
+  revenue figure in this codebase already uses. Customer profitability
+  skips guest orders (`customerId: null`) — an anonymous order has no
+  stable identity a merchandiser could act on.
+
+## Admin UI (`/admin/finance`)
+
+Two read-only tables (top products / top customers by margin) added to
+the existing finance page, sharing the page's existing default date
+window (`finance.range`, already used by the GL overview and VAT report
+on the same page — no new date picker needed). The description text
+states the estimation method and the D3 caveat plainly rather than
+presenting the numbers as GL-grade precision.
+
+## Verification
+
+**Unit tests**: `resolveLineUnitCost` — prefers snapshot, falls back on
+missing/zero snapshot. `aggregateProfitability` — per-key revenue/COGS/
+margin with descending sort; nets out partial refunds; drops a fully-
+refunded line entirely; sums multiple lines sharing a key.
+
+**DB-integration verified** (throwaway script, deleted after use, run via
+`tsx` against the real local DB): created a real product + variant + cost
+snapshot (₪200/unit) + customer + a 10-unit order at ₪100/unit with 3
+units refunded. `getProductProfitability`/`getCustomerProfitability`
+correctly netted 10−3=7 units, revenue ₪700, COGS ₪1400 (7×200), margin
+−₪700 — and the customer row's label correctly used the real
+first+last name.
+
+**Live browser verified** (real local dev server, real DB, existing
+e2e-fixture data — no synthetic rows needed since real orders already
+existed): screenshotted the new "רווחיות פר-מוצר ופר-לקוח" card on
+`/admin/finance` showing real per-product and per-customer rows with
+correct units/revenue/margin%, side-by-side responsive layout, RTL intact.

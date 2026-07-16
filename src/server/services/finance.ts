@@ -560,7 +560,7 @@ async function auditFinanceAccess(input: {
   });
 }
 
-function normalizeFinanceRange(range: FinanceDateRange = {}) {
+export function normalizeFinanceRange(range: FinanceDateRange = {}) {
   const to = range.to ?? new Date();
   const from =
     range.from ??

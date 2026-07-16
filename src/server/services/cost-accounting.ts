@@ -1,10 +1,22 @@
 import { db } from "~/server/db";
 import { writeAdminAudit } from "~/server/services/admin-commerce-workflow";
+import { isRevenueOrder } from "~/server/services/crm";
+import {
+  normalizeFinanceRange,
+  type FinanceDateRange,
+} from "~/server/services/finance";
 
 /**
  * Cost accounting / controlling (FIN-CO-001): cost & profit centers with
- * revenue/expense entries for profitability and budget-variance reporting. A
- * managerial layer separate from the financial GL. The maths are pure + tested.
+ * revenue/expense entries for profitability and budget-variance reporting (a
+ * managerial layer separate from the financial GL), plus per-product/
+ * per-customer profitability breakdowns. The maths are pure + tested.
+ *
+ * Per-line COGS uses the same estimation `getFinanceOverview` already uses
+ * for its read-only KPIs (latest cost snapshot, else 40% of price) — this is
+ * a read-only report, not a GL posting, so it isn't blocked by the pending
+ * FIFO/weighted-average valuation decision (D3) that defers real COGS-per-
+ * sale *consumption*.
  */
 
 export const CENTER_KINDS = ["COST", "PROFIT"] as const;
@@ -223,5 +235,218 @@ export async function getCostAccountingSummary() {
     revenue: round2(revenue),
     expense: round2(expense),
     margin: round2(revenue - expense),
+  };
+}
+
+// ---- per-product / per-customer profitability ----
+
+export type ProfitabilityLine = {
+  key: string;
+  label: string;
+  quantity: number;
+  refundedQuantity: number;
+  unitPrice: number;
+  unitCost: number;
+};
+
+export type ProfitabilityRow = {
+  key: string;
+  label: string;
+  unitsSold: number;
+  revenue: number;
+  cogs: number;
+  margin: number;
+  marginPct: number;
+};
+
+/**
+ * Per-unit cost for a profitability line: the latest cost snapshot, falling
+ * back to 40% of unit price — the same estimate `getFinanceOverview` already
+ * uses (`finance.ts`), reused here rather than inventing a new assumption. Pure.
+ */
+export function resolveLineUnitCost(input: {
+  latestSnapshotUnitCost: number | null;
+  unitPrice: number;
+}): number {
+  if (input.latestSnapshotUnitCost != null && input.latestSnapshotUnitCost > 0) {
+    return round2(input.latestSnapshotUnitCost);
+  }
+  return round2(input.unitPrice * 0.4);
+}
+
+/**
+ * Aggregates refund-aware revenue/COGS/margin by an arbitrary grouping key
+ * (product or customer), sorted by margin descending. Pure.
+ */
+export function aggregateProfitability(
+  lines: ProfitabilityLine[],
+): ProfitabilityRow[] {
+  const byKey = new Map<
+    string,
+    { label: string; unitsSold: number; revenue: number; cogs: number }
+  >();
+
+  for (const line of lines) {
+    const netQuantity = Math.max(0, line.quantity - line.refundedQuantity);
+    if (netQuantity <= 0) continue;
+
+    const current = byKey.get(line.key) ?? {
+      label: line.label,
+      unitsSold: 0,
+      revenue: 0,
+      cogs: 0,
+    };
+    current.unitsSold += netQuantity;
+    current.revenue = round2(current.revenue + netQuantity * line.unitPrice);
+    current.cogs = round2(current.cogs + netQuantity * line.unitCost);
+    byKey.set(line.key, current);
+  }
+
+  return [...byKey.entries()]
+    .map(([key, value]) => {
+      const margin = round2(value.revenue - value.cogs);
+      return {
+        key,
+        label: value.label,
+        unitsSold: value.unitsSold,
+        revenue: value.revenue,
+        cogs: value.cogs,
+        margin,
+        marginPct: value.revenue > 0 ? round2((margin / value.revenue) * 100) : 0,
+      };
+    })
+    .sort((a, b) => b.margin - a.margin);
+}
+
+/** Per-product profitability over a date range (default: last 30 days). */
+export async function getProductProfitability(
+  range: FinanceDateRange = {},
+  limit = 20,
+) {
+  const { from, to } = normalizeFinanceRange(range);
+
+  const items = await db.orderItem.findMany({
+    where: { order: { createdAt: { gte: from, lt: to } } },
+    select: {
+      quantity: true,
+      refundedQuantity: true,
+      unitPrice: true,
+      order: { select: { status: true } },
+      variant: {
+        select: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              sku: true,
+              costSnapshots: {
+                orderBy: { effectiveAt: "desc" },
+                take: 1,
+                select: { unitCost: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const lines: ProfitabilityLine[] = items
+    .filter((item) => isRevenueOrder(item.order))
+    .map((item) => {
+      const product = item.variant.product;
+      const snapshot = product.costSnapshots[0]?.unitCost ?? null;
+      const unitPrice = Number(item.unitPrice);
+      return {
+        key: product.id,
+        label: `${product.name} (${product.sku})`,
+        quantity: item.quantity,
+        refundedQuantity: item.refundedQuantity,
+        unitPrice,
+        unitCost: resolveLineUnitCost({
+          latestSnapshotUnitCost: snapshot ? Number(snapshot) : null,
+          unitPrice,
+        }),
+      };
+    });
+
+  return {
+    range: { from, to },
+    rows: aggregateProfitability(lines).slice(0, limit),
+  };
+}
+
+/** Per-customer profitability over a date range (default: last 30 days). Guest orders (no customer) are excluded — there's no stable identity to act on. */
+export async function getCustomerProfitability(
+  range: FinanceDateRange = {},
+  limit = 20,
+) {
+  const { from, to } = normalizeFinanceRange(range);
+
+  const items = await db.orderItem.findMany({
+    where: {
+      order: { createdAt: { gte: from, lt: to }, customerId: { not: null } },
+    },
+    select: {
+      quantity: true,
+      refundedQuantity: true,
+      unitPrice: true,
+      order: {
+        select: {
+          status: true,
+          customerId: true,
+          customer: {
+            select: { firstName: true, lastName: true, email: true },
+          },
+        },
+      },
+      variant: {
+        select: {
+          product: {
+            select: {
+              costSnapshots: {
+                orderBy: { effectiveAt: "desc" },
+                take: 1,
+                select: { unitCost: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const lines: ProfitabilityLine[] = items
+    .filter((item) => isRevenueOrder(item.order) && item.order.customerId)
+    .map((item) => {
+      const snapshot = item.variant.product.costSnapshots[0]?.unitCost ?? null;
+      const unitPrice = Number(item.unitPrice);
+      const customerName = [
+        item.order.customer?.firstName,
+        item.order.customer?.lastName,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+
+      return {
+        key: item.order.customerId!,
+        label:
+          (customerName.length > 0 ? customerName : undefined) ??
+          item.order.customer?.email ??
+          "לקוח",
+        quantity: item.quantity,
+        refundedQuantity: item.refundedQuantity,
+        unitPrice,
+        unitCost: resolveLineUnitCost({
+          latestSnapshotUnitCost: snapshot ? Number(snapshot) : null,
+          unitPrice,
+        }),
+      };
+    });
+
+  return {
+    range: { from, to },
+    rows: aggregateProfitability(lines).slice(0, limit),
   };
 }
