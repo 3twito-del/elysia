@@ -111,6 +111,7 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
     const compareAt = getFormNumber(form, "compareAt");
     const parsed = updateAdminProductCommerceInputSchema.safeParse({
       availabilityMode: getFormString(form, "availabilityMode"),
+      backorderEnabled: form.has("backorderEnabled"),
       careInstructions: getOptionalFormString(form, "careInstructions"),
       commerceHighlights: getFormLines(form, "commerceHighlights"),
       compareAt: compareAt > 0 ? compareAt : undefined,
@@ -160,6 +161,15 @@ export function AdminProductCommerceForm({ product }: { product: Product }) {
       <form className="mt-3 grid min-w-72 gap-3" onSubmit={handleSubmit}>
         <fieldset className="grid gap-3" disabled={mutation.isPending}>
           <AvailabilitySelect defaultValue={product.availabilityMode} />
+          <label className="text-muted-foreground flex items-center gap-2 text-xs">
+            <input
+              defaultChecked={product.backorderEnabled}
+              name="backorderEnabled"
+              type="checkbox"
+            />
+            הזמנה מראש כשהמוצר אזל מהמלאי (OMS-002) — לסמן רק כשהחזרה למלאי
+            אכן צפויה
+          </label>
           <Textarea
             aria-label="הבטחות מסחר"
             defaultValue={product.commerceHighlights.join("\n")}

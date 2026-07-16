@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Boxes, Search } from "lucide-react";
+import { Boxes, PackagePlus, Search } from "lucide-react";
 
+import { AdminFulfillBackorderButton } from "../_components/admin-backorder-actions";
 import { AdminInventoryEditor } from "../_components/admin-catalog-actions";
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -28,7 +29,10 @@ import {
 import { TableEmptyRow } from "~/components/ui/table-empty-row";
 import { getStockQuantityLabel } from "~/lib/commerce-labels";
 import { formatHebrewDateTime } from "~/lib/format";
-import { listAdminInventory } from "~/server/services/admin-operations";
+import {
+  listAdminInventory,
+  listOpenBackorders,
+} from "~/server/services/admin-operations";
 import {
   getInventoryLowStockThresholdCopy,
   isInventoryLowStock,
@@ -84,6 +88,14 @@ export default async function AdminInventoryPage({
   });
 
   if (!data) return <AdminDatabaseFallback />;
+
+  const backorders = await listOpenBackorders().catch((error: unknown) => {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[admin] failed to load backorders", error);
+    }
+
+    return [];
+  });
 
   const showPhysicalBranches = data.physicalBranchesEnabled;
   const hasActiveFilters = [
@@ -345,6 +357,66 @@ export default async function AdminInventoryPage({
                 sort: params.sort,
               }}
             />
+          </CardContent>
+        </Card>
+
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PackagePlus aria-hidden="true" className="size-5" />
+              הזמנות מראש פתוחות (OMS-002)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4 text-sm leading-6">
+              פריטים שנמכרו מעבר למלאי הזמין בפועל, עבור מוצרים שסומנו
+              &quot;הזמנה מראש&quot;. למלא רק כשהמלאי האמיתי אכן חזר — הבדיקה
+              מתבצעת שוב בשרת לפני המילוי.
+            </p>
+            <Table className="min-w-[720px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>מוצר</TableHead>
+                  <TableHead>מיקום</TableHead>
+                  <TableHead>הזמנה</TableHead>
+                  <TableHead>כמות</TableHead>
+                  <TableHead>נפתח</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {backorders.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    description="כשמכירה תעבור את המלאי הזמין למוצר עם הזמנה מראש מופעלת, היא תופיע כאן."
+                    icon={PackagePlus}
+                    title="אין הזמנות מראש פתוחות"
+                  />
+                ) : (
+                  backorders.map((backorder) => (
+                    <TableRow key={backorder.id}>
+                      <TableCell className="font-medium">
+                        {backorder.productName}
+                        <span className="text-muted-foreground block text-xs">
+                          {backorder.variantName} · {backorder.variantSku}
+                        </span>
+                      </TableCell>
+                      <TableCell>{backorder.branchName}</TableCell>
+                      <TableCell>{backorder.orderNumber}</TableCell>
+                      <TableCell>{backorder.quantity}</TableCell>
+                      <TableCell>
+                        {formatHebrewDateTime(backorder.createdAt)}
+                      </TableCell>
+                      <TableCell>
+                        <AdminFulfillBackorderButton
+                          backorderId={backorder.id}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </TRPCReactProvider>

@@ -95,6 +95,11 @@ export type PublicProductAvailabilityMode =
 type PublicProductCommerceStatusInput = {
   availabilityMode?: PublicProductAvailabilityMode;
   availableQuantity: number;
+  /// OMS-002: admin opt-in per product -- lets a genuinely out-of-stock
+  /// READY_TO_ORDER item still be purchased on backorder instead of being
+  /// blocked. Defaults false, so every existing call site keeps its exact
+  /// current behavior unless it explicitly opts in.
+  backorderEnabled?: boolean;
 };
 
 export function getOrderStatusLabel(status: string) {
@@ -171,6 +176,7 @@ export function getPublicStockStatusLabel(quantity: number) {
 export function getPublicProductCommerceStatus({
   availabilityMode = "READY_TO_ORDER",
   availableQuantity,
+  backorderEnabled = false,
 }: PublicProductCommerceStatusInput) {
   if (availabilityMode === "MADE_TO_ORDER") {
     return {
@@ -189,6 +195,19 @@ export function getPublicProductCommerceStatus({
       ctaLabel: "תיאום ייעוץ",
       label: "לייעוץ",
       serviceReason: "consultation",
+    } as const;
+  }
+
+  if (availableQuantity <= 0 && backorderEnabled) {
+    // Honest, no-date promise: the admin explicitly confirmed a restock is
+    // genuinely expected for this product (not a blanket claim for every
+    // stockout) -- but no delivery timeline is fabricated.
+    return {
+      canAddToCart: true,
+      cardCtaLabel: "הזמנה מראש",
+      ctaLabel: "הזמנה מראש (בהמתנה למלאי)",
+      label: "בהזמנה מראש",
+      serviceReason: "backorder",
     } as const;
   }
 

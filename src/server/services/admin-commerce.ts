@@ -4,6 +4,7 @@ import type { z } from "zod";
 import {
   createAdminCouponInputSchema,
   createAdminProductInputSchema,
+  fulfillBackorderInputSchema,
   refundAdminOrderInputSchema,
   updateAdminAppointmentStatusInputSchema,
   updateAdminCouponStatusInputSchema,
@@ -30,6 +31,7 @@ import {
 } from "~/server/services/catalog-publish-readiness";
 import { normalizeCouponCode } from "~/server/services/coupons";
 import { postOrderRefundToLedger } from "~/server/services/finance";
+import { canReserveStock } from "~/server/services/inventory";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 import {
   isOwnCommerceEnabled,
@@ -39,6 +41,7 @@ import {
 export {
   createAdminCouponInputSchema,
   createAdminProductInputSchema,
+  fulfillBackorderInputSchema,
   refundAdminOrderInputSchema,
   updateAdminAppointmentStatusInputSchema,
   updateAdminCouponStatusInputSchema,
@@ -585,6 +588,7 @@ export async function updateAdminProductCommerce(input: {
       where: { id: parsed.productId },
       data: {
         availabilityMode: parsed.availabilityMode,
+        backorderEnabled: parsed.backorderEnabled,
         commerceHighlights: parsed.commerceHighlights,
         deliveryPromise: parsed.deliveryPromise ?? null,
         returnPolicy: parsed.returnPolicy ?? null,
@@ -965,4 +969,129 @@ export async function updateAdminCouponStatus(input: {
   });
 
   return { id: coupon.id, isActive: coupon.isActive };
+}
+
+/**
+ * OMS-002: converts an OPEN backorder into a real reservation, once real
+ * stock actually covers it -- re-checked here, not assumed from the admin
+ * clicking the button. Only allowed once the order has a genuine financial
+ * commitment (paid or further along); fulfilling stock against an unpaid
+ * order makes no business sense. A far-future `expiresAt` is used since this
+ * reservation isn't a "waiting for payment" hold (the existing 30-minute
+ * checkout window) -- the order is already paid, so nothing should
+ * auto-release it; the reservation-expiry job only ever acts on orders
+ * still `PENDING_PAYMENT` (see K-05), which this guard already excludes.
+ */
+export async function fulfillBackorder(input: {
+  data: z.infer<typeof fulfillBackorderInputSchema>;
+  adminUserId: string;
+}) {
+  const parsed = fulfillBackorderInputSchema.parse(input.data);
+
+  return db.$transaction(async (tx) => {
+    const backorder = await tx.backorder.findUnique({
+      where: { id: parsed.backorderId },
+    });
+
+    if (!backorder) throw new Error("הזמנה מראש לא נמצאה.");
+    if (backorder.status !== "OPEN") {
+      throw new Error("ההזמנה מראש כבר טופלה.");
+    }
+
+    const order = await tx.order.findUniqueOrThrow({
+      where: { id: backorder.orderId },
+    });
+
+    if (!canRefundOrderStatus(order.status)) {
+      throw new Error(
+        "ניתן למלא הזמנה מראש רק להזמנה ששולמה ועדיין לא זוכתה/בוטלה.",
+      );
+    }
+
+    const inventoryItem = await tx.inventoryItem.findUniqueOrThrow({
+      where: {
+        branchId_variantId: {
+          branchId: backorder.branchId,
+          variantId: backorder.variantId,
+        },
+      },
+    });
+
+    if (
+      !canReserveStock({
+        quantity: inventoryItem.quantity,
+        reserved: inventoryItem.reserved,
+        safetyStock: inventoryItem.safetyStock,
+        requested: backorder.quantity,
+      })
+    ) {
+      throw new Error("עדיין אין מספיק מלאי זמין למילוי הזמנה מראש זו.");
+    }
+
+    const reserved = await tx.inventoryItem.updateMany({
+      where: {
+        branchId: backorder.branchId,
+        variantId: backorder.variantId,
+        reserved: {
+          lte:
+            inventoryItem.quantity -
+            inventoryItem.safetyStock -
+            backorder.quantity,
+        },
+      },
+      data: { reserved: { increment: backorder.quantity } },
+    });
+
+    if (reserved.count !== 1) {
+      throw new Error("המלאי השתנה בזמן המילוי. נסו שוב.");
+    }
+
+    await tx.inventoryReservation.create({
+      data: {
+        branchId: backorder.branchId,
+        variantId: backorder.variantId,
+        quantity: backorder.quantity,
+        orderId: backorder.orderId,
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    await tx.inventoryLedger.create({
+      data: {
+        branchId: backorder.branchId,
+        variantId: backorder.variantId,
+        delta: -backorder.quantity,
+        reason: "backorder_fulfilled",
+        reference: order.orderNumber,
+      },
+    });
+
+    await tx.orderItem.update({
+      where: { id: backorder.orderItemId },
+      data: { backorderedQuantity: { decrement: backorder.quantity } },
+    });
+
+    const updatedBackorder = await tx.backorder.update({
+      where: { id: backorder.id },
+      data: { status: "FULFILLED", fulfilledAt: new Date() },
+    });
+
+    await writeAdminAudit(tx, {
+      adminUserId: input.adminUserId,
+      action: "backorder_fulfilled",
+      entity: "Backorder",
+      entityId: backorder.id,
+      metadata: {
+        orderId: backorder.orderId,
+        orderNumber: order.orderNumber,
+        variantId: backorder.variantId,
+        quantity: backorder.quantity,
+      },
+    });
+
+    return {
+      backorderId: updatedBackorder.id,
+      status: updatedBackorder.status,
+    };
+  });
 }

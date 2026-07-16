@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import {
   assertCartCheckoutPricesAvailable,
   assertCartCheckoutOwnItems,
-  assertCartReservationAvailable,
   cartCheckoutInputSchema,
   createCartCheckoutOrderNumber,
   getCartCheckoutReservationExpiresAt,
@@ -89,17 +88,6 @@ describe("cart checkout service", () => {
         now,
       }),
     ).toBe(false);
-  });
-
-  it("rejects checkout reservations above sellable stock", () => {
-    expect(() =>
-      assertCartReservationAvailable({
-        quantity: 4,
-        reserved: 2,
-        safetyStock: 1,
-        requested: 2,
-      }),
-    ).toThrow(TRPCError);
   });
 
   it("rejects checkout items without a usable price", () => {

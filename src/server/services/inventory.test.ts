@@ -6,6 +6,7 @@ import {
   getSellableQuantity,
   isPublicSellableQuantityLowStock,
   isInventoryLowStock,
+  resolveItemFulfillment,
   simulateInventoryReservations,
 } from "./inventory";
 
@@ -39,6 +40,66 @@ describe("inventory service", () => {
         requested: 4,
       }),
     ).toBe(false);
+  });
+
+  it("resolves full reservation with no backorder when stock covers demand (OMS-002)", () => {
+    expect(
+      resolveItemFulfillment({
+        quantity: 6,
+        reserved: 2,
+        safetyStock: 1,
+        requested: 3,
+        backorderEnabled: false,
+      }),
+    ).toEqual({ reserveNow: 3, backorder: 0 });
+
+    // backorderEnabled doesn't matter when nothing is actually short.
+    expect(
+      resolveItemFulfillment({
+        quantity: 6,
+        reserved: 2,
+        safetyStock: 1,
+        requested: 3,
+        backorderEnabled: true,
+      }),
+    ).toEqual({ reserveNow: 3, backorder: 0 });
+  });
+
+  it("splits reserve-now/backorder when demand exceeds sellable stock and backorder is enabled", () => {
+    // sellable = 6-2-1 = 3, requested 5 -> reserve 3 now, backorder 2.
+    expect(
+      resolveItemFulfillment({
+        quantity: 6,
+        reserved: 2,
+        safetyStock: 1,
+        requested: 5,
+        backorderEnabled: true,
+      }),
+    ).toEqual({ reserveNow: 3, backorder: 2 });
+  });
+
+  it("returns null (reject) when demand exceeds sellable stock and backorder isn't enabled", () => {
+    expect(
+      resolveItemFulfillment({
+        quantity: 6,
+        reserved: 2,
+        safetyStock: 1,
+        requested: 5,
+        backorderEnabled: false,
+      }),
+    ).toBeNull();
+  });
+
+  it("backorders the full requested quantity when nothing is sellable at all", () => {
+    expect(
+      resolveItemFulfillment({
+        quantity: 2,
+        reserved: 2,
+        safetyStock: 0,
+        requested: 4,
+        backorderEnabled: true,
+      }),
+    ).toEqual({ reserveNow: 0, backorder: 4 });
   });
 
   it("documents the low-stock threshold used by admin inventory views", () => {

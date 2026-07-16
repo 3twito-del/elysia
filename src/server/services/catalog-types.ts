@@ -46,6 +46,8 @@ export type CatalogProduct = {
   shortDescription: string;
   description: string;
   availabilityMode: PublicProductAvailabilityMode;
+  /// OMS-002: admin opt-in for managed backorder when out of stock.
+  backorderEnabled?: boolean;
   commerceHighlights: string[];
   deliveryPromise?: string;
   returnPolicy?: string;

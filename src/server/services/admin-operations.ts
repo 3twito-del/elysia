@@ -499,6 +499,7 @@ export async function listAdminCatalog(input: AdminCatalogListInput) {
       })),
       status: product.status,
       availabilityMode: product.availabilityMode,
+      backorderEnabled: product.backorderEnabled,
       commerceHighlights: product.commerceHighlights,
       deliveryPromise: product.deliveryPromise,
       returnPolicy: product.returnPolicy,
@@ -669,6 +670,32 @@ export async function listAdminInventory(input: AdminInventoryListInput) {
       totalItems,
     }),
   };
+}
+
+/** OMS-002: open (unfulfilled) backorders, oldest first, for the admin queue. */
+export async function listOpenBackorders() {
+  const backorders = await db.backorder.findMany({
+    where: { status: "OPEN" },
+    orderBy: { createdAt: "asc" },
+    take: 100,
+    include: {
+      branch: true,
+      variant: { include: { product: true } },
+      order: { select: { orderNumber: true, status: true } },
+    },
+  });
+
+  return backorders.map((backorder) => ({
+    id: backorder.id,
+    branchName: backorder.branch.name,
+    productName: backorder.variant.product.name,
+    variantName: backorder.variant.name,
+    variantSku: backorder.variant.sku,
+    orderNumber: backorder.order.orderNumber,
+    orderStatus: backorder.order.status,
+    quantity: backorder.quantity,
+    createdAt: backorder.createdAt,
+  }));
 }
 
 export async function listAdminCustomers(input: AdminCustomerListInput) {

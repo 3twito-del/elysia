@@ -38,6 +38,36 @@ export function canReserveStock(input: {
   return getSellableQuantity(input) >= input.requested;
 }
 
+export type ItemFulfillmentPlan = {
+  reserveNow: number;
+  backorder: number;
+};
+
+/**
+ * OMS-002 (managed backorder): resolves how much of a requested quantity
+ * can be reserved from real sellable stock right now vs. how much would
+ * have to go on backorder. Returns `null` when the shortfall can't be
+ * covered at all -- the product isn't `backorderEnabled` -- so the caller
+ * must reject the request, preserving the original all-or-nothing
+ * behavior exactly for every product that hasn't opted in.
+ */
+export function resolveItemFulfillment(input: {
+  quantity: number;
+  reserved: number;
+  safetyStock: number;
+  requested: number;
+  backorderEnabled: boolean;
+}): ItemFulfillmentPlan | null {
+  const sellable = getSellableQuantity(input);
+  const reserveNow = Math.min(sellable, input.requested);
+  const shortfall = input.requested - reserveNow;
+
+  if (shortfall <= 0) return { reserveNow, backorder: 0 };
+  if (!input.backorderEnabled) return null;
+
+  return { reserveNow, backorder: shortfall };
+}
+
 export function simulateInventoryReservations(input: {
   quantity: number;
   reserved: number;

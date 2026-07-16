@@ -104,6 +104,7 @@ Sections: 64
 - [k-04-per-class-alert-email-routing](#evidence-k-04-per-class-alert-email-routing)
 - [crm-sal-001-lead-opportunity-edit-mutations](#evidence-crm-sal-001-lead-opportunity-edit-mutations)
 - [oms-006-partial-line-level-rma](#evidence-oms-006-partial-line-level-rma)
+- [oms-002-managed-backorder](#evidence-oms-002-managed-backorder)
 
 ---
 
@@ -8649,3 +8650,197 @@ shape as the K-02/K-14 "verify a live caller before treating a gap as
 active" lesson, now a further instance of it — not fixed here since
 deleting dead code was outside this item's scope, but worth a future
 cleanup pass.
+
+---
+
+<a id="evidence-oms-002-managed-backorder"></a>
+
+## Evidence: oms-002-managed-backorder
+
+# OMS-002 — Managed Backorder
+
+Date: 2026-07-16.
+
+Scope: `docs/ERP_CRM_MASTER_BLUEPRINT.md` §4.C listed OMS-002 as `[M] 🟡` —
+network ATP + demand allocation (`src/server/services/availability.ts`)
+already built; remaining: managed backorder. Investigated before building:
+checkout (`assertCartReservationAvailable`, since removed) hard-rejected
+*any* cart whose requested quantity exceeded real sellable stock — there
+was no backorder concept anywhere in the schema or checkout flow, and
+`getPublicProductCommerceStatus` (`src/lib/commerce-labels.ts`) returned
+`canAddToCart: false` unconditionally for an out-of-stock READY_TO_ORDER
+item. Flagged the scope to the user before starting — this touches the
+checkout reservation path (the same CAS logic K-05 hardened against real
+oversell races) and customer-facing PDP purchase behavior, a bigger and
+riskier lift than the other three items this session picked in its "do all
+four" round. User confirmed: full scope, not a reduced version.
+
+## Design decision: opt-in per product, not automatic for every stockout
+
+A blanket "every out-of-stock item becomes backorderable" would fabricate
+a restock promise for products that may never come back — the exact kind
+of invented fact this codebase's own conventions forbid elsewhere (F-05,
+G-07). `Product.backorderEnabled` is an explicit admin decision instead
+(a checkbox in `/admin/catalog`'s commerce form), and the customer-facing
+copy makes no date commitment ("בהזמנה מראש (בהמתנה למלאי)" — no ETA, matching
+the same restraint as every other honest-copy decision in this codebase).
+
+## Schema (additive-only migration `20260716020000_backorder`)
+
+- `Product.backorderEnabled Boolean @default(false)`.
+- `OrderItem.backorderedQuantity Int @default(0)` — how much of this line
+  was backordered at order time vs. reserved from real stock immediately.
+- New `Backorder` (`branchId`, `variantId`, `orderId`, `orderItemId`,
+  `quantity`, `status` OPEN/FULFILLED/CANCELLED, `fulfilledAt`) — scoped to
+  the order's own branch, where the restock is expected to land and where
+  fulfillment happens from.
+
+Verified the hand-written migration SQL byte-for-byte against the live
+local DB's `information_schema`/`pg_constraint`/`pg_indexes` after a
+`db push`, same discipline as OMS-006 (column types/precision/defaults,
+FK delete behavior, index names all matched exactly).
+
+## Core logic: `resolveItemFulfillment` (`src/server/services/inventory.ts`)
+
+A new pure function: given on-hand/reserved/safetyStock/requested/
+backorderEnabled, returns `{ reserveNow, backorder }` or `null` when the
+shortfall can't be covered at all (not backorder-enabled) — the caller
+rejects in that case, preserving the *exact* previous all-or-nothing
+behavior for every product that hasn't opted in. Unit tested directly (5
+cases).
+
+## Checkout (`cart-checkout.ts`) — the highest-stakes part
+
+- `resolveOnlineFulfillmentBranch`'s per-branch viability check now asks
+  "can every item either be fully reserved or (if enabled) backordered?"
+  instead of "can every item be fully reserved?" — an absent
+  `InventoryItem` row (never stocked at this branch) still rules a branch
+  out entirely, backorder or not.
+- The per-item reservation loop now uses `plan.reserveNow` (not the full
+  requested quantity) for both the CAS threshold and the increment —
+  a fully-backordered line (`reserveNow=0`) correctly touches no inventory
+  at all. `plan.backorder > 0` creates a real `Backorder` row linked to the
+  newly-created `OrderItem` (matched by `variantId`, safe because
+  `CartItem` has `@@unique([cartId, variantId, branchId])`).
+  `assertCartReservationAvailable` (the old all-or-nothing assert) was
+  removed entirely — superseded by `resolveItemFulfillment`, not left
+  behind as dead code.
+- The customer-notification outbox/email path is unchanged — the customer
+  paid the full order total either way; only fulfillment timing differs
+  for the backordered lines.
+
+**End-to-end verified against the real local DB** (throwaway script, this
+repo's established pattern for checkout/GL code with no test-DB wiring):
+a two-item cart (only 2 of 2 sellable) requesting 5 units of a
+backorder-enabled variant reserved exactly 2 and backordered exactly 3,
+with a correctly-linked `Backorder` row; the identical shortage against a
+**non**-backorder-enabled variant was rejected with the *exact* same
+pre-existing error message ("הסל אינו פנוי במלואו לשמירה") — confirming zero
+behavior change for the entire existing catalog that hasn't opted in.
+
+## Customer-facing PDP (`commerce-labels.ts`, `product-purchase-panel.tsx`, `page.tsx`)
+
+`getPublicProductCommerceStatus` gained an optional `backorderEnabled`
+param (defaults `false`, so every existing call site is unchanged unless
+it opts in): out-of-stock + enabled now returns `canAddToCart: true` with
+an honest, date-free label instead of the hard block. Threaded through
+`CatalogProduct.backorderEnabled` (added as **optional** on the type,
+since it flows through dozens of existing test fixtures across the
+codebase that would otherwise all need updating for an unrelated field).
+
+**Two real bugs found and fixed while verifying live in a real browser**
+(not just unit tests — this is exactly the kind of gap unit tests can't
+catch, matching this session's established discipline of live-checking
+customer-facing changes):
+1. The actual "add to cart" button text (both the sticky mobile bar and
+   the main panel) was **hardcoded** to `"הוספה לסל"` whenever the item was
+   addable, never reading `commerceStatus.ctaLabel` — so a backorder item
+   would have silently shown "add to cart" with no indication it was a
+   pre-order. Fixed to show the honest pre-order label specifically when
+   `serviceReason === "backorder"`, leaving every other case (including
+   the separate-checkout/dropship path) byte-identical to before.
+2. The size-selector buttons on the PDP were **disabled** for any
+   zero-stock READY_TO_ORDER variant regardless of backorder eligibility —
+   a customer couldn't even select the size to see the pre-order option.
+   Fixed by adding `&& !backorderEnabled` to that disabled condition.
+
+**Verified live**: created a real disposable backorder-enabled product
+against a plain `pnpm dev` server (real DB, no catalog fixtures),
+screenshotted the actual rendered PDP. Before the two fixes: badge
+correctly said "בהזמנה מראש" but the CTA button still said "הוספה לסל" and
+the price-adjacent stock badge said "אזל מהמלאי" (from the *product page's*
+own separate `getPublicProductCommerceStatus` call, which also needed
+`backorderEnabled` threaded through — a third call site, `page.tsx`, found
+during this same live check). After: badge, price-panel availability row,
+and CTA button (`"הזמנה מראש (בהמתנה למלאי)"`) all agree.
+
+**Found, not fixed (pre-existing, out of scope)**: `product-structured-data.ts`
+already mapped `inStock: false → schema.org/PreOrder` for *every*
+out-of-stock product, backorder-enabled or not — arguably wrong for a
+genuinely unavailable item (should be `OutOfStock`), but this predates
+this change and fixing it needs a third structured-data state, not a
+backorder-specific fix. My change only makes this *more* accurate for the
+backorder case (canAddToCart now correctly reflects it); the pre-existing
+inaccuracy for non-backorder stockouts is unchanged.
+
+## Admin (`/admin/catalog` toggle, `/admin/inventory` queue)
+
+- A plain checkbox in the existing product commerce form
+  (`updateAdminProductCommerceInputSchema`/`updateAdminProductCommerce`) —
+  same audited-mutation path every other commerce field already uses.
+- New `fulfillBackorder` (`admin-commerce.ts`): re-validates real sellable
+  stock **server-side** before converting a backorder into a real
+  reservation (never trusts the admin's click alone) — requires the
+  order to already be paid-or-further (reusing `canRefundOrderStatus`'s
+  status set, which represents exactly "a genuine financial commitment"),
+  since fulfilling stock against an unpaid order makes no business sense.
+  Uses the same CAS reservation pattern as checkout. A far-future
+  `expiresAt` is used since this isn't a "waiting for payment" hold — the
+  existing reservation-expiry job (K-05) only ever acts on orders still
+  `PENDING_PAYMENT`, which the paid-order guard here already excludes.
+- New `/admin/inventory` "הזמנות מראש פתוחות" card lists every OPEN
+  backorder with a fulfill button.
+
+**End-to-end verified against the real local DB** (same throwaway-script
+pattern): a backorder against a real 0-stock variant correctly rejected
+fulfillment; after setting real stock, fulfillment succeeded — `Backorder`
+→ `FULFILLED`, `OrderItem.backorderedQuantity` → 0, `InventoryItem.reserved`
+incremented, a real `InventoryReservation` created, and a real `AuditLog`
+row written. A second fulfillment attempt on the same (now-fulfilled)
+backorder was correctly rejected.
+
+## A third dead-code-next-to-live-code instance found (not fixed)
+
+While wiring the admin catalog form's new checkbox, discovered
+`admin-commerce-read.ts`'s `listAdminCatalog()` (no-arg) is dead —
+`admin.ts`'s real `catalog` tRPC procedure imports a *different*
+`listAdminCatalog(input)` from `admin-operations.ts`. Same shape as this
+session's `getAdminOrderDetail` duplicate (OMS-006) and the K-02/K-14
+"verify a live caller" lesson — the third instance of this exact pattern
+in one session. Updated only the live one; not fixed, out of scope.
+
+## Explicitly out of scope, not rushed
+
+- **Automatic backorder allocation on PO receipt** — the admin fulfill
+  button is a manual, explicit action (admin confirms real stock arrived,
+  server re-verifies). Wiring `fulfillBackorder` into the purchase-order
+  receiving flow automatically would be a real, separate feature — not
+  attempted here to avoid rushing a second high-stakes integration in the
+  same pass.
+- **A full browser-driven local-checkout completion e2e test** (name/
+  email/phone/shipping fields filled, submit clicked, real order created)
+  does not exist anywhere in this codebase yet — confirmed via L-04's own
+  evidence, which already names this exact gap
+  ("authenticated-customer *local order placement*... blocked on
+  CardCom/Shopify credentials, EXTERNAL"). Building the first-ever
+  instance of that as a side effect of verifying OMS-002 would be solving
+  a separate, larger, pre-existing gap under this item's name. Relied
+  instead on the throwaway-script verification (calling the real service
+  function directly, same rigor already established in this codebase for
+  GL/checkout code with no test-DB wiring) for the checkout logic, and a
+  live-browser check (screenshotted) for the PDP rendering.
+- **Cancelling a backorder** (vs. fulfilling it) — would need a decision
+  about whether cancellation auto-refunds the customer's already-paid
+  amount (crossing into OMS-006 territory) or just leaves it pending
+  admin follow-up. Not a simple engineering call; named here rather than
+  guessed at.

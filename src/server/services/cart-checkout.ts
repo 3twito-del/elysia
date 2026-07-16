@@ -16,10 +16,12 @@ import {
   createOrderShippingAddress,
   getDeliveryShippingTotal,
   getReservationExpiresAt,
-  hasReservableStock,
   shippingAddressSchema,
 } from "~/server/services/order-workflow";
-import { canReserveStock } from "~/server/services/inventory";
+import {
+  resolveItemFulfillment,
+  type ItemFulfillmentPlan,
+} from "~/server/services/inventory";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
@@ -86,20 +88,6 @@ export function getCartCheckoutReservationExpiresAt(now = new Date()) {
 
 export function getCartCheckoutShippingTotal(method: FulfillmentMethod) {
   return getDeliveryShippingTotal(method);
-}
-
-export function assertCartReservationAvailable(input: {
-  quantity: number;
-  reserved: number;
-  safetyStock: number;
-  requested: number;
-}) {
-  if (!canReserveStock(input)) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "הסל אינו פנוי במלואו לשמירה.",
-    });
-  }
 }
 
 export function assertCartCheckoutPricesAvailable(
@@ -214,7 +202,11 @@ async function createCartCheckoutOrderInTransaction(
   assertCartCheckoutPricesAvailable(ownItems);
 
   const branch = await resolveOnlineFulfillmentBranch(tx, input, {
-    items: ownItems,
+    items: ownItems.map((item) => ({
+      quantity: item.quantity,
+      variantId: item.variantId,
+      backorderEnabled: item.variant.product.backorderEnabled,
+    })),
   });
 
   const coupon = await resolveCoupon(tx, input.couponCode ?? cart.couponCode);
@@ -255,6 +247,11 @@ async function createCartCheckoutOrderInTransaction(
     shippingAddress: input.shippingAddress,
   });
 
+  // OMS-002: resolved once per variant here (not re-derived after order
+  // creation), so the exact same snapshot drives both the OrderItem's
+  // backorderedQuantity and the reservation/backorder split below.
+  const fulfillmentPlans = new Map<string, ItemFulfillmentPlan>();
+
   for (const item of ownItems) {
     const inventoryItem = await tx.inventoryItem.findUnique({
       where: {
@@ -272,15 +269,26 @@ async function createCartCheckoutOrderInTransaction(
       });
     }
 
-    assertCartReservationAvailable({
+    const plan = resolveItemFulfillment({
       quantity: inventoryItem.quantity,
       reserved: inventoryItem.reserved,
       safetyStock: inventoryItem.safetyStock,
       requested: item.quantity,
+      backorderEnabled: item.variant.product.backorderEnabled,
     });
+
+    if (!plan) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "הסל אינו פנוי במלואו לשמירה.",
+      });
+    }
+
+    fulfillmentPlans.set(item.variantId, plan);
   }
 
   const order = await tx.order.create({
+    include: { items: true },
     data: {
       orderNumber,
       cartId: cart.id,
@@ -305,60 +313,85 @@ async function createCartCheckoutOrderInTransaction(
           sku: item.sku,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
+          backorderedQuantity:
+            fulfillmentPlans.get(item.variantId)?.backorder ?? 0,
         })),
       },
     },
   });
+  const orderItemIdByVariant = new Map(
+    order.items.map((orderItem) => [orderItem.variantId, orderItem.id]),
+  );
 
   for (const item of ownItems) {
-    const reserved = await tx.inventoryItem.updateMany({
-      where: {
-        branchId: branch.id,
-        variantId: item.variantId,
-        reserved: {
-          lte: item.variant.inventoryItems.reduce(
-            (minimum, inventoryItem) =>
-              inventoryItem.branchId === branch.id
-                ? inventoryItem.quantity -
-                  inventoryItem.safetyStock -
-                  item.quantity
-                : minimum,
-            0,
-          ),
-        },
-      },
-      data: {
-        reserved: { increment: item.quantity },
-      },
-    });
+    const plan = fulfillmentPlans.get(item.variantId)!;
 
-    if (reserved.count !== 1) {
-      throw new TRPCError({
-        code: "CONFLICT",
-        message: "מצב הסל השתנה בזמן יצירת ההזמנה. נסו שוב.",
+    // OMS-002: only reserve real stock for the part that isn't backordered
+    // -- the CAS threshold and increment both use `reserveNow`, not the
+    // full requested quantity, so a fully-backordered line (reserveNow=0)
+    // correctly touches no inventory at all.
+    if (plan.reserveNow > 0) {
+      const reserved = await tx.inventoryItem.updateMany({
+        where: {
+          branchId: branch.id,
+          variantId: item.variantId,
+          reserved: {
+            lte: item.variant.inventoryItems.reduce(
+              (minimum, inventoryItem) =>
+                inventoryItem.branchId === branch.id
+                  ? inventoryItem.quantity -
+                    inventoryItem.safetyStock -
+                    plan.reserveNow
+                  : minimum,
+              0,
+            ),
+          },
+        },
+        data: {
+          reserved: { increment: plan.reserveNow },
+        },
+      });
+
+      if (reserved.count !== 1) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "מצב הסל השתנה בזמן יצירת ההזמנה. נסו שוב.",
+        });
+      }
+
+      await tx.inventoryReservation.create({
+        data: {
+          branchId: branch.id,
+          variantId: item.variantId,
+          quantity: plan.reserveNow,
+          cartId: cart.id,
+          orderId: order.id,
+          expiresAt: reservationExpiresAt,
+        },
+      });
+
+      await tx.inventoryLedger.create({
+        data: {
+          branchId: branch.id,
+          variantId: item.variantId,
+          delta: -plan.reserveNow,
+          reason: "cart_checkout_reserved",
+          reference: order.orderNumber,
+        },
       });
     }
 
-    await tx.inventoryReservation.create({
-      data: {
-        branchId: branch.id,
-        variantId: item.variantId,
-        quantity: item.quantity,
-        cartId: cart.id,
-        orderId: order.id,
-        expiresAt: reservationExpiresAt,
-      },
-    });
-
-    await tx.inventoryLedger.create({
-      data: {
-        branchId: branch.id,
-        variantId: item.variantId,
-        delta: -item.quantity,
-        reason: "cart_checkout_reserved",
-        reference: order.orderNumber,
-      },
-    });
+    if (plan.backorder > 0) {
+      await tx.backorder.create({
+        data: {
+          branchId: branch.id,
+          variantId: item.variantId,
+          orderId: order.id,
+          orderItemId: orderItemIdByVariant.get(item.variantId)!,
+          quantity: plan.backorder,
+        },
+      });
+    }
   }
 
   await tx.payment.create({
@@ -511,7 +544,13 @@ async function createCartCheckoutOrderInTransaction(
 async function resolveOnlineFulfillmentBranch(
   tx: TransactionClient,
   input: Pick<CartCheckoutInput, "branchSlug">,
-  cart: { items: Array<{ quantity: number; variantId: string }> },
+  cart: {
+    items: Array<{
+      quantity: number;
+      variantId: string;
+      backorderEnabled: boolean;
+    }>;
+  },
 ) {
   if (input.branchSlug) {
     const selectedBranch = await tx.branch.findUnique({
@@ -542,17 +581,25 @@ async function resolveOnlineFulfillmentBranch(
     const inventoryByVariant = new Map(
       inventoryItems.map((item) => [item.variantId, item]),
     );
+    // OMS-002: a branch is viable if every item can either be fully
+    // reserved from real stock, or (when the product opted in) the
+    // shortfall can go on backorder. An absent InventoryItem row (never
+    // stocked at this branch at all) still rules the branch out entirely,
+    // backorder or not -- there's nothing to check a safety threshold
+    // against.
     const canFulfillCart = cart.items.every((item) => {
       const inventoryItem = inventoryByVariant.get(item.variantId);
+      if (!inventoryItem) return false;
 
-      return inventoryItem
-        ? hasReservableStock({
-            quantity: inventoryItem.quantity,
-            reserved: inventoryItem.reserved,
-            safetyStock: inventoryItem.safetyStock,
-            requested: item.quantity,
-          })
-        : false;
+      return (
+        resolveItemFulfillment({
+          quantity: inventoryItem.quantity,
+          reserved: inventoryItem.reserved,
+          safetyStock: inventoryItem.safetyStock,
+          requested: item.quantity,
+          backorderEnabled: item.backorderEnabled,
+        }) !== null
+      );
     });
 
     if (canFulfillCart) return branch;

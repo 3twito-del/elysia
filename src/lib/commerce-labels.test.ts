@@ -103,6 +103,49 @@ describe("commerce labels", () => {
     });
   });
 
+  it("allows backorder purchase only when the product opted in (OMS-002)", () => {
+    // Out of stock, backorder NOT enabled -> the original hard block.
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "READY_TO_ORDER",
+        availableQuantity: 0,
+      }),
+    ).toMatchObject({
+      canAddToCart: false,
+      label: "אזל מהמלאי",
+      serviceReason: "availability",
+    });
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "READY_TO_ORDER",
+        availableQuantity: 0,
+        backorderEnabled: false,
+      }),
+    ).toMatchObject({ canAddToCart: false, serviceReason: "availability" });
+
+    // Out of stock, backorder enabled -> purchasable, honest no-date label.
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "READY_TO_ORDER",
+        availableQuantity: 0,
+        backorderEnabled: true,
+      }),
+    ).toMatchObject({
+      canAddToCart: true,
+      label: "בהזמנה מראש",
+      serviceReason: "backorder",
+    });
+
+    // In stock -> backorderEnabled is irrelevant, still the plain "available" status.
+    expect(
+      getPublicProductCommerceStatus({
+        availabilityMode: "READY_TO_ORDER",
+        availableQuantity: 3,
+        backorderEnabled: true,
+      }),
+    ).toMatchObject({ canAddToCart: true, label: "זמין", serviceReason: "ready" });
+  });
+
   it("keeps order source labels wired through customer, admin, checkout, and product surfaces", () => {
     const accountPage = read("src/app/account/page.tsx");
     const accountOrderPage = read("src/app/account/orders/[id]/page.tsx");

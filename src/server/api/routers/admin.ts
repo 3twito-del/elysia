@@ -26,6 +26,8 @@ import {
   createAdminCouponInputSchema,
   createAdminProduct,
   createAdminProductInputSchema,
+  fulfillBackorder,
+  fulfillBackorderInputSchema,
   refundAdminOrder,
   refundAdminOrderInputSchema,
   updateAdminAppointmentStatus,
@@ -62,6 +64,7 @@ import {
   listAdminJobRuns,
   listAdminOrders,
   listAdminOutboxEvents,
+  listOpenBackorders,
 } from "~/server/services/admin-operations";
 import {
   getAdminServiceConfiguration,
@@ -215,6 +218,16 @@ export const adminRouter = createTRPCRouter({
   inventory: adminProcedure("INVENTORY_READ")
     .input(adminInventoryListInputSchema)
     .query(({ input }) => listAdminInventory(input)),
+
+  backorders: adminProcedure("INVENTORY_READ").query(() =>
+    listOpenBackorders(),
+  ),
+
+  fulfillBackorder: adminProcedure("INVENTORY_WRITE")
+    .input(fulfillBackorderInputSchema)
+    .mutation(({ ctx, input }) =>
+      fulfillBackorder({ data: input, adminUserId: ctx.admin.id }),
+    ),
 
   audit: adminProcedure("SYSTEM_CONFIG")
     .input(adminAuditListInputSchema)

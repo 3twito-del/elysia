@@ -72,6 +72,7 @@ type ProductPurchasePanelProps = {
   categorySlug: string;
   requiresSeparateCheckout: boolean;
   availabilityMode: PublicProductAvailabilityMode;
+  backorderEnabled?: boolean;
   careInstructions?: string;
   deliveryPromise?: string;
   price: number;
@@ -86,6 +87,7 @@ export function ProductPurchasePanel({
   productName,
   productReference,
   categorySlug,
+  backorderEnabled,
   careInstructions,
   requiresSeparateCheckout,
   availabilityMode,
@@ -119,19 +121,23 @@ export function ProductPurchasePanel({
   const commerceStatus = getPublicProductCommerceStatus({
     availableQuantity: selectedVariantQuantity,
     availabilityMode,
+    backorderEnabled,
   });
   const selectedVariantAvailable = isVariantSelectableForCart({
     availabilityMode,
+    backorderEnabled,
     requiresSeparateCheckout,
     variant: selectedVariant,
   });
   const selectedVariantStatusLabel = getVariantStatusLabel({
     availabilityMode,
+    backorderEnabled,
     requiresSeparateCheckout,
     variant: selectedVariant,
   });
   const purchaseConfidenceItems = getPurchaseConfidenceItems({
     availabilityMode,
+    backorderEnabled,
     careInstructions,
     deliveryPromise,
     requiresSeparateCheckout,
@@ -307,9 +313,9 @@ export function ProductPurchasePanel({
           >
             {addItem.isPending
               ? "מוסיפים לסל"
-              : selectedVariantAvailable
-                ? "הוספה לסל"
-                : "אזל מהמלאי"}
+              : commerceStatus.serviceReason === "backorder"
+                ? commerceStatus.ctaLabel
+                : "הוספה לסל"}
             <PackageCheck aria-hidden="true" className="size-4" />
           </Button>
         ) : (
@@ -365,13 +371,15 @@ export function ProductPurchasePanel({
                     variant,
                     availabilityMode,
                     requiresSeparateCheckout,
+                    backorderEnabled,
                   )}
                   aria-pressed={isSelected}
                   className="min-h-11 min-w-12 rounded-full px-4"
                   disabled={
                     !usesSeparateCheckout &&
                     availabilityMode === "READY_TO_ORDER" &&
-                    variant.availableQuantity <= 0
+                    variant.availableQuantity <= 0 &&
+                    !backorderEnabled
                   }
                   key={variant.sku}
                   onClick={() => setSelectedSku(variant.sku)}
@@ -482,9 +490,9 @@ export function ProductPurchasePanel({
             >
               {addItem.isPending
                 ? "מוסיפים לסל"
-                : selectedVariantAvailable
-                  ? "הוספה לסל"
-                  : "אזל מהמלאי"}
+                : commerceStatus.serviceReason === "backorder"
+                  ? commerceStatus.ctaLabel
+                  : "הוספה לסל"}
               <PackageCheck aria-hidden="true" className="size-4" />
             </Button>
           ) : (

@@ -105,6 +105,7 @@ export function getVariantButtonLabel(
   variant: CatalogProductVariant,
   availabilityMode: PublicProductAvailabilityMode,
   requiresSeparateCheckout = false,
+  backorderEnabled = false,
 ) {
   if (
     isSeparateCheckoutVariantAvailable({ requiresSeparateCheckout, variant })
@@ -115,6 +116,7 @@ export function getVariantButtonLabel(
   const commerceStatus = getPublicProductCommerceStatus({
     availabilityMode,
     availableQuantity: variant.availableQuantity,
+    backorderEnabled,
   });
   const availability =
     availabilityMode === "READY_TO_ORDER"
@@ -126,6 +128,7 @@ export function getVariantButtonLabel(
 
 export function isVariantSelectableForCart(input: {
   availabilityMode: PublicProductAvailabilityMode;
+  backorderEnabled?: boolean;
   requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
 }) {
@@ -136,11 +139,13 @@ export function isVariantSelectableForCart(input: {
   return getPublicProductCommerceStatus({
     availabilityMode: input.availabilityMode,
     availableQuantity: input.variant.availableQuantity,
+    backorderEnabled: input.backorderEnabled,
   }).canAddToCart;
 }
 
 export function getVariantStatusLabel(input: {
   availabilityMode: PublicProductAvailabilityMode;
+  backorderEnabled?: boolean;
   requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
 }) {
@@ -151,11 +156,13 @@ export function getVariantStatusLabel(input: {
   return getPublicProductCommerceStatus({
     availabilityMode: input.availabilityMode,
     availableQuantity: input.variant.availableQuantity,
+    backorderEnabled: input.backorderEnabled,
   }).label;
 }
 
 export function getPurchaseConfidenceItems(input: {
   availabilityMode: PublicProductAvailabilityMode;
+  backorderEnabled?: boolean;
   careInstructions?: string;
   deliveryPromise?: string;
   requiresSeparateCheckout: boolean;
@@ -282,6 +289,7 @@ export function getAddToCartFailureMessage(error: { message: string }) {
 
 function getCheckoutConfidenceDescription(input: {
   availabilityMode: PublicProductAvailabilityMode;
+  backorderEnabled?: boolean;
   requiresSeparateCheckout: boolean;
   variant: CatalogProductVariant | undefined;
   variantStatusLabel: string;
@@ -297,6 +305,7 @@ function getCheckoutConfidenceDescription(input: {
   if (
     isVariantSelectableForCart({
       availabilityMode: input.availabilityMode,
+      backorderEnabled: input.backorderEnabled,
       requiresSeparateCheckout: input.requiresSeparateCheckout,
       variant: input.variant,
     })

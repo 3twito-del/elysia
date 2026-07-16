@@ -117,6 +117,7 @@ export default async function ProductPage({
   const commerceStatus = getPublicProductCommerceStatus({
     availableQuantity: onlineStockQuantity,
     availabilityMode: product.availabilityMode,
+    backorderEnabled: product.backorderEnabled,
   });
   const uniqueImages = getProductBoutiqueGalleryImages(product);
   const productMediaCaptionParts = [
@@ -308,6 +309,7 @@ export default async function ProductPage({
               <TRPCReactProvider>
                 <ProductPurchasePanel
                   availabilityMode={product.availabilityMode}
+                  backorderEnabled={product.backorderEnabled}
                   categorySlug={product.categorySlug}
                   careInstructions={product.careInstructions}
                   deliveryPromise={product.deliveryPromise}

@@ -177,6 +177,7 @@ export const updateAdminProductCommerceInputSchema = z
     productId: requiredId("חסר מוצר לעדכון."),
     variantId: requiredId("חסרה וריאציה לעדכון.").optional(),
     availabilityMode: z.enum(productAvailabilityModes),
+    backorderEnabled: z.boolean().default(false),
     commerceHighlights,
     deliveryPromise: optionalTrimmedString(160, "הבטחת המשלוח ארוכה מדי."),
     returnPolicy: optionalTrimmedString(220, "מדיניות ההחזרה ארוכה מדי."),
@@ -285,6 +286,10 @@ export const upsertAdminShipmentInputSchema = z.object({
   provider: optionalTrimmedString(80, "שם ספק המשלוח ארוך מדי."),
   tracking: optionalTrimmedString(120, "מספר המעקב ארוך מדי."),
   status: requiredText("יש לבחור סטטוס משלוח.", 80).default("SHIPPED"),
+});
+
+export const fulfillBackorderInputSchema = z.object({
+  backorderId: requiredId("חסרה הזמנה מראש למילוי."),
 });
 
 // OMS-006: an explicit line refunds only that item/quantity; omitting `lines`

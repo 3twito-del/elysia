@@ -761,6 +761,7 @@ function mapCatalogProduct(record: CatalogProductRecord): CatalogProduct {
     }),
     description: displayDescription,
     availabilityMode: record.availabilityMode,
+    backorderEnabled: record.backorderEnabled,
     commerceHighlights: policiesVerified
       ? getDisplayCommerceHighlights(record)
       : [],
