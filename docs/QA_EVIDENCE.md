@@ -9218,3 +9218,87 @@ e2e-fixture data — no synthetic rows needed since real orders already
 existed): screenshotted the new "רווחיות פר-מוצר ופר-לקוח" card on
 `/admin/finance` showing real per-product and per-customer rows with
 correct units/revenue/margin%, side-by-side responsive layout, RTL intact.
+
+## Evidence: ent-003-consolidated-pl-bs-cta
+
+# ENT-003 — Separate Consolidated P&L / Balance Sheet + CTA
+
+Date: 2026-07-16.
+
+Scope: `consolidation.ts`'s own top-of-file comment already named the exact
+gap — a single closing FX rate applied to every account, when real
+consolidation uses the average rate for P&L and the closing rate for the
+balance sheet, with the difference booked as a Cumulative Translation
+Adjustment (CTA). Blueprint shorthand "CTA נפרד P&L/BS" reads as "a CTA,
+[from] separate [rates for] P&L [vs] BS" — a real accounting mechanism,
+not a UI button, confirmed against the file's own comment before scoping
+anything.
+
+## Schema (additive migration `20260716050000_legal_entity_average_fx_rate`)
+
+`LegalEntity.averageFxRateToBase Decimal?` — nullable; every entity
+without one explicitly set falls back to its existing `fxRateToBase`
+(closing rate) everywhere, so consolidation output is byte-identical to
+v1 until an admin opts a specific entity into a distinct average rate.
+
+## The math (`consolidation.ts`)
+
+- `rateForAccountType` — average rate for REVENUE/EXPENSE, closing rate
+  for ASSET/LIABILITY/EQUITY. `consolidateTrialBalances` now looks this up
+  per row instead of applying one `fxRate` uniformly.
+- Once an entity's two rates diverge, its own local trial balance's
+  Σdebit=Σcredit stops holding after translation (translating one side's
+  rows at a different rate than the other necessarily breaks the raw
+  debit/credit tie) — this is expected, not a bug, and the existing merged
+  trial-balance card on `/admin/entities` now carries a note explaining
+  it, so a "לא מאוזן" badge there isn't mistaken for a real problem.
+- `splitConsolidatedStatements` — the multi-entity analogue of
+  `financial-statements.ts`'s `buildFinancialStatements` (FIN-RPT-001),
+  same unclosed-period identity (Assets = Liabilities + Equity +
+  NetIncome), computing the CTA as the exact plug needed to keep that
+  identity balanced once P&L and BS use different rates: `CTA = Assets −
+  Liabilities − Equity − NetIncome`. When every entity's average rate
+  equals its closing rate, CTA is exactly 0 (verified by test) — the
+  identity was already balanced without one.
+
+## Admin UI (`/admin/entities`)
+
+- Entity create/update forms gained an optional "שער ממוצע" (average
+  rate) field alongside the existing closing-rate field.
+- Two new cards replace the single merged view for statement purposes:
+  a consolidated P&L (revenue/expense rows + totals) and a consolidated
+  Balance Sheet (asset/liability/equity rows, an explicit CTA line when
+  nonzero, and a "מאוזן"/"לא מאוזן" badge driven by the *statement*
+  identity rather than the raw trial-balance debit/credit check). The
+  original merged trial-balance card is kept as-is for GL reconciliation,
+  with a caveat note added.
+
+## Verification
+
+**Unit tests**: `rateForAccountType` — average for P&L, closing for BS.
+`consolidateTrialBalances` with diverging rates — P&L translated at
+average, BS at closing, raw trial balance correctly reports unbalanced.
+`splitConsolidatedStatements` — zero CTA when rates match (hand-verified
+against the identity); a hand-computed nonzero-CTA scenario (assets 400,
+equity 80, net income 70 → CTA 250) matching real double-entry math by
+hand before writing the assertion.
+
+**DB-integration verified** (throwaway script, deleted after use, via
+`tsx` against the real local DB): created a real `LegalEntity` with
+closingRate=4/averageRate=3.5 and posted one real `JournalEntry`
+(100 debit cash / 100 credit revenue) attributed to it. Confirmed
+`getConsolidatedReport` translated cash at 4× and revenue at 3.5×, and
+`balanceSheet.balanced` was `true` with the expected CTA. Cleanup
+surfaced a real, pre-existing (not introduced by this change) system
+invariant: hard-deleting a `LegalEntity` that has a POSTED journal entry
+fails — `ELYSIA_IMMUTABLE: JournalEntry may only transition POSTED ->
+REVERSED`, because even the `onDelete: SetNull` FK cascade counts as an
+update to a POSTED row under ADR 0004's trigger. Deactivating
+(`isActive: false`) instead — which is also how a real entity would be
+retired — worked cleanly and is what test cleanup used.
+
+**Live browser verified** (real local dev server, real DB): screenshotted
+the updated entities table (both rate fields editable per entity) and the
+new P&L/Balance Sheet cards rendering correctly (empty states, "מאוזן"
+badges, RTL) once the scratch entities from the DB-integration check were
+deactivated.

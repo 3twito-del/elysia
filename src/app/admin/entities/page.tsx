@@ -1,4 +1,11 @@
-import { Building2, Globe, Landmark, Scale, Workflow } from "lucide-react";
+import {
+  Building2,
+  Globe,
+  Landmark,
+  Scale,
+  TrendingUp,
+  Workflow,
+} from "lucide-react";
 
 import { AdminShell } from "../_components/admin-shell";
 import {
@@ -116,14 +123,23 @@ export default async function AdminEntitiesPage() {
               />
             </div>
             <Input name="name" placeholder="שם החברה" required />
-            <Input
-              defaultValue="1"
-              min="0"
-              name="fxRateToBase"
-              placeholder="שער לבסיס"
-              step="0.000001"
-              type="number"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                defaultValue="1"
+                min="0"
+                name="fxRateToBase"
+                placeholder="שער סגירה (מאזן)"
+                step="0.000001"
+                type="number"
+              />
+              <Input
+                min="0"
+                name="averageFxRateToBase"
+                placeholder="שער ממוצע (רו״ה, רשות)"
+                step="0.000001"
+                type="number"
+              />
+            </div>
             <label className="text-muted-foreground flex items-center gap-2 text-sm">
               <input name="isBase" type="checkbox" value="1" />
               ישות בסיס (מטבע דיווח)
@@ -172,10 +188,25 @@ export default async function AdminEntitiesPage() {
                       >
                         <input name="entityId" type="hidden" value={entity.id} />
                         <Input
-                          className="h-8 w-24"
+                          aria-label="שער סגירה"
+                          className="h-8 w-20"
                           defaultValue={String(entity.fxRateToBase)}
                           min="0"
                           name="fxRateToBase"
+                          step="0.000001"
+                          type="number"
+                        />
+                        <Input
+                          aria-label="שער ממוצע"
+                          className="h-8 w-20"
+                          defaultValue={
+                            entity.averageFxRateToBase != null
+                              ? String(entity.averageFxRateToBase)
+                              : ""
+                          }
+                          min="0"
+                          name="averageFxRateToBase"
+                          placeholder="ממוצע"
                           step="0.000001"
                           type="number"
                         />
@@ -416,7 +447,10 @@ export default async function AdminEntitiesPage() {
           <CardContent>
             <p className="text-muted-foreground mb-3 text-xs">
               {report.entities
-                .map((entity) => `${entity.entityCode} ×${entity.fxRate}`)
+                .map(
+                  (entity) =>
+                    `${entity.entityCode} ×${entity.closingRate} (סגירה) / ×${entity.averageRate} (ממוצע)`,
+                )
                 .join(" · ")}
             </p>
             <Table>
@@ -456,6 +490,166 @@ export default async function AdminEntitiesPage() {
                     <TableCell />
                   </TableRow>
                 ) : null}
+              </TableBody>
+            </Table>
+            <p className="text-muted-foreground mt-3 text-xs">
+              מאזן הבוחן הגולמי עשוי להיראות &quot;לא מאוזן&quot; ברגע ששער
+              ממוצע שונה משער סגירה — זה צפוי; ראו את התאמת התרגום (CTA)
+              בדוח המאזן המאוחד למטה.
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {report ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp aria-hidden="true" className="size-5" />
+              רווח והפסד מאוחד (P&amp;L)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <p className="text-muted-foreground text-sm">
+              חשבונות רווח והפסד מתורגמים לפי השער הממוצע של כל ישות (ולא שער
+              הסגירה) — פרקטיקת איחוד רב-מטבעי אמיתית (ENT-003).
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>חשבון</TableHead>
+                  <TableHead>יתרה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {report.statements.incomeStatement.rows.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={2}
+                    description="חשבונות רווח והפסד יופיעו כאן."
+                    icon={TrendingUp}
+                    title="אין תנועות"
+                  />
+                ) : (
+                  report.statements.incomeStatement.rows.map((row) => (
+                    <TableRow key={row.accountCode}>
+                      <TableCell className="text-sm">
+                        {row.accountCode} {row.accountName}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.balance)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+                <TableRow className="font-semibold">
+                  <TableCell>הכנסות</TableCell>
+                  <TableCell>
+                    {formatPrice(report.statements.incomeStatement.revenue)}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="font-semibold">
+                  <TableCell>הוצאות</TableCell>
+                  <TableCell>
+                    {formatPrice(report.statements.incomeStatement.expenses)}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="font-semibold">
+                  <TableCell>רווח נקי</TableCell>
+                  <TableCell>
+                    {formatPrice(report.statements.incomeStatement.netIncome)}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {report ? (
+        <Card className="mt-6 rounded-md">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-2">
+                <Scale aria-hidden="true" className="size-5" />
+                מאזן מאוחד (Balance Sheet)
+              </span>
+              <Badge
+                variant={
+                  report.statements.balanceSheet.balanced
+                    ? "secondary"
+                    : "destructive"
+                }
+              >
+                {report.statements.balanceSheet.balanced ? "מאוזן" : "לא מאוזן"}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <p className="text-muted-foreground text-sm">
+              חשבונות מאזן מתורגמים לפי שער הסגירה של כל ישות. כאשר לישות
+              שער ממוצע שונה משער הסגירה, ההפרש נזקף כ&quot;התאמת תרגום
+              מצטברת&quot; (CTA) כדי שהזהות החשבונאית (נכסים = התחייבויות +
+              הון + CTA + רווח נקי) תישמר.
+            </p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>חשבון</TableHead>
+                  <TableHead>יתרה</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {report.statements.balanceSheet.rows.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={2}
+                    description="חשבונות מאזן יופיעו כאן."
+                    icon={Scale}
+                    title="אין תנועות"
+                  />
+                ) : (
+                  report.statements.balanceSheet.rows.map((row) => (
+                    <TableRow key={row.accountCode}>
+                      <TableCell className="text-sm">
+                        {row.accountCode} {row.accountName}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {formatPrice(row.balance)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+                {report.statements.balanceSheet.cumulativeTranslationAdjustment !==
+                0 ? (
+                  <TableRow>
+                    <TableCell className="text-sm">
+                      התאמת תרגום מצטברת (CTA)
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {formatPrice(
+                        report.statements.balanceSheet
+                          .cumulativeTranslationAdjustment,
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+                <TableRow className="font-semibold">
+                  <TableCell>נכסים</TableCell>
+                  <TableCell>
+                    {formatPrice(report.statements.balanceSheet.assets)}
+                  </TableCell>
+                </TableRow>
+                <TableRow className="font-semibold">
+                  <TableCell>התחייבויות + הון + רווח נקי</TableCell>
+                  <TableCell>
+                    {formatPrice(
+                      report.statements.balanceSheet.liabilities +
+                        report.statements.balanceSheet.equity +
+                        report.statements.balanceSheet
+                          .cumulativeTranslationAdjustment +
+                        report.statements.balanceSheet.netIncome,
+                    )}
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </CardContent>

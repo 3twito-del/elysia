@@ -1,6 +1,7 @@
 import { db } from "~/server/db";
 import {
   consolidateTrialBalances,
+  splitConsolidatedStatements,
   summarizeIntercompany,
   type EntityTrialBalance,
 } from "~/server/services/consolidation";
@@ -31,6 +32,7 @@ export async function createEntity(input: {
   name: string;
   functionalCurrency?: string;
   fxRateToBase?: number;
+  averageFxRateToBase?: number;
   isBase?: boolean;
   parentId?: string;
 }) {
@@ -40,6 +42,9 @@ export async function createEntity(input: {
 
   const fxRateToBase = input.fxRateToBase ?? 1;
   if (!(fxRateToBase > 0)) throw new Error("שער חליפין חייב להיות חיובי.");
+  if (input.averageFxRateToBase !== undefined && !(input.averageFxRateToBase > 0)) {
+    throw new Error("שער ממוצע חייב להיות חיובי.");
+  }
 
   return db.$transaction(async (tx) => {
     if (input.isBase) {
@@ -51,6 +56,7 @@ export async function createEntity(input: {
         name,
         functionalCurrency: (input.functionalCurrency ?? "ILS").trim() || "ILS",
         fxRateToBase,
+        averageFxRateToBase: input.averageFxRateToBase,
         isBase: input.isBase ?? false,
         parentId: input.parentId,
       },
@@ -68,15 +74,32 @@ export async function setEntityActive(input: {
   });
 }
 
-/** Updates an entity's FX rate to the base currency (used in consolidation). */
+/**
+ * Updates an entity's closing rate (balance-sheet accounts) and, optionally,
+ * its distinct average rate for the period (P&L accounts) — real
+ * consolidation practice (ENT-003). Passing `null` for `averageFxRateToBase`
+ * clears it, falling back to the closing rate everywhere.
+ */
 export async function setEntityFxRate(input: {
   entityId: string;
   fxRateToBase: number;
+  averageFxRateToBase?: number | null;
 }) {
   if (!(input.fxRateToBase > 0)) throw new Error("שער חליפין חייב להיות חיובי.");
+  if (
+    input.averageFxRateToBase != null &&
+    !(input.averageFxRateToBase > 0)
+  ) {
+    throw new Error("שער ממוצע חייב להיות חיובי.");
+  }
   return db.legalEntity.update({
     where: { id: input.entityId },
-    data: { fxRateToBase: input.fxRateToBase },
+    data: {
+      fxRateToBase: input.fxRateToBase,
+      ...(input.averageFxRateToBase !== undefined
+        ? { averageFxRateToBase: input.averageFxRateToBase }
+        : {}),
+    },
   });
 }
 
@@ -131,6 +154,7 @@ export async function listEntities() {
       name: true,
       functionalCurrency: true,
       fxRateToBase: true,
+      averageFxRateToBase: true,
       isBase: true,
       isActive: true,
       _count: { select: { journalEntries: true } },
@@ -143,6 +167,10 @@ export async function listEntities() {
     name: entity.name,
     currency: entity.functionalCurrency,
     fxRateToBase: Number(entity.fxRateToBase),
+    averageFxRateToBase:
+      entity.averageFxRateToBase != null
+        ? Number(entity.averageFxRateToBase)
+        : null,
     isBase: entity.isBase,
     isActive: entity.isActive,
     journalEntryCount: entity._count.journalEntries,
@@ -221,7 +249,8 @@ export async function getPerEntityTrialBalances(): Promise<EntityTrialBalance[]>
     entityCode: entity.code,
     entityName: entity.name,
     currency: entity.functionalCurrency,
-    fxRate: Number(entity.fxRateToBase),
+    closingRate: Number(entity.fxRateToBase),
+    averageRate: Number(entity.averageFxRateToBase ?? entity.fxRateToBase),
     rows: [...buckets.get(entity.id)!.entries()].map(([accountId, sums]) => {
       const account = accountById.get(accountId);
       return {
@@ -236,10 +265,11 @@ export async function getPerEntityTrialBalances(): Promise<EntityTrialBalance[]>
   }));
 }
 
-/** Consolidated trial balance (base currency) + intercompany summary. */
+/** Consolidated trial balance (base currency) + P&L/BS split + intercompany summary. */
 export async function getConsolidatedReport() {
   const entityTBs = await getPerEntityTrialBalances();
   const consolidated = consolidateTrialBalances(entityTBs);
+  const statements = splitConsolidatedStatements(consolidated.rows);
 
   const transactions = await db.intercompanyTransaction.findMany({
     select: { status: true, amount: true },
@@ -257,10 +287,12 @@ export async function getConsolidatedReport() {
       entityCode: tb.entityCode,
       entityName: tb.entityName,
       currency: tb.currency,
-      fxRate: tb.fxRate,
+      closingRate: tb.closingRate,
+      averageRate: tb.averageRate,
       lineCount: tb.rows.length,
     })),
     consolidated,
+    statements,
     intercompany,
   };
 }

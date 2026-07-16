@@ -26,12 +26,14 @@ export async function createEntityAction(formData: FormData) {
   if (!code || !name) throw new Error("קוד ושם הם שדות חובה.");
 
   const fxRaw = stringValue(formData.get("fxRateToBase")).trim();
+  const averageFxRaw = stringValue(formData.get("averageFxRateToBase")).trim();
 
   await createEntity({
     code,
     name,
     functionalCurrency: optionalString(formData.get("functionalCurrency")),
     fxRateToBase: fxRaw ? Number(fxRaw) || 1 : 1,
+    averageFxRateToBase: averageFxRaw ? Number(averageFxRaw) || undefined : undefined,
     isBase: formData.get("isBase") === "1",
   });
 
@@ -60,7 +62,13 @@ export async function setEntityFxAction(formData: FormData) {
   if (!entityId) throw new Error("חסר מזהה ישות.");
   if (!fxRaw) throw new Error("יש להזין שער חליפין.");
 
-  await setEntityFxRate({ entityId, fxRateToBase: Number(fxRaw) || 0 });
+  const averageFxRaw = stringValue(formData.get("averageFxRateToBase")).trim();
+
+  await setEntityFxRate({
+    entityId,
+    fxRateToBase: Number(fxRaw) || 0,
+    averageFxRateToBase: averageFxRaw ? Number(averageFxRaw) || undefined : null,
+  });
 
   revalidatePath("/admin/entities");
 }

@@ -2046,8 +2046,14 @@ model LegalEntity {
   code               String                    @unique
   name               String
   functionalCurrency String                    @default("ILS")
-  /// rate to convert this entity's functional currency into the base currency
+  /// closing rate: converts this entity's functional-currency BALANCE SHEET
+  /// accounts (asset/liability/equity) into the base currency at consolidation.
   fxRateToBase       Decimal                   @default(1) @db.Decimal(18, 6)
+  /// ENT-003: average rate for the period, used instead of the closing rate to
+  /// translate this entity's P&L accounts (revenue/expense) — real multi-currency
+  /// consolidation practice. Null = not set, falls back to fxRateToBase (the v1
+  /// single-rate behavior, so this is fully backward compatible).
+  averageFxRateToBase Decimal?                 @db.Decimal(18, 6)
   isBase             Boolean                   @default(false)
   isActive           Boolean                   @default(true)
   parentId           String?
