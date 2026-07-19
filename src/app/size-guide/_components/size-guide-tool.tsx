@@ -446,7 +446,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
             <div className="grid gap-2 text-sm">
               {activeCopy.rows.map((row) => (
                 <div
-                  className="hover:border-foreground/50 hover:bg-muted/60 grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 transition-colors sm:grid-cols-[1fr_auto] sm:items-center"
+                  className="hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 transition-colors sm:grid-cols-[1fr_auto] sm:items-center"
                   key={`${row.measurement}-${row.size}`}
                 >
                   <span>

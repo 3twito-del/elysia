@@ -111,10 +111,10 @@ export default async function SizeGuidePage({
               className="rounded-md border border-[var(--glass-border)] p-3"
               data-testid="size-guide-print-ruler"
             >
-              <div className="border-foreground/60 flex h-10 items-end justify-between border-b">
+              <div className="border-[var(--glass-border-strong)] flex h-10 items-end justify-between border-b">
                 {printRulerTicks.map((tick) => (
                   <span
-                    className="border-foreground/60 relative flex h-6 min-w-0 items-start border-s ps-1 text-[0.7rem] tabular-nums"
+                    className="border-[var(--glass-border-strong)] relative flex h-6 min-w-0 items-start border-s ps-1 text-[0.7rem] tabular-nums"
                     key={tick}
                   >
                     {tick}

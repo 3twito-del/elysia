@@ -57,7 +57,7 @@ describe("cart + checkout design pass (owner-selected DP 41-50)", () => {
     expect(checkoutStepBadge).toContain("checkout-step-badge-complete");
     expect(checkoutStepBadge).not.toMatch(/emerald/);
     expect(css).toContain(
-      ".checkout-step-badge-complete {\n  border-color: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);",
+      ".checkout-step-badge-complete {\n  border-color: var(--elysia-success);",
     );
     expect(checkoutForm).toContain("checkoutStepCompletionByValue[step.value]");
     // The four standalone section-header badges stay untouched (pinned by

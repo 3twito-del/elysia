@@ -200,7 +200,7 @@ export default async function BranchesPage() {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <a
-                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
                     href={`tel:${profile.settings.phoneE164}`}
                   >
                     <Phone aria-hidden="true" className="mb-3 size-4" />
@@ -210,7 +210,7 @@ export default async function BranchesPage() {
                     </span>
                   </a>
                   <a
-                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
                     href={`mailto:${profile.settings.serviceEmail}`}
                   >
                     <Mail aria-hidden="true" className="mb-3 size-4" />
@@ -220,7 +220,7 @@ export default async function BranchesPage() {
                     </span>
                   </a>
                   <Link
-                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
                     href="/service?topic=general"
                   >
                     <Headphones aria-hidden="true" className="mb-3 size-4" />

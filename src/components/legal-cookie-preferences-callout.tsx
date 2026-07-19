@@ -26,7 +26,7 @@ export function LegalCookiePreferencesCallout({
         </span>
       </span>
       <Link
-        className="border-border hover:border-foreground/50 hover:bg-muted/60 inline-flex min-h-9 items-center justify-center gap-2 rounded-md border px-3 font-medium transition"
+        className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] inline-flex min-h-9 items-center justify-center gap-2 rounded-md border px-3 font-medium transition"
         href={cookiePreferencesLink.href}
       >
         <ShieldCheck aria-hidden="true" className="size-4" />

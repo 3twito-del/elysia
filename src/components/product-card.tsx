@@ -96,7 +96,7 @@ export function ProductCard({
     <Card
       aria-label={publicProductName}
       className={cn(
-        "ui-equal-item product-card-shell elysia-product-card group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-transparent py-0 shadow-none transition hover:border-[var(--glass-border-hover)] has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-[var(--glass-focus)]",
+        "ui-equal-item product-card-shell elysia-product-card group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-transparent py-0 shadow-none transition duration-[var(--motion-fast)] ease-[var(--ease-standard)] hover:border-[var(--glass-border-hover)] has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-[var(--glass-focus)]",
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"
@@ -130,7 +130,7 @@ export function ProductCard({
             <Image
               alt={publicProductName}
               blurDataURL={PRODUCT_IMAGE_BLUR_DATA_URL}
-              className="media-color product-card-image object-cover transition duration-[900ms] ease-[var(--ease-motion-standard)] group-focus-within/card:scale-[1.045] group-hover/card:scale-[1.045]"
+              className="media-color product-card-image object-cover transition duration-[var(--motion-media)] ease-[var(--ease-motion-standard)] group-focus-within/card:scale-[1.045] group-hover/card:scale-[1.045]"
               fill
               placeholder="blur"
               priority={imagePriority}

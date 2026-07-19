@@ -259,7 +259,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               <div className="grid gap-2 sm:grid-cols-2">
                 {profile.topics.slice(0, 6).map((topic) => (
                   <Link
-                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-md border p-3 text-sm transition"
+                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
                     href={`/service?topic=${topic.slug}#service-form`}
                     key={topic.slug}
                   >
@@ -326,7 +326,7 @@ function ServicePriorityTriage() {
 
           return (
             <Link
-              className="border-border hover:border-foreground/50 hover:bg-muted/60 grid min-h-28 rounded-md border p-3 text-sm transition"
+              className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] grid min-h-28 rounded-md border p-3 text-sm transition"
               href={action.href}
               key={action.href}
             >

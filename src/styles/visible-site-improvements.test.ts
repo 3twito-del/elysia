@@ -465,7 +465,11 @@ describe("visible site improvement affordances", () => {
     expect(gallery).toContain("מסך מלא");
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-trigger"');
     expect(gallery).not.toContain('data-testid="product-gallery-zoom-dialog"');
-    expect(gallery).toContain('"border-foreground ring-foreground ring-1"');
+    // Selected-thumbnail styling now comes solely from the CSS
+    // [data-gallery-selected="true"] rules (gold ring) -- the old inline
+    // Tailwind classes fought with them over the same border/ring property.
+    expect(gallery).not.toContain("ring-foreground ring-1");
+    expect(gallery).toContain("data-gallery-selected=");
     expect(gallery).toContain("handleThumbnailKeyDown");
     expect(purchasePanel).toContain("getSizeGuideHref(sizeKind");
     expect(purchasePanel).toContain('data-testid="product-variant-feedback"');

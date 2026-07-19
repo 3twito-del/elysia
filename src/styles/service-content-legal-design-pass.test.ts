@@ -63,7 +63,7 @@ describe("service + content + legal design pass (owner-selected DP 59-66)", () =
 
   it("highlights size-guide table rows on hover", () => {
     expect(sizeGuideTool).toContain(
-      "hover:border-foreground/50 hover:bg-muted/60 grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 transition-colors",
+      "hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] grid gap-2 rounded-md border border-[var(--glass-border)] px-3 py-2 transition-colors",
     );
   });
 

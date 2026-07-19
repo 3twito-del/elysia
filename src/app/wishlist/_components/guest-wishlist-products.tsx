@@ -237,7 +237,7 @@ function GuestWishlistShortlistOnboarding({
   return (
     <section
       aria-label="איך מועדפים מקומיים עובדים"
-      className="grid gap-3 rounded-md border border-[var(--glass-border)] p-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto]"
+      className="glass-inset grid gap-3 rounded-md border p-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto]"
       data-testid="wishlist-guest-shortlist-onboarding"
     >
       <div>

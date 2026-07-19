@@ -1027,7 +1027,7 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
   overflow: hidden;
   background:
     linear-gradient(115deg, var(--brand-ink), transparent 62%),
-    linear-gradient(180deg, #0e1112, #1b2022);
+    linear-gradient(180deg, var(--brand-espresso), #1b1613);
 }
 
 .cinematic-hero-slide {
@@ -1160,9 +1160,9 @@ html[data-accessibility-motion="reduce"] .cinematic-hero-band,
 
 .compact-page-intro-eyebrow {
   width: fit-content;
-  border: 1px solid rgb(29 25 22 / 10%);
+  border: 1px solid color-mix(in srgb, var(--brand-ink) 10%, transparent);
   border-radius: 999px;
-  background: rgb(255 255 255 / 88%);
+  background: color-mix(in srgb, var(--brand-porcelain) 88%, transparent);
   color: var(--brand-espresso);
   padding: 0.25rem 0.65rem;
   font-size: 0.78rem;
@@ -1680,7 +1680,8 @@ main
 }
 
 .account-feature-icon,
-.account-summary-icon {
+.account-summary-icon,
+.account-support-icon {
   display: grid;
   width: 2.35rem;
   height: 2.35rem;
@@ -1797,6 +1798,11 @@ main
   align-items: center;
   border-bottom: 1px solid var(--boutique-border);
   padding: 0.95rem 0;
+  transition: background-color var(--motion-micro) var(--ease-standard);
+}
+
+.account-summary-row:hover {
+  background: var(--glass-hover-overlay);
 }
 
 .account-summary-row:hover .account-summary-action {
@@ -1842,9 +1848,13 @@ main
 .account-record-row {
   border-color: var(--boutique-border);
   background: var(--boutique-surface-soft);
+  transition:
+    border-color var(--motion-micro) var(--ease-standard),
+    background-color var(--motion-micro) var(--ease-standard);
 }
 
 .account-record-row:hover {
+  border-color: var(--boutique-border-hover);
   background: var(--glass-hover-overlay);
 }
 
@@ -1858,10 +1868,6 @@ main
 
 .account-support-link:hover {
   background: var(--boutique-surface-soft);
-}
-
-.account-support-icon {
-  border-radius: 999px;
 }
 
 @media (min-width: 640px) {
@@ -1960,8 +1966,13 @@ main
 }
 
 .wishlist-product-thumb {
-  border-color: var(--boutique-border);
+  border-color: var(--elysia-media-border);
   background: var(--elysia-media-bg);
+  transition: border-color var(--motion-ui) var(--ease-motion-standard);
+}
+
+.wishlist-product-card:hover .wishlist-product-thumb {
+  border-color: var(--elysia-media-border-hover);
 }
 
 .order-timeline-dot {
@@ -1975,7 +1986,7 @@ main
 }
 
 .order-timeline-dot[data-state="done"] {
-  background: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);
+  background: var(--elysia-success);
   opacity: 1;
 }
 
@@ -1984,8 +1995,8 @@ main
 }
 
 .checkout-step-badge-complete {
-  border-color: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);
-  color: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);
+  border-color: var(--elysia-success);
+  color: var(--elysia-success);
 }
 
 .dark .checkout-step-badge-complete {
@@ -2067,8 +2078,13 @@ main
 }
 
 .checkout-boutique-thumb {
-  border-color: var(--boutique-border);
+  border-color: var(--elysia-media-border);
   background: var(--elysia-media-bg);
+  transition: border-color var(--motion-ui) var(--ease-motion-standard);
+}
+
+.checkout-boutique-item-card:hover .checkout-boutique-thumb {
+  border-color: var(--elysia-media-border-hover);
 }
 
 .checkout-boutique-summary {
@@ -2457,7 +2473,7 @@ main
 
 .boutique-collection-card img {
   transform: scale(1.01);
-  transition: transform 700ms var(--ease-motion-standard);
+  transition: transform var(--motion-media) var(--ease-motion-standard);
 }
 
 .boutique-collection-card:hover img,
@@ -2499,9 +2515,9 @@ main
   color: var(--brand-porcelain);
   background: linear-gradient(
     180deg,
-    rgb(29 25 22 / 0%),
-    rgb(29 25 22 / 48%) 42%,
-    rgb(29 25 22 / 74%)
+    color-mix(in srgb, var(--brand-ink) 0%, transparent),
+    color-mix(in srgb, var(--brand-ink) 48%, transparent) 42%,
+    color-mix(in srgb, var(--brand-ink) 74%, transparent)
   );
 }
 
@@ -3065,7 +3081,7 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   background: linear-gradient(to left, var(--brand-champagne), transparent);
   transform: scaleX(0);
   transform-origin: right center;
-  transition: transform 900ms var(--ease-liquid) 0.15s;
+  transition: transform var(--motion-media) var(--ease-liquid) 0.15s;
 }
 
 .about-rv[data-inview="true"] .about-rule {
@@ -3132,7 +3148,7 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   .about-principle-card:hover {
     transform: translateY(-3px);
     border-color: color-mix(in srgb, var(--brand-champagne) 70%, transparent);
-    box-shadow: 0 18px 40px -28px rgb(29 25 22 / 45%);
+    box-shadow: 0 18px 40px -28px var(--glass-shadow-deep);
   }
 
   .about-principle-card:hover .about-principle-sweep {
@@ -3162,9 +3178,9 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
   padding: clamp(1.5rem, 6vw, 5rem);
   background: linear-gradient(
     to left,
-    rgb(20 17 15 / 76%) 0%,
-    rgb(20 17 15 / 40%) 46%,
-    rgb(20 17 15 / 8%) 100%
+    color-mix(in srgb, var(--brand-espresso) 76%, transparent) 0%,
+    color-mix(in srgb, var(--brand-espresso) 40%, transparent) 46%,
+    color-mix(in srgb, var(--brand-espresso) 8%, transparent) 100%
   );
 }
 
@@ -3348,9 +3364,9 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     align-items: flex-end;
     background: linear-gradient(
       to top,
-      rgb(20 17 15 / 82%) 0%,
-      rgb(20 17 15 / 38%) 55%,
-      rgb(20 17 15 / 10%) 100%
+      color-mix(in srgb, var(--brand-espresso) 82%, transparent) 0%,
+      color-mix(in srgb, var(--brand-espresso) 38%, transparent) 55%,
+      color-mix(in srgb, var(--brand-espresso) 10%, transparent) 100%
     );
   }
 }
@@ -3894,7 +3910,7 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   inset-inline-end: auto;
   bottom: calc(clamp(3rem, 8svh, 6rem) + env(safe-area-inset-bottom));
   top: auto;
-  color: white;
+  color: var(--brand-porcelain);
   text-align: start;
 }
 
@@ -4484,7 +4500,7 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
 .mobile-nav-quick-action:focus-visible,
 .mobile-nav-link:hover,
 .mobile-nav-link:focus-visible {
-  background: rgb(29 25 22 / 3%);
+  background: var(--glass-hover-overlay);
 }
 
 .mobile-nav-feature-link {
@@ -4669,6 +4685,10 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   background: color-mix(in srgb, var(--brand-porcelain) 96%, transparent);
 }
 
+.dark .product-gallery-position-dot {
+  box-shadow: 0 0 0 1px rgb(243 237 230 / 18%);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .product-gallery-main-frame {
     cursor: zoom-in;
@@ -4750,14 +4770,14 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
     calc((100dvw - var(--viewer-media-shell-width)) / 2 - 3.5rem)
   );
   background:
-    linear-gradient(180deg, rgb(255 252 248 / 88%), rgb(250 247 242 / 96%)),
+    linear-gradient(180deg, rgb(255 250 244 / 88%), rgb(255 250 244 / 96%)),
     var(--background);
 }
 
 .product-gallery-viewer-header {
   min-height: clamp(3.5rem, 7dvh, 4.5rem);
   border-bottom: 1px solid rgb(29 25 22 / 9%);
-  background: rgb(255 252 248 / 88%);
+  background: rgb(255 250 244 / 88%);
   padding-inline: clamp(1rem, 2.4vw, 2rem);
 }
 
@@ -4801,7 +4821,7 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   padding-inline: clamp(4.25rem, 7vw, 7rem);
   background:
     radial-gradient(circle at 50% 45%, rgb(255 255 255 / 70%), transparent 46%),
-    linear-gradient(180deg, rgb(252 249 244 / 92%), rgb(248 245 240 / 96%));
+    linear-gradient(180deg, rgb(255 250 244 / 92%), rgb(255 250 244 / 96%));
 }
 
 .product-gallery-viewer-stage[data-gallery-drag-mode="swipe"] {
@@ -4973,7 +4993,7 @@ html[data-accessibility-motion="reduce"]
   height: 2.875rem;
   border: 1px solid rgb(29 25 22 / 13%);
   border-radius: 999px;
-  background: rgb(255 252 248 / 88%);
+  background: rgb(255 250 244 / 88%);
   color: var(--foreground);
   box-shadow: 0 12px 28px rgb(29 25 22 / 9%);
   transform: translateY(-50%);
@@ -4982,7 +5002,8 @@ html[data-accessibility-motion="reduce"]
 .product-gallery-viewer-stage .product-gallery-viewer-nav:hover,
 .product-gallery-viewer-stage .product-gallery-viewer-nav:focus-visible {
   border-color: rgb(29 25 22 / 24%);
-  background: rgb(255 252 248 / 96%);
+  background: rgb(255 250 244 / 96%);
+  box-shadow: 0 14px 32px rgb(29 25 22 / 12%);
 }
 
 .product-gallery-viewer-nav-previous {
@@ -4998,7 +5019,7 @@ html[data-accessibility-motion="reduce"]
   min-height: clamp(6.25rem, 13dvh, 8rem);
   align-items: center;
   border-top: 1px solid rgb(29 25 22 / 9%);
-  background: rgb(255 252 248 / 86%);
+  background: rgb(255 250 244 / 86%);
   padding: 0.75rem clamp(0.875rem, 3vw, 2rem);
 }
 
@@ -5014,14 +5035,14 @@ html[data-accessibility-motion="reduce"]
 
 .product-gallery-thumbnail-rail .product-gallery-viewer-thumbnail {
   border-color: rgb(29 25 22 / 12%);
-  background: rgb(250 246 239 / 96%);
+  background: var(--brand-ivory);
 }
 
 .product-gallery-thumbnail-rail
   .product-gallery-viewer-thumbnail[data-gallery-selected="true"] {
-  border-color: rgb(29 25 22 / 58%);
+  border-color: var(--brand-gold-muted);
   box-shadow:
-    0 0 0 1px rgb(29 25 22 / 38%),
+    0 0 0 1px var(--brand-gold-muted),
     0 8px 18px rgb(29 25 22 / 8%);
 }
 
@@ -5347,7 +5368,7 @@ footer nav a:focus-visible {
 
 .footer-social-link:hover,
 .footer-social-link:focus-visible {
-  background: rgb(29 25 22 / 3%);
+  background: var(--glass-hover-overlay);
   text-decoration-line: none;
 }
 
@@ -5534,14 +5555,6 @@ footer nav a:focus-visible {
   background: color-mix(in srgb, var(--brand-porcelain) 88%, transparent) !important;
 }
 
-.product-card-status-badge {
-  border-color: rgb(29 25 22 / 12%);
-  background: var(--card);
-  color: var(--foreground);
-  font-weight: 500;
-  box-shadow: none;
-}
-
 .product-card-favorite {
   border: 1px solid rgb(29 25 22 / 8%);
   border-radius: 999px;
@@ -5549,14 +5562,36 @@ footer nav a:focus-visible {
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 55%),
     0 4px 14px rgb(29 25 22 / 9%);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.12);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.12);
+  backdrop-filter: blur(var(--glass-blur)) saturate(0.92);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(0.92);
   transition:
     background var(--motion-fast) var(--ease-motion-standard),
     box-shadow var(--motion-fast) var(--ease-motion-standard);
 }
 
 .product-card-favorite:hover {
+  background: rgb(255 250 244 / 88%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 65%),
+    0 6px 18px rgb(29 25 22 / 12%);
+}
+
+/* Same frosted-chip-over-photo treatment as .product-card-favorite, for the
+   gallery's fullscreen/zoom trigger buttons. */
+.product-gallery-icon-trigger {
+  border: 1px solid rgb(29 25 22 / 8%);
+  background: rgb(255 250 244 / 72%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 55%),
+    0 4px 14px rgb(29 25 22 / 9%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(0.92);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(0.92);
+  transition:
+    background var(--motion-fast) var(--ease-motion-standard),
+    box-shadow var(--motion-fast) var(--ease-motion-standard);
+}
+
+.product-gallery-icon-trigger:hover {
   background: rgb(255 250 244 / 88%);
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 65%),
@@ -5684,7 +5719,7 @@ footer nav a:focus-visible {
 
 .product-purchase-surface .glass-inset {
   border-color: var(--glass-border);
-  background: rgb(255 250 244 / 42%);
+  background: rgb(255 250 244 / 56%);
 }
 
 .product-purchase-surface [data-slot="button"][variant="outline"],
@@ -5827,6 +5862,17 @@ footer nav a:focus-visible {
 .glass-inset {
   border-color: var(--glass-border);
   background: var(--glass-inset-bg);
+  box-shadow: none;
+}
+
+/* Declared after .glass-inset so its own border/background win the cascade —
+   Badge's outline variant applies both classes at equal specificity, and the
+   later declaration otherwise clobbers this one regardless of source. */
+.product-card-status-badge {
+  border-color: rgb(29 25 22 / 12%);
+  background: var(--card);
+  color: var(--foreground);
+  font-weight: 500;
   box-shadow: none;
 }
 
@@ -6220,7 +6266,7 @@ footer nav a:focus-visible {
   /* Bronze frame emphasis on hover — same box metrics, zero layout shift. */
   border-color: var(--glass-focus) !important;
   background: rgb(29 25 22 / 72%) !important;
-  color: white !important;
+  color: var(--brand-porcelain) !important;
 }
 
 .home-hero-actions .home-hero-cta-secondary:not(:disabled) {
@@ -6233,7 +6279,7 @@ footer nav a:focus-visible {
 .home-hero-actions .home-hero-cta-secondary:not(:disabled):focus-visible {
   border-color: rgb(255 250 244 / 84%) !important;
   background: rgb(255 250 244 / 16%) !important;
-  color: white !important;
+  color: var(--brand-porcelain) !important;
 }
 
 .home-hero-actions .home-hero-cta-icon {
@@ -7315,6 +7361,21 @@ html[data-accessibility-motion="reduce"]
     0 6px 18px oklch(0 0 0 / 36%);
 }
 
+.dark .product-gallery-icon-trigger {
+  border-color: rgb(243 237 230 / 14%);
+  background: rgb(31 26 21 / 72%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 8%),
+    0 4px 14px oklch(0 0 0 / 30%);
+}
+
+.dark .product-gallery-icon-trigger:hover {
+  background: rgb(31 26 21 / 90%);
+  box-shadow:
+    inset 0 0 0 1px rgb(243 237 230 / 12%),
+    0 6px 18px oklch(0 0 0 / 36%);
+}
+
 .dark .product-card-favorite:has(
   .product-card-favorite-button[data-favorite-saved="true"]
 ) {
@@ -7350,10 +7411,10 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .product-gallery-secondary-tile[data-gallery-selected="true"] {
-  border-color: rgb(243 237 230 / 55%);
+  border-color: var(--brand-gold-muted);
   box-shadow:
     inset 0 0 0 1px rgb(243 237 230 / 10%),
-    0 0 0 1px rgb(243 237 230 / 24%);
+    0 0 0 1px var(--brand-gold-muted);
 }
 
 .dark .product-gallery-main-frame::after,
@@ -7379,26 +7440,21 @@ html[data-accessibility-motion="reduce"]
   background: var(--elysia-media-bg);
 }
 
-.dark .product-gallery-thumbnail-rail button[data-gallery-selected="true"] {
-  border-color: rgb(243 237 230 / 60%);
-  box-shadow: 0 0 0 1px rgb(243 237 230 / 40%);
-}
-
 .dark .product-gallery-viewer-dialog {
   background:
-    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 97%)),
+    linear-gradient(180deg, rgb(31 26 21 / 92%), rgb(31 26 21 / 97%)),
     var(--background);
 }
 
 .dark .product-gallery-viewer-header {
   border-bottom-color: rgb(243 237 230 / 10%);
-  background: rgb(26 21 18 / 90%);
+  background: rgb(31 26 21 / 90%);
 }
 
 .dark .product-gallery-viewer-stage {
   background:
     radial-gradient(circle at 50% 45%, rgb(243 237 230 / 5%), transparent 46%),
-    linear-gradient(180deg, rgb(26 21 18 / 92%), rgb(22 18 16 / 96%));
+    linear-gradient(180deg, rgb(31 26 21 / 92%), rgb(31 26 21 / 96%));
 }
 
 .dark .product-gallery-viewer-stage .product-gallery-viewer-nav {
@@ -7411,25 +7467,17 @@ html[data-accessibility-motion="reduce"]
 .dark .product-gallery-viewer-stage .product-gallery-viewer-nav:focus-visible {
   border-color: rgb(243 237 230 / 30%);
   background: rgb(37 31 25 / 96%);
+  box-shadow: 0 14px 32px oklch(0 0 0 / 36%);
 }
 
 .dark .product-gallery-viewer-filmstrip-shell {
   border-top-color: rgb(243 237 230 / 10%);
-  background: rgb(26 21 18 / 88%);
+  background: rgb(31 26 21 / 88%);
 }
 
 .dark .product-gallery-thumbnail-rail .product-gallery-viewer-thumbnail {
   border-color: rgb(243 237 230 / 14%);
   background: rgb(31 26 21 / 96%);
-}
-
-.dark
-  .product-gallery-thumbnail-rail
-  .product-gallery-viewer-thumbnail[data-gallery-selected="true"] {
-  border-color: rgb(243 237 230 / 60%);
-  box-shadow:
-    0 0 0 1px rgb(243 237 230 / 36%),
-    0 8px 18px oklch(0 0 0 / 30%);
 }
 
 .dark .motion-sticky-purchase {
@@ -7468,13 +7516,6 @@ html[data-accessibility-motion="reduce"]
   color: var(--foreground);
 }
 
-.dark .mobile-nav-quick-action:hover,
-.dark .mobile-nav-quick-action:focus-visible,
-.dark .mobile-nav-link:hover,
-.dark .mobile-nav-link:focus-visible {
-  background: rgb(243 237 230 / 6%);
-}
-
 .dark .public-motion-shell [data-slot="badge"][data-variant="secondary"],
 .dark .public-motion-shell [data-slot="badge"][data-variant="outline"] {
   border-color: rgb(243 237 230 / 14%);
@@ -7488,11 +7529,6 @@ html[data-accessibility-motion="reduce"]
   background: var(--card) !important;
   color: var(--foreground) !important;
   box-shadow: none;
-}
-
-.dark .footer-social-link:hover,
-.dark .footer-social-link:focus-visible {
-  background: rgb(243 237 230 / 6%);
 }
 
 /* Keyboard focus visibility (WCAG 2.4.7). Several controls flatten box-shadow

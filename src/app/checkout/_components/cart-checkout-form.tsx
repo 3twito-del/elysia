@@ -77,6 +77,7 @@ import {
 } from "./checkout-status";
 import { CheckoutStepBadge } from "./checkout-step-badge";
 
+const checkoutInputClassName = "h-12 px-4 text-base md:text-sm";
 const checkoutFormId = "cart-checkout-form";
 const checkoutLegalAcceptanceErrorId = "checkout-legal-acceptance-error";
 const checkoutLegalAcceptanceMessage =
@@ -721,7 +722,7 @@ export function CartCheckoutForm() {
       <section className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
         <Card className="checkout-boutique-panel rounded-md">
           <CardHeader>
-            <div className="glass-inset mb-4 grid size-12 place-items-center rounded-full border">
+            <div className="glass-inset mb-4 grid size-12 place-items-center rounded-md border">
               <CheckCircle2 aria-hidden="true" className="size-6" />
             </div>
             <CardTitle className="text-3xl">ההזמנה נשמרה</CardTitle>
@@ -929,7 +930,7 @@ export function CartCheckoutForm() {
               </div>
               {cart.items.map((item) => (
                 <div
-                  className="checkout-boutique-item-card bg-background grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
+                  className="checkout-boutique-item-card grid grid-cols-[68px_minmax(0,1fr)] gap-3 rounded-md border p-3 sm:grid-cols-[68px_minmax(0,1fr)_auto] sm:items-center"
                   key={item.id}
                 >
                   <Link
@@ -1119,6 +1120,7 @@ export function CartCheckoutForm() {
                         aria-describedby="name-error"
                         aria-invalid={Boolean(getVisibleFieldError("name"))}
                         autoComplete="name"
+                        className={checkoutInputClassName}
                         disabled={checkoutLocked}
                         id="name"
                         minLength={2}
@@ -1140,6 +1142,7 @@ export function CartCheckoutForm() {
                         aria-describedby="phone-error"
                         aria-invalid={Boolean(getVisibleFieldError("phone"))}
                         autoComplete="tel"
+                        className={checkoutInputClassName}
                         dir="ltr"
                         disabled={checkoutLocked}
                         id="phone"
@@ -1168,6 +1171,7 @@ export function CartCheckoutForm() {
                       aria-describedby="email-error"
                       aria-invalid={Boolean(getVisibleFieldError("email"))}
                       autoComplete="email"
+                      className={checkoutInputClassName}
                       dir="ltr"
                       disabled={checkoutLocked}
                       id="email"
@@ -1183,7 +1187,7 @@ export function CartCheckoutForm() {
                     className="checkout-delivery-fields grid gap-4"
                     data-testid="checkout-delivery-fields"
                   >
-                    <div className="checkout-service-note bg-background flex items-start gap-3 rounded-md border p-3.5 text-sm">
+                    <div className="checkout-service-note flex items-start gap-3 rounded-md border p-3.5 text-sm">
                       <Truck
                         className="mt-0.5 size-4 shrink-0"
                         aria-hidden="true"
@@ -1208,6 +1212,7 @@ export function CartCheckoutForm() {
                           aria-describedby="city-error"
                           aria-invalid={Boolean(getVisibleFieldError("city"))}
                           autoComplete="address-level2"
+                          className={checkoutInputClassName}
                           disabled={checkoutLocked}
                           id="city"
                           minLength={2}
@@ -1231,6 +1236,7 @@ export function CartCheckoutForm() {
                           aria-describedby="street-error"
                           aria-invalid={Boolean(getVisibleFieldError("street"))}
                           autoComplete="street-address"
+                          className={checkoutInputClassName}
                           disabled={checkoutLocked}
                           id="street"
                           minLength={2}
@@ -1246,6 +1252,7 @@ export function CartCheckoutForm() {
                         <Label htmlFor="postalCode">מיקוד</Label>
                         <Input
                           autoComplete="postal-code"
+                          className={checkoutInputClassName}
                           dir="ltr"
                           disabled={checkoutLocked}
                           id="postalCode"
@@ -1802,7 +1809,7 @@ function CheckoutEmptyCartState() {
         data-testid="checkout-empty-cart"
       >
         <div className="max-w-2xl">
-          <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-full border">
+          <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-md border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
           <p className="text-muted-foreground text-xs font-medium">

@@ -152,7 +152,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {post.relatedProducts.map((product) => (
                 <Link
-                  className="bg-card grid gap-3 rounded-md border p-3 transition hover:border-[var(--glass-border-hover)]"
+                  className="bg-card grid gap-3 rounded-md border p-3 transition duration-[var(--motion-fast)] ease-[var(--ease-standard)] hover:border-[var(--glass-border-hover)]"
                   href={`/product/${product.slug}`}
                   key={product.slug}
                 >

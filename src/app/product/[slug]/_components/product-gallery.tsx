@@ -1154,9 +1154,7 @@ export function ProductGallery({
                 isViewerRail
                   ? "product-gallery-viewer-thumbnail w-[3.5rem] sm:w-[4.75rem]"
                   : "w-[4.5rem] sm:w-20 lg:w-[5.5rem]",
-                activeImageIndex === index
-                  ? "border-foreground ring-foreground ring-1"
-                  : "hover:border-foreground/60",
+                activeImageIndex !== index && "hover:border-foreground/60",
               )}
               data-gallery-selected={
                 activeImageIndex === index ? "true" : "false"
@@ -1360,7 +1358,7 @@ export function ProductGallery({
               <DialogTrigger asChild>
                 <Button
                   aria-label={`פתיחת גלריית מסך מלא עבור ${productName}`}
-                  className="bg-background text-foreground hover:bg-background size-9 rounded-full p-0 shadow-sm"
+                  className="product-gallery-icon-trigger text-foreground size-9 rounded-full p-0"
                   data-icon-tooltip="מסך מלא"
                   data-testid="product-gallery-fullscreen-trigger"
                   onClick={(event) => {
@@ -1377,7 +1375,7 @@ export function ProductGallery({
               </DialogTrigger>
               <Button
                 aria-label={`הגדלת תמונת התכשיט עבור ${productName}`}
-                className="bg-background text-foreground hover:bg-background rounded-full shadow-sm sm:hidden"
+                className="product-gallery-icon-trigger text-foreground rounded-full sm:hidden"
                 data-icon-tooltip="הגדלה"
                 data-testid="product-gallery-touch-zoom-trigger"
                 onClick={(event) => {

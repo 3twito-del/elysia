@@ -130,7 +130,7 @@ export default async function FaqPage() {
               <div className="flex flex-wrap gap-2">
                 {faqGroups.map((group, index) => (
                   <Link
-                    className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-sm transition"
+                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-full border px-3 py-1.5 text-sm transition"
                     href={`#faq-group-${index + 1}`}
                     key={group.title}
                   >

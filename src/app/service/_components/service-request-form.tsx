@@ -300,7 +300,7 @@ export function ServiceRequestForm({
         />
       </div>
 
-      <div className="bg-background grid gap-3 rounded-md border p-3">
+      <div className="glass-inset grid gap-3 rounded-md border p-3">
         <Label className="flex items-center gap-2" htmlFor="attachments">
           <Paperclip aria-hidden="true" className="size-4" />
           קבצים מצורפים

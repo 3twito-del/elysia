@@ -333,7 +333,7 @@ function GiftChipGroup({
       <div className="mt-2 flex flex-wrap gap-1.5">
         {links.map((link) => (
           <Link
-            className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-2.5 py-1 text-xs transition sm:text-sm"
+            className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-full border px-2.5 py-1 text-xs transition sm:text-sm"
             href={link.href}
             key={link.href}
           >
