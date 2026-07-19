@@ -96,7 +96,7 @@ export function ProductCard({
     <Card
       aria-label={publicProductName}
       className={cn(
-        "ui-equal-item product-card-shell elysia-product-card group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-transparent py-0 shadow-none transition hover:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+        "ui-equal-item product-card-shell elysia-product-card group/card relative h-full min-w-0 gap-0 overflow-hidden rounded-md border border-[var(--glass-border)] bg-transparent py-0 shadow-none transition hover:border-[var(--glass-border-hover)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
         isUnavailable && "opacity-90",
       )}
       data-public-floating-avoid="true"

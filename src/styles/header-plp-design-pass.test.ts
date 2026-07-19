@@ -11,7 +11,6 @@ function read(relativePath: string) {
 
 const header = read("src/components/site-header.tsx");
 const mobileNav = read("src/components/mobile-nav.tsx");
-const cartCountLink = read("src/components/cart-count-link.tsx");
 const css = read("src/styles/globals.css");
 const searchControls = read("src/app/search/_components/search-controls.tsx");
 const searchPage = read("src/app/search/page.tsx");
@@ -59,12 +58,14 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
     expect(mobileNav).toContain("catalogServiceSeparatorIndex");
   });
 
-  it("uses a subtle icon-adjacent cart count instead of a filled bubble", () => {
-    expect(cartCountLink).not.toContain("bg-foreground text-background");
-    expect(cartCountLink).not.toContain("rounded-full");
-    expect(css).toContain("A subtle icon-adjacent digit, not a filled bubble");
+  it("uses a filled cart-count dot with its own contrast surface, not a bare floating digit", () => {
+    expect(css).toContain(
+      "A small filled dot instead of a bare floating digit",
+    );
     expect(css).toContain(".cart-count-badge {");
-    expect(css).toContain("color: var(--glass-focus);");
+    expect(css).toContain("background: var(--brand-ink);");
+    expect(css).toContain("color: var(--brand-porcelain);");
+    expect(css).toContain("border-radius: 999px;");
   });
 
   it("auto-focuses the search query field on open and returns focus to the toggle on Escape", () => {

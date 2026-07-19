@@ -176,7 +176,7 @@ export function SiteHeader() {
             />
             <Button
               asChild
-              className="site-header-action hidden size-11 md:inline-flex"
+              className="site-header-action inline-flex size-10 md:size-11"
               size="icon"
               variant="ghost"
             >

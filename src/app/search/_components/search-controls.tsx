@@ -716,7 +716,7 @@ function AvailabilityField({ input }: { input: ProductSearchInput }) {
     <SearchControlField label="זמינות">
       <label
         className={cn(
-          "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
+          "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-hover)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
           input.availableOnly && "bg-[var(--muted)]",
         )}
       >
