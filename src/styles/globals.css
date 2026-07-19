@@ -746,7 +746,7 @@
   right: 0.75rem;
   z-index: 1000;
   transform: translateY(-150%);
-  border: 1px solid var(--glass-border-strong);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   background: var(--popover);
   color: var(--popover-foreground);
@@ -1530,7 +1530,7 @@ main
 }
 
 .account-boutique-page .brand-accent-card:hover {
-  border-color: var(--boutique-border-strong);
+  border-color: var(--boutique-border-hover);
   background: var(--boutique-surface-soft);
 }
 
@@ -3552,7 +3552,7 @@ html[data-accessibility-motion="reduce"] .about-rule {
   place-items: center;
   width: 2.4rem;
   height: 2.4rem;
-  border: 1px solid var(--glass-border-strong);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
   background: var(--background);
   font-size: 0.78rem;
@@ -3631,7 +3631,7 @@ html[data-accessibility-motion="reduce"] .about-rule {
   top: 1.3rem;
   inset-inline: 1.3rem;
   height: 1px;
-  background: var(--glass-border-strong);
+  background: var(--elysia-border-soft);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 900ms var(--ease-motion-standard) 180ms;
@@ -3655,7 +3655,7 @@ html[data-accessibility-motion="reduce"] .about-rule {
   place-items: center;
   width: 2.6rem;
   height: 2.6rem;
-  border: 1px solid var(--glass-border-strong);
+  border: 1px solid var(--glass-border);
   border-radius: 999px;
   background: var(--background);
   font-size: 0.8rem;
