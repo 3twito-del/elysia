@@ -155,7 +155,7 @@ function SavedSizeRow({
   return (
     <form
       action={action}
-      className="glass-inset grid gap-3 rounded-md border p-3"
+      className="grid gap-3 border-b border-[var(--glass-border)] pb-4 last:border-b-0 last:pb-0"
       onSubmit={handleSubmit}
     >
       <input name="kind" type="hidden" value={kind} />

@@ -29,7 +29,9 @@ describe("accessibility guardrails", () => {
 
     expect(css).toContain("--brand-gold-muted: #b49a6a;");
     expect(css).toContain("--elysia-focus: rgb(138 106 63 / 90%);");
-    expect(css).toContain("--elysia-focus: rgb(240 233 223 / 88%);");
+    expect(css).toContain(
+      "--elysia-focus: color-mix(in srgb, var(--brand-champagne) 65%, transparent);",
+    );
     expect(css).toContain("--elysia-focus: oklch(0 0 0 / 85%);");
     expect(css).toContain("--glass-focus: var(--elysia-focus);");
   });
@@ -77,7 +79,8 @@ describe("accessibility guardrails", () => {
 
       return (
         !source.includes("focus-visible") ||
-        !source.includes("var(--glass-focus)")
+        (!source.includes("var(--glass-focus)") &&
+          !source.includes("var(--site-header-focus)"))
       );
     });
     const css = readFileSync(
@@ -91,6 +94,10 @@ describe("accessibility guardrails", () => {
     );
     expect(css).toContain(".public-select-trigger:focus-visible");
     expect(css).toContain(".skip-link:focus-visible");
+    // --site-header-focus is a state-aware alias of --glass-focus (swaps to
+    // white over the transparent hero header) — it must resolve back to the
+    // shared bronze token by default, not a disconnected value.
+    expect(css).toContain("--site-header-focus: var(--glass-focus);");
   });
 
   it("keeps literal icon-sized buttons accessible by name", () => {

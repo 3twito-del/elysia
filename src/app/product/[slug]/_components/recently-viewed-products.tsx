@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
 import { RECENTLY_VIEWED_STORAGE_KEY } from "~/lib/cookie-consent";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
@@ -89,12 +90,10 @@ function RecentlyViewedProductsContent({
       data-testid="recently-viewed-products"
       id={id}
     >
-      <h2
-        className="text-2xl font-semibold"
+      <CommerceSectionHeader
         id="recently-viewed-products-heading"
-      >
-        {heading}
-      </h2>
+        title={heading}
+      />
       <div
         className={gridClassName}
         data-layout-equal-group="recently-viewed-products"

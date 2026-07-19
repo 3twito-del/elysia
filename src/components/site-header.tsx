@@ -120,7 +120,7 @@ export function SiteHeader() {
             <Link
               aria-current={pathname === "/search" ? "page" : undefined}
               aria-label="חיפוש"
-              className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] max-[360px]:hidden sm:min-h-10 sm:min-w-0 sm:justify-start"
+              className="site-header-link site-header-label-action inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-md text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)] max-[360px]:hidden sm:min-h-10 sm:min-w-0 sm:justify-start"
               href="/search"
               prefetch={false}
             >
@@ -130,7 +130,7 @@ export function SiteHeader() {
           </div>
 
           <Link
-            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-h-11 min-w-0 shrink-0 items-center justify-self-center"
+            className="brand-header-mark site-header-link outline-none [grid-column:2] [grid-row:1] flex min-h-11 min-w-0 shrink-0 items-center justify-self-center rounded-md focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)]"
             aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"
@@ -146,7 +146,7 @@ export function SiteHeader() {
             <Link
               aria-current={pathname === "/service" ? "page" : undefined}
               aria-label="תמיכה"
-              className="site-header-link site-header-label-action hidden min-h-10 items-center text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)] lg:inline-flex"
+              className="site-header-link site-header-label-action hidden min-h-10 items-center rounded-md text-[0.94rem] font-medium outline-none focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)] lg:inline-flex"
               href="/service"
               prefetch={false}
             >
@@ -170,7 +170,7 @@ export function SiteHeader() {
               </Link>
             </Button>
             <CartCountLink
-              className="site-header-action inline-grid size-11 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+              className="site-header-action inline-grid size-11 place-items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)]"
               data-icon-tooltip="סל"
               data-icon-tooltip-placement="bottom"
             />

@@ -14,6 +14,12 @@ type KineticImageMotionProps = {
   scrollMotion?: boolean;
 };
 
+// Matches --motion-media / --ease-standard in globals.css — the CSS tokens
+// can't be read from this animejs-driven layer, so the numbers are mirrored
+// here instead of using off-scale durations with a spring easing.
+const KINETIC_MOTION_DURATION_MS = 680;
+const KINETIC_MOTION_EASE = "cubicBezier(.2,0,0,1)";
+
 const motionConfig = {
   card: {
     depth: 8,
@@ -22,7 +28,7 @@ const motionConfig = {
   },
   hero: {
     depth: 18,
-    scale: 1.026,
+    scale: 1.018,
     scrollDepth: 0,
   },
   panel: {
@@ -76,7 +82,7 @@ export function KineticImageMotion({
         y: number,
         scale: number,
         rotate: number,
-        duration = 760,
+        duration = KINETIC_MOTION_DURATION_MS,
       ) => {
         layerAnimation?.revert();
         layerAnimation = animate(layer, {
@@ -85,7 +91,7 @@ export function KineticImageMotion({
           scale,
           rotate,
           duration,
-          ease: "out(3)",
+          ease: KINETIC_MOTION_EASE,
         });
       };
 
@@ -109,7 +115,7 @@ export function KineticImageMotion({
 
       const onPointerLeave = () => {
         pointerInside = false;
-        animateLayer(0, 0, 1, 0, 880);
+        animateLayer(0, 0, 1, 0, KINETIC_MOTION_DURATION_MS);
       };
 
       const syncScroll = () => {
@@ -126,7 +132,13 @@ export function KineticImageMotion({
           1,
         );
 
-        animateLayer(0, (progress - 0.5) * scrollDepth, 1.01, 0, 920);
+        animateLayer(
+          0,
+          (progress - 0.5) * scrollDepth,
+          1.01,
+          0,
+          KINETIC_MOTION_DURATION_MS,
+        );
       };
 
       const requestScrollSync = () => {

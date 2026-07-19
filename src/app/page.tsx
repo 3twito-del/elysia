@@ -283,7 +283,7 @@ export default async function Home() {
 
       <TRPCReactProvider>
         <RecentlyViewedProducts
-          className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-7 lg:px-[var(--ui-page-x-wide)]"
+          className="boutique-section mx-auto w-full max-w-[92rem] border-y border-[var(--glass-border)] px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
           gridClassName="ui-equal-grid mt-5 grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-7 sm:gap-y-10 lg:grid-cols-4"
           heading="נצפו לאחרונה"
           id="recently-viewed"

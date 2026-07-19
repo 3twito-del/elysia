@@ -34,9 +34,12 @@ describe("footer + dark-mode design pass (owner-selected DP 67-77)", () => {
     );
   });
 
-  it("gives the footer social icons a bronze hover accent instead of a neutral ink tint, with no color fill", () => {
+  it("gives footer social icons a quiet ink hover distinct from the bronze keyboard-focus ring, with no color fill", () => {
     expect(css).toContain(
-      ".footer-social-link:hover,\n.footer-social-link:focus-visible {\n  border-color: var(--glass-focus);",
+      ".footer-social-link:hover {\n  border-color: var(--glass-border-hover);\n}",
+    );
+    expect(css).toContain(
+      ".footer-social-link:focus-visible {\n  border-color: var(--glass-focus);\n}",
     );
   });
 
@@ -56,21 +59,19 @@ describe("footer + dark-mode design pass (owner-selected DP 67-77)", () => {
     expect(skeleton).toContain("bg-muted");
   });
 
-  it("gives the PDP gallery frame a subtle dark-mode border so it doesn't float on the espresso background", () => {
+  it("gives the PDP gallery frame a subtle border in both themes so it doesn't float on the page background", () => {
     expect(css).toContain(
-      ".dark .brand-gallery-frame {\n  border: 1px solid var(--glass-border);\n}",
+      ".brand-gallery-frame {\n  border: 1px solid var(--glass-border);\n",
     );
   });
 
   it("unifies glass-inset border-color on bespoke surfaces to the shared token instead of near-duplicate hardcoded values", () => {
-    expect(css).toContain(
-      ".footer-trust-link .glass-inset {\n  border-color: var(--glass-border);",
-    );
+    // The footer trust-link override was dropped entirely (not just
+    // re-tokenized) since it duplicated .glass-inset's own default
+    // border-color/background — it now just inherits the shared rule.
+    expect(css).not.toContain(".footer-trust-link .glass-inset {");
     expect(css).toContain(
       ".product-purchase-surface .glass-inset {\n  border-color: var(--glass-border);",
-    );
-    expect(css).toContain(
-      ".dark .footer-trust-link .glass-inset {\n  border-color: var(--glass-border);",
     );
     expect(css).toContain(
       ".dark .product-purchase-surface .glass-inset {\n  border-color: var(--glass-border);",

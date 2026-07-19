@@ -882,7 +882,7 @@ function CategoryPagination({
           page === "ellipsis" ? (
             <span
               aria-label="עמודים נוספים"
-              className="text-muted-foreground grid h-8 min-w-8 place-items-center rounded-md border border-transparent px-2 text-sm"
+              className="text-muted-foreground grid h-8 min-w-8 place-items-center rounded-md border border-[var(--glass-border)] px-2 text-sm"
               key={`ellipsis-${index}`}
             >
               ...

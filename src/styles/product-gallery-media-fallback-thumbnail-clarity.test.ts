@@ -121,7 +121,9 @@ describe("product gallery media fallback and thumbnail clarity", () => {
     expect(css).toContain(".product-gallery-secondary-tile");
     expect(css).toContain(".product-gallery-more-images-veil");
     expect(css).toContain(".product-gallery-more-images-label");
-    expect(css).toContain("backdrop-filter: blur(4px) saturate(0.92);");
+    expect(css).toContain(
+      "backdrop-filter: blur(var(--glass-blur)) saturate(0.92);",
+    );
     expect(css).toContain(".product-gallery-thumbnail-rail button");
     expect(css).toContain(".product-gallery-viewer-dialog");
     expect(css).toContain(".product-gallery-viewer-header");

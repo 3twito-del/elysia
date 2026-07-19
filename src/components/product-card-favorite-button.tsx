@@ -280,7 +280,7 @@ function FavoriteSubmitButton({
       aria-pressed={isSaved}
       className={cn(
         "product-card-favorite-button h-10 w-10 shrink-0 rounded-full border border-transparent !bg-transparent text-[var(--foreground)] shadow-none",
-        "hover:border-transparent hover:!bg-transparent hover:text-[var(--foreground)] focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        "hover:border-transparent hover:!bg-transparent hover:text-[var(--foreground)] focus-visible:ring-0",
       )}
       data-favorite-saved={visuallySaved ? "true" : "false"}
       data-icon-tooltip={

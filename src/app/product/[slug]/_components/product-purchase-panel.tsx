@@ -61,7 +61,6 @@ import {
   getSavedSize,
   subscribeToSavedSizeUpdates,
 } from "~/lib/size-fit-storage";
-import { cn } from "~/lib/utils";
 import type { CatalogProductVariant } from "~/server/services/catalog-types";
 import { api } from "~/trpc/react";
 
@@ -404,12 +403,7 @@ export function ProductPurchasePanel({
           </div>
           {savedSizeMatch ? (
             <div
-              className={cn(
-                "rounded-md border p-3 text-sm leading-6",
-                savedSizeMatch.available
-                  ? "glass-inset"
-                  : "border-destructive/30 bg-destructive/5 text-foreground",
-              )}
+              className="glass-inset rounded-md border p-3 text-sm leading-6"
               data-testid="product-saved-size-match"
             >
               <p className="font-medium">
@@ -624,7 +618,7 @@ export function ProductPurchasePanel({
                 >
                   <span
                     aria-hidden="true"
-                    className="size-3 rounded-full border border-black/10"
+                    className="size-3 rounded-full border border-[var(--elysia-border-soft)]"
                     data-material-swatch="true"
                     style={getMetalSwatchStyle(color)}
                   />

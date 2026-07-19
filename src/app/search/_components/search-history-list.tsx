@@ -66,7 +66,7 @@ export function SearchHistoryList({
         </span>
         {visibleQueries.map((query) => (
           <Link
-            className="glass-control hover:border-foreground/30 inline-flex h-8 max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 text-sm transition"
+            className="glass-control hover:border-[var(--glass-border-hover)] inline-flex h-8 max-w-full items-center gap-1.5 rounded-md border border-[var(--glass-border)] px-2.5 text-sm transition"
             data-testid="search-history-query"
             href={createSearchHistoryHref(query, { mode, viewMode })}
             key={query}

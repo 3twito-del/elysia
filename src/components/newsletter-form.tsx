@@ -129,7 +129,7 @@ export function NewsletterForm({
       <label className="newsletter-form-consent text-muted-foreground flex min-h-6 items-start gap-2 text-xs leading-5">
         <input
           checked={marketingConsent}
-          className="mt-0.5 size-5 shrink-0 accent-[var(--brand-ink)]"
+          className="mt-0.5 size-5 shrink-0 accent-[var(--foreground)]"
           name="marketingConsent"
           onChange={(event) => setMarketingConsent(event.currentTarget.checked)}
           required

@@ -714,7 +714,7 @@ function SearchResultListItem({
         {isUnavailable ? (
           <div className="absolute top-2.5 left-2.5 flex items-start gap-2">
             <Badge
-              className="text-foreground h-6 border border-[var(--glass-border)] bg-[var(--brand-ivory)] px-2.5 text-[0.7rem] font-semibold shadow-[0_8px_20px_oklch(0.18_0_0_/_8%)]"
+              className="text-foreground h-6 border border-[var(--glass-border)] bg-[var(--brand-ivory)] px-2.5 text-[0.7rem] font-semibold shadow-none"
               variant="ghost"
             >
               אזל מהמלאי
@@ -742,9 +742,7 @@ function SearchResultListItem({
               >
                 {detail}
                 {index < productDetails.length - 1 ? (
-                  <span className="mx-2 text-[var(--glass-border-strong)]">
-                    ·
-                  </span>
+                  <span className="text-muted-foreground mx-2">·</span>
                 ) : null}
               </span>
             ))}

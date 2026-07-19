@@ -38,7 +38,7 @@ describe("popup surfaces", () => {
       /\.popup-surface\s*\{[\s\S]*-webkit-backdrop-filter:\s*none;/,
     );
     expect(css).toMatch(
-      /\.popup-overlay\s*\{[\s\S]*background:\s*oklch\(0\.12 0 0 \/ 58%\);/,
+      /\.popup-overlay\s*\{[\s\S]*background:\s*color-mix\(in srgb, var\(--brand-espresso\) 58%, transparent\);/,
     );
   });
 

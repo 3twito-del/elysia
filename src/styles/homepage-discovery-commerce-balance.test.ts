@@ -143,7 +143,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(css).toContain(
       ".boutique-collection-card:focus-visible .boutique-collection-action",
     );
-    expect(css).toContain("background: #fffaf4;");
+    expect(css).toContain("background: var(--brand-porcelain);");
     expect(css).toContain("color: var(--foreground);");
     expect(css).toContain("transform: scale(1);");
   });

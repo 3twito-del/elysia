@@ -717,7 +717,7 @@ function AvailabilityField({ input }: { input: ProductSearchInput }) {
       <label
         className={cn(
           "glass-control flex h-11 min-w-0 items-center gap-2 rounded-md border px-3 text-sm transition-colors focus-within:border-[var(--glass-border-strong)] focus-within:ring-3 focus-within:ring-[var(--glass-focus)]",
-          input.availableOnly && "border-[var(--glass-border-strong)]",
+          input.availableOnly && "bg-[var(--muted)]",
         )}
       >
         <input

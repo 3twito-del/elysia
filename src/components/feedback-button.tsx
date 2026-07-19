@@ -38,7 +38,8 @@ export function FeedbackButton() {
       <DialogTrigger asChild>
         <Button
           aria-label="שליחת פידבק"
-          className="fixed end-6 bottom-6 z-50 gap-2 shadow-md"
+          className="public-floating-control fixed end-6 bottom-6 z-50 gap-2 shadow-none"
+          data-public-floating-avoid="true"
           size="sm"
           variant="outline"
         >

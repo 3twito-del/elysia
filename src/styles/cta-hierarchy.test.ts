@@ -83,7 +83,7 @@ describe("public CTA hierarchy", () => {
       '.home-hero-actions [data-slot="button"]:focus-visible',
     );
     expect(css).toContain(".home-hero-actions .home-hero-cta-secondary");
-    expect(css).toContain("outline: 2px solid currentColor !important;");
+    expect(css).toContain("outline: none !important;");
     expect(css).toContain("--tw-ring-color: transparent !important;");
   });
 

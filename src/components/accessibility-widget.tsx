@@ -335,7 +335,7 @@ export function AccessibilityWidget() {
           aria-haspopup="dialog"
           aria-label="פתיחת תפריט נגישות"
           className={cn(
-            "public-floating-control public-floating-trigger bg-background text-foreground focus-visible:outline-foreground/50 fixed right-3 bottom-[calc(max(var(--floating-stack-bottom,0.75rem),var(--public-floating-bar-offset,0.75rem))+env(safe-area-inset-bottom))] left-auto z-50 size-10 rounded-full shadow-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid sm:right-5 sm:size-11",
+            "public-floating-control public-floating-trigger bg-background text-foreground fixed right-3 bottom-[calc(max(var(--floating-stack-bottom,0.75rem),var(--public-floating-bar-offset,0.75rem))+env(safe-area-inset-bottom))] left-auto z-50 size-10 rounded-full shadow-none sm:right-5 sm:size-11",
             usesCheckoutTopPlacement &&
               "top-[calc(var(--site-header-height)+var(--floating-stack-top,0px)+0.75rem+env(safe-area-inset-top))] bottom-auto sm:bottom-auto",
           )}
@@ -354,7 +354,7 @@ export function AccessibilityWidget() {
       )}
 
       {isOpen && (
-        <div className="fixed inset-0 z-[90]" dir="rtl">
+        <div className="fixed inset-0 z-[80]" dir="rtl">
           <button
             aria-label="סגירת תפריט נגישות"
             className="popup-overlay fixed inset-0 cursor-default"
@@ -367,7 +367,7 @@ export function AccessibilityWidget() {
             aria-describedby={descriptionId}
             aria-labelledby={titleId}
             aria-modal="true"
-            className="popup-surface minimal-scroll fixed top-1/2 left-1/2 z-[100] grid max-h-[min(42rem,calc(100vh-2rem))] w-[min(calc(100vw-2rem),27rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm shadow-[0_24px_80px_oklch(0.1_0_0_/_24%)] outline-none"
+            className="popup-surface minimal-scroll animate-in fade-in-0 zoom-in-95 fixed top-1/2 left-1/2 z-[90] grid max-h-[min(42rem,calc(100vh-2rem))] w-[min(calc(100vw-2rem),27rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border p-4 text-sm outline-none duration-100"
             id={dialogId}
             ref={dialogRef}
             role="dialog"

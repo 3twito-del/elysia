@@ -29,7 +29,8 @@ type PublicMotionContextValue = {
   suppressInitialReveal: boolean;
 };
 
-const pageTransitionMs = 180;
+// Kept in sync with --motion-page in globals.css.
+const pageTransitionMs = 220;
 const floatingAvoidSelector = [
   '[data-public-floating-avoid="true"]',
   '[data-slot="card"]',

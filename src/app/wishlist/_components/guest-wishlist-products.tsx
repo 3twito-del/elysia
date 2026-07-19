@@ -253,13 +253,13 @@ function GuestWishlistShortlistOnboarding({
       </div>
       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <Link
-          className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
+          className="border-border hover:border-[var(--glass-border-hover)] hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
           href="/search"
         >
           המשך חיפוש
         </Link>
         <Link
-          className="border-border hover:border-foreground/50 hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
+          className="border-border hover:border-[var(--glass-border-hover)] hover:bg-muted/60 rounded-full border px-3 py-1.5 text-xs transition"
           href="/account"
         >
           שמירה בחשבון

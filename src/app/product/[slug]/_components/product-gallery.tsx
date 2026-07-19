@@ -1243,7 +1243,7 @@ export function ProductGallery({
         dir="rtl"
       >
         <div
-          className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(82vh,46rem)] w-full min-w-0 overflow-hidden rounded-md bg-[var(--secondary)] sm:aspect-[5/4] lg:aspect-auto lg:max-h-none lg:min-h-[min(72vh,42rem)]"
+          className="brand-gallery-frame product-gallery-main-frame relative aspect-[4/5] max-h-[min(82vh,46rem)] w-full min-w-0 overflow-hidden rounded-md sm:aspect-[5/4] lg:aspect-auto lg:max-h-none lg:min-h-[min(72vh,42rem)]"
           data-gallery-hover-zoom={isHoverZoomActive ? "true" : "false"}
           data-gallery-swipeable={galleryImageCount > 1 ? "true" : undefined}
           data-motion-gallery="product"

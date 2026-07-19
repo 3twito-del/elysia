@@ -29,7 +29,7 @@ const markdownComponents: Components = {
   },
   blockquote({ children }) {
     return (
-      <blockquote className="border-s-2 border-[var(--glass-border-strong)] ps-4 text-muted-foreground italic">
+      <blockquote className="border-muted-foreground/40 border-s-2 ps-4 text-muted-foreground italic">
         {children}
       </blockquote>
     );

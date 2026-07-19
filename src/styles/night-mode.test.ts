@@ -14,7 +14,9 @@ describe("storefront night mode", () => {
     expect(css).toContain("--background: #161210;");
     expect(css).toContain("--foreground: #f3ede6;");
     expect(css).toContain("--muted-foreground: #b5aa9e;");
-    expect(css).toContain("--elysia-focus: rgb(240 233 223 / 88%);");
+    expect(css).toContain(
+      "--elysia-focus: color-mix(in srgb, var(--brand-champagne) 65%, transparent);",
+    );
     // The legacy teal dark palette must not return.
     expect(css).not.toContain("oklch(0.15 0.025 195)");
     expect(css).not.toContain("oklch(0.78 0.05 190)");

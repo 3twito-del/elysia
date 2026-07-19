@@ -33,7 +33,7 @@ describe("typography + motion design pass (owner-selected DP 78-89)", () => {
 
   it("gives blog markdown a defined emphasis and blockquote treatment instead of raw browser defaults", () => {
     expect(blogMarkdown).toContain("blockquote({ children }) {");
-    expect(blogMarkdown).toContain("border-s-2 border-[var(--glass-border-strong)]");
+    expect(blogMarkdown).toContain("border-muted-foreground/40 border-s-2");
     expect(blogMarkdown).toContain("strong({ children }) {");
   });
 

@@ -251,7 +251,7 @@ export default async function ProductPage({
                       <span className="text-2xl font-semibold tracking-normal sm:text-3xl">
                         {formatPrice(product.price)}
                       </span>
-                      <span className="text-muted-foreground text-sm line-through decoration-[var(--glass-border-strong)]">
+                      <span className="text-muted-foreground text-sm line-through">
                         מחיר קודם {formatPrice(productSale.compareAt)}
                       </span>
                     </span>
@@ -266,7 +266,12 @@ export default async function ProductPage({
                     {formatPrice(product.price)}
                   </span>
                 )}
-                <Badge variant="secondary">{commerceStatus.label}</Badge>
+                <Badge
+                  className="product-card-status-badge"
+                  variant="outline"
+                >
+                  {commerceStatus.label}
+                </Badge>
               </div>
               <p className="text-muted-foreground text-xs leading-5">
                 {vatIncludedNotice}

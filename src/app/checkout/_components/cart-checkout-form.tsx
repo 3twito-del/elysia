@@ -361,10 +361,6 @@ export function CartCheckoutForm() {
       Boolean(checkoutContactFieldValues[field].trim()) &&
       !checkoutErrors[field],
   );
-  const checkoutStepCompletionByValue: Record<string, boolean> = {
-    "1": hasOwnItems,
-    "2": isCheckoutDetailsStepComplete,
-  };
   const checkoutLegalIssue =
     (hasOwnItems || hasDropshipItems) && !legalAccepted
       ? checkoutLegalAcceptanceMessage
@@ -382,6 +378,12 @@ export function CartCheckoutForm() {
     legalAccepted &&
     !checkoutLocked &&
     !hasPricingReview;
+  const checkoutStepCompletionByValue: Record<string, boolean> = {
+    "1": hasOwnItems,
+    "2": isCheckoutDetailsStepComplete,
+    "3": hasOwnItems && isCheckoutDetailsStepComplete,
+    "4": canSubmit,
+  };
   const checkoutIntroCopy = hasMixedSourceCart
     ? "הסל מחולק לשני מסלולים: פריטי החנות מסוכמים כאן, ופריטים נפרדים ימשיכו לקופה נפרדת."
     : hasDropshipItems
@@ -1361,8 +1363,8 @@ export function CartCheckoutForm() {
             size="sm"
           >
             <CardHeader className="checkout-boutique-card-header">
-              <CheckoutStepBadge value="4" />
-              <CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <CheckoutStepBadge value="4" />
                 {hasOwnItems ? "סיכום הזמנה" : "סיכום פריטים נפרדים"}
               </CardTitle>
             </CardHeader>
@@ -1832,7 +1834,7 @@ function CheckoutEmptyCartState() {
         >
           {checkoutEmptyRecommendedProducts.map((item) => (
             <Link
-              className="glass-inset group grid grid-cols-[5.25rem_minmax(0,1fr)] gap-3 rounded-md border p-3 transition hover:border-[var(--glass-border-strong)]"
+              className="glass-inset group grid grid-cols-[5.25rem_minmax(0,1fr)] gap-3 rounded-md border p-3 transition hover:border-[var(--glass-border-hover)]"
               data-testid="checkout-empty-recommended-product"
               href={item.href}
               key={item.href}

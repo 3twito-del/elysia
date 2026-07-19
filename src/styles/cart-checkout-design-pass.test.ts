@@ -50,9 +50,15 @@ describe("cart + checkout design pass (owner-selected DP 41-50)", () => {
   });
 
   it("gives the top step-overview panel a subtle completed state with a token-based color, without touching the standalone per-section step badges", () => {
+    const css = read("src/styles/globals.css");
+
     expect(checkoutStepBadge).toContain("isComplete = false");
     expect(checkoutStepBadge).toContain("data-checkout-step-complete");
-    expect(checkoutStepBadge).toContain("text-emerald-700");
+    expect(checkoutStepBadge).toContain("checkout-step-badge-complete");
+    expect(checkoutStepBadge).not.toMatch(/emerald/);
+    expect(css).toContain(
+      ".checkout-step-badge-complete {\n  border-color: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);",
+    );
     expect(checkoutForm).toContain("checkoutStepCompletionByValue[step.value]");
     // The four standalone section-header badges stay untouched (pinned by
     // visible-site-improvements.test.ts as literal self-closing tags).

@@ -60,10 +60,9 @@ describe("public floating chrome contract", () => {
     expect(widget).toContain("bg-background");
     expect(widget).toContain("text-foreground");
     expect(widget).toContain("shadow-none");
-    expect(widget).toContain("focus-visible:ring-0");
-    expect(widget).toContain("focus-visible:ring-transparent");
-    expect(widget).toContain("focus-visible:outline-foreground/50");
-    expect(widget).toContain("focus-visible:outline-solid");
+    // Focus now uses the shared bronze ring (--glass-focus) like every other
+    // control, instead of a bespoke outline — no separate focus classes here.
+    expect(widget).not.toContain("focus-visible:outline-foreground/50");
     expect(widget).not.toContain("fixed bottom");
     expect(widget).not.toContain("left-4");
     expect(widget).not.toContain("var(--public-bottom-safe-offset");

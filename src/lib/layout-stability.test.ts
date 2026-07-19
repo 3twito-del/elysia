@@ -136,7 +136,7 @@ describe("layout stability guardrails", () => {
     expect(accessibilityWidgetSource).toContain(
       "bottom-[calc(max(var(--floating-stack-bottom",
     );
-    expect(accessibilityWidgetSource).toContain("fixed inset-0 z-[90]");
+    expect(accessibilityWidgetSource).toContain("fixed inset-0 z-[80]");
   });
 
   it("keeps floating chrome collision offsets wired to commerce controls", () => {

@@ -48,7 +48,7 @@ describe("PDP design pass 2 (owner-selected DP 31-40)", () => {
 
   it("gives the mobile sticky purchase bar a real top shadow instead of the ineffective shadow-none it carried", () => {
     expect(purchasePanel).not.toContain("motion-sticky-purchase glass-chrome fixed inset-x-2 bottom-[calc(var(--floating-stack-bottom,0px)+0.625rem+env(safe-area-inset-bottom))] z-40 rounded-md border p-2.5 shadow-none");
-    expect(css).toContain("box-shadow: 0 -10px 22px rgb(29 25 22 / 7%);");
+    expect(css).toContain("box-shadow: 0 -10px 22px var(--elysia-border-soft);");
     expect(css).toContain(".dark .motion-sticky-purchase {");
     expect(css).toContain("box-shadow: 0 -10px 22px oklch(0 0 0 / 24%);");
   });

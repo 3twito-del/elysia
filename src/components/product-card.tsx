@@ -221,7 +221,7 @@ export function ProductCard({
                 {sale ? (
                   <span
                     aria-label={`מחיר קודם ${formatPrice(sale.compareAt)}`}
-                    className="text-muted-foreground text-xs leading-5 font-normal line-through decoration-[var(--glass-border-strong)]"
+                    className="text-muted-foreground text-xs leading-5 font-normal line-through"
                   >
                     {formatPrice(sale.compareAt)}
                   </span>
