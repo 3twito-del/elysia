@@ -194,8 +194,21 @@ export function GuestWishlistProducts() {
             </div>
 
             {missingSlugs.length > 0 ? (
-              <StatusMessage role="status" tone="neutral">
-                חלק מהפריטים שנשמרו אינם זמינים עוד באתר.
+              <StatusMessage
+                role="status"
+                tone="neutral"
+                variant="plain"
+                className="flex flex-wrap items-center justify-between gap-3"
+              >
+                <span>חלק מהפריטים שנשמרו אינם זמינים עוד באתר.</span>
+                <Button
+                  onClick={handleRemoveMissing}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  הסרת הפריטים שאינם זמינים
+                </Button>
               </StatusMessage>
             ) : null}
 
@@ -226,6 +239,13 @@ export function GuestWishlistProducts() {
   function handleClearWishlist() {
     clearGuestWishlistItems();
     setMessage("רשימת המועדפים נוקתה.");
+  }
+
+  function handleRemoveMissing() {
+    for (const slug of missingSlugs) {
+      removeGuestWishlistItem(slug);
+    }
+    setMessage("הפריטים שאינם זמינים הוסרו מהמועדפים.");
   }
 }
 

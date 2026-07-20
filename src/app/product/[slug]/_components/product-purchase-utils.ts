@@ -101,16 +101,33 @@ export function getSelectedVariantLabel(input: {
     : base;
 }
 
+// UX38: a variant with both a size and a metal/stone color has no other way
+// to say which color a given picker button represents -- there's no
+// separate color control, just a static swatch list below the size row
+// (see the "גוון מתכת" block in product-purchase-panel.tsx). Every variant
+// with a color gets it named here so screen readers always hear the full
+// identity of what they're selecting, not just the size.
+function getVariantColorDescriptor(variant: CatalogProductVariant) {
+  return [variant.metalColor, variant.stoneColor]
+    .filter((value): value is string => Boolean(value))
+    .join(" · ");
+}
+
 export function getVariantButtonLabel(
   variant: CatalogProductVariant,
   availabilityMode: PublicProductAvailabilityMode,
   requiresSeparateCheckout = false,
   backorderEnabled = false,
 ) {
+  const colorDescriptor = getVariantColorDescriptor(variant);
+  const displayName = colorDescriptor
+    ? `${getVariantDisplayName(variant)}, ${colorDescriptor}`
+    : getVariantDisplayName(variant);
+
   if (
     isSeparateCheckoutVariantAvailable({ requiresSeparateCheckout, variant })
   ) {
-    return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, זמין להזמנה`;
+    return `${displayName}, ${formatInlinePrice(variant.price)}, זמין להזמנה`;
   }
 
   const commerceStatus = getPublicProductCommerceStatus({
@@ -123,7 +140,22 @@ export function getVariantButtonLabel(
       ? getPublicStockStatusLabel(variant.availableQuantity)
       : commerceStatus.label;
 
-  return `${getVariantDisplayName(variant)}, ${formatInlinePrice(variant.price)}, ${availability}`;
+  return `${displayName}, ${formatInlinePrice(variant.price)}, ${availability}`;
+}
+
+/**
+ * Only true when picking blind would actually be ambiguous -- a single
+ * product-wide color still gets named in the aria-label, but doesn't need
+ * to clutter every visible pill when every button is the same color.
+ */
+export function hasAmbiguousVariantColors(variants: CatalogProductVariant[]) {
+  const colors = new Set(
+    variants
+      .map((variant) => getVariantColorDescriptor(variant))
+      .filter((descriptor) => descriptor.length > 0),
+  );
+
+  return colors.size > 1;
 }
 
 export function isVariantSelectableForCart(input: {

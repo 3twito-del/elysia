@@ -17,6 +17,15 @@ const MAX_OTP_ATTEMPTS = 5;
 const OTP_RESEND_COOLDOWN_SECONDS = 60;
 const OTP_HASH_SCHEME = "otp-hmac-sha256";
 
+// Exported so ~/server/auth/config.ts's authorize() catch block can tell
+// these three failure modes apart without re-verifying the code a second
+// time (which would double-count the attempt / re-consume the challenge).
+export const OTP_EXPIRED_MESSAGE = "הקוד פג תוקף. בקשי קוד חדש.";
+export const OTP_LOCKED_MESSAGE = "בוצעו יותר מדי ניסיונות. בקשי קוד חדש.";
+export const OTP_INVALID_MESSAGE = "קוד האימות אינו תקין.";
+export const OTP_RESEND_COOLDOWN_MESSAGE = (seconds: number) =>
+  `כבר נשלח קוד לאחרונה. אפשר לבקש קוד נוסף בעוד ${seconds} שניות.`;
+
 type TransactionClient = Prisma.TransactionClient;
 
 export const requestCustomerOtpInputSchema = z
@@ -182,7 +191,7 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
   if (resendWaitSeconds > 0) {
     throw new TRPCError({
       code: "TOO_MANY_REQUESTS",
-      message: `Please wait ${resendWaitSeconds} seconds before requesting another code.`,
+      message: OTP_RESEND_COOLDOWN_MESSAGE(resendWaitSeconds),
     });
   }
 
@@ -260,14 +269,14 @@ export async function verifyCustomerOtp(input: VerifyCustomerOtpInput) {
     if (challengeState === "expired") {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "הקוד פג תוקף. בקשי קוד חדש.",
+        message: OTP_EXPIRED_MESSAGE,
       });
     }
 
     if (challengeState === "locked") {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",
-        message: "בוצעו יותר מדי ניסיונות. בקשי קוד חדש.",
+        message: OTP_LOCKED_MESSAGE,
       });
     }
 
@@ -391,6 +400,6 @@ async function upsertCustomerIdentity(
 function invalidOtpError() {
   return new TRPCError({
     code: "BAD_REQUEST",
-    message: "קוד האימות אינו תקין.",
+    message: OTP_INVALID_MESSAGE,
   });
 }

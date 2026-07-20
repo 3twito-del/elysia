@@ -27,7 +27,7 @@ import {
 } from "~/components/ui/sheet";
 import { formatPlpResultCount } from "~/lib/format";
 import { cn } from "~/lib/utils";
-import type { ProductSearchInput } from "~/server/adapters/search";
+import type { ProductSearchInput, SearchFacet } from "~/server/adapters/search";
 import type { CatalogCategory, CatalogFacets } from "~/server/services/catalog";
 import { SearchHistoryList } from "./search-history-list";
 
@@ -36,6 +36,7 @@ type SearchControlsProps = {
   categories: CatalogCategory[];
   clearFiltersHref: string;
   clearSearchHref: string;
+  facetCounts: SearchFacet[];
   facets: CatalogFacets;
   input: ProductSearchInput;
   resultTotal: number;
@@ -49,6 +50,7 @@ export function SearchControls({
   categories,
   clearFiltersHref,
   clearSearchHref,
+  facetCounts,
   facets,
   input,
   resultTotal,
@@ -60,6 +62,13 @@ export function SearchControls({
   const summaryRef = useRef<HTMLElement>(null);
   const desktopQueryInputRef = useRef<HTMLInputElement>(null);
   const mobileQueryInputRef = useRef<HTMLInputElement>(null);
+  // UX39: resultTotal is a snapshot from the page that was already loaded --
+  // once the shopper edits a field in the still-open filter sheet it no
+  // longer describes what submitting would return, so the submit button
+  // stops claiming a specific (now-stale) count instead of showing a wrong
+  // one.
+  const [filtersTouchedSinceOpen, setFiltersTouchedSinceOpen] =
+    useState(false);
 
   useEffect(() => {
     const detailsElement = detailsRef.current;
@@ -157,7 +166,7 @@ export function SearchControls({
               ) : null}
             </summary>
             <div className="mt-3 grid items-end gap-3 lg:grid-cols-[repeat(5,minmax(8.5rem,1fr))]">
-              <FacetSearchFields facets={facets} input={input} />
+              <FacetSearchFields facetCounts={facetCounts} facets={facets} input={input} />
               <AvailabilityField input={input} />
               <PreservedModeInput input={input} />
               <PreservedViewInput viewMode={viewMode} />
@@ -206,7 +215,12 @@ export function SearchControls({
             </Button>
           </form>
 
-          <Sheet closeOnMediaQuery="(min-width: 768px)">
+          <Sheet
+            closeOnMediaQuery="(min-width: 768px)"
+            onOpenChange={(open) => {
+              if (open) setFiltersTouchedSinceOpen(false);
+            }}
+          >
             <SheetTrigger asChild>
               <Button
                 aria-label="סינון ומיון"
@@ -260,6 +274,7 @@ export function SearchControls({
                 aria-label="סינון תוצאות חיפוש"
                 className="grid gap-4 p-4 pb-24"
                 id="mobile-search-filter-form"
+                onChange={() => setFiltersTouchedSinceOpen(true)}
                 onSubmit={pruneEmptySearchParams}
                 role="search"
               >
@@ -267,8 +282,14 @@ export function SearchControls({
                   categories={categories}
                   clearSearchHref={clearSearchHref}
                   input={input}
+                  onFieldChange={() => setFiltersTouchedSinceOpen(true)}
                 />
-                <FacetSearchFields facets={facets} input={input} />
+                <FacetSearchFields
+                  facetCounts={facetCounts}
+                  facets={facets}
+                  input={input}
+                  onFieldChange={() => setFiltersTouchedSinceOpen(true)}
+                />
                 <AvailabilityField input={input} />
                 <PreservedModeInput input={input} />
                 <PreservedViewInput viewMode={viewMode} />
@@ -276,11 +297,14 @@ export function SearchControls({
               {/* Sticky footer, outside the scrollable form: always reachable
                   without hunting through facet fields, and the submit button
                   shows the result count for the currently loaded page so the
-                  action reads as concrete rather than a blind "show results". */}
+                  action reads as concrete rather than a blind "show results" --
+                  until the shopper edits a field, at which point that count
+                  is stale (UX39) and the label falls back to a neutral one. */}
               <div className="bg-popover sticky bottom-0 grid gap-2 border-t border-[var(--glass-border)] p-4">
                 <Button form="mobile-search-filter-form" type="submit">
-                  {"הצגת "}
-                  {formatPlpResultCount(resultTotal)}
+                  {filtersTouchedSinceOpen
+                    ? "הצגת התוצאות המסוננות"
+                    : `הצגת ${formatPlpResultCount(resultTotal)}`}
                 </Button>
                 <Button asChild variant="outline">
                   <SheetClose asChild>
@@ -305,12 +329,16 @@ function PrimarySearchFields({
   categories,
   clearSearchHref,
   input,
+  onFieldChange,
   onQueryKeyDown,
   queryInputRef,
 }: {
   categories: CatalogCategory[];
   clearSearchHref: string;
   input: ProductSearchInput;
+  // UX39: only the mobile filter sheet wires this, to know its stale
+  // result-count submit label needs to fall back once a field changes.
+  onFieldChange?: () => void;
   // Optional: only the "חיפוש וסינון" details panel's own input wires these
   // (autofocus-on-open + Escape returns focus to its summary toggle). The
   // mobile filter/sort Sheet reuses this component too, but a Sheet is a
@@ -346,6 +374,7 @@ function PrimarySearchFields({
         key={`category-${input.category ?? ""}`}
         label="קטגוריה"
         name="category"
+        onSelect={onFieldChange}
         options={categories.map((category) => ({
           label: category.name,
           value: category.slug,
@@ -369,6 +398,7 @@ function PrimarySearchFields({
         key={`sort-${input.sort ?? "relevance"}`}
         label="מיון"
         name="sort"
+        onSelect={onFieldChange}
         options={[
           { label: "התאמה", value: "relevance" },
           { label: "מחיר: נמוך לגבוה", value: "price-asc" },
@@ -398,20 +428,43 @@ function SearchClearQueryLink({ href }: { href: string }) {
   );
 }
 
+function getFacetCountLookup(facetCounts: SearchFacet[], field: string) {
+  const values = facetCounts.find((facet) => facet.field === field)?.values;
+
+  if (!values) return undefined;
+
+  return new Map(values.map((entry) => [entry.value, entry.count]));
+}
+
 function FacetSearchFields({
+  facetCounts,
   facets,
   input,
+  onFieldChange,
 }: {
+  facetCounts: SearchFacet[];
   facets: CatalogFacets;
   input: ProductSearchInput;
+  // UX39: only the mobile filter sheet wires this, to know its stale
+  // result-count submit label needs to fall back once a field changes.
+  onFieldChange?: () => void;
 }) {
+  const materialCounts = getFacetCountLookup(facetCounts, "material");
+  const styleCounts = getFacetCountLookup(facetCounts, "style");
+  const giftCounts = getFacetCountLookup(facetCounts, "gift");
+  const colorCounts = getFacetCountLookup(facetCounts, "color");
+  const stoneCounts = getFacetCountLookup(facetCounts, "stone");
+  const collectionCounts = getFacetCountLookup(facetCounts, "collection");
+
   return (
     <>
       <SearchSelectField
         key={`material-${input.material ?? ""}`}
         label="חומר"
         name="material"
+        onSelect={onFieldChange}
         options={facets.materials.map((material) => ({
+          count: materialCounts?.get(material),
           label: material,
           value: material,
         }))}
@@ -422,7 +475,9 @@ function FacetSearchFields({
         key={`style-${input.style ?? ""}`}
         label="סגנון"
         name="style"
+        onSelect={onFieldChange}
         options={facets.styles.map((style) => ({
+          count: styleCounts?.get(style),
           label: style,
           value: style,
         }))}
@@ -433,7 +488,9 @@ function FacetSearchFields({
         key={`gift-${input.gift ?? ""}`}
         label="מתנה"
         name="gift"
+        onSelect={onFieldChange}
         options={facets.giftTags.map((gift) => ({
+          count: giftCounts?.get(gift),
           label: gift,
           value: gift,
         }))}
@@ -444,7 +501,9 @@ function FacetSearchFields({
         key={`color-${input.color ?? ""}`}
         label="צבע"
         name="color"
+        onSelect={onFieldChange}
         options={facets.colors.map((color) => ({
+          count: colorCounts?.get(color),
           label: color,
           value: color,
         }))}
@@ -455,7 +514,9 @@ function FacetSearchFields({
         key={`stone-${input.stone ?? ""}`}
         label="אבן"
         name="stone"
+        onSelect={onFieldChange}
         options={facets.stones.map((stone) => ({
+          count: stoneCounts?.get(stone),
           label: stone,
           value: stone,
         }))}
@@ -466,7 +527,9 @@ function FacetSearchFields({
         key={`collection-${input.collection ?? ""}`}
         label="קולקציה"
         name="collection"
+        onSelect={onFieldChange}
         options={facets.collections.map((collection) => ({
+          count: collectionCounts?.get(collection),
           label: collection,
           value: collection,
         }))}
@@ -481,6 +544,7 @@ function SearchSelectField({
   defaultSubmitValue,
   label,
   name,
+  onSelect,
   options,
   placeholder,
   value,
@@ -488,7 +552,13 @@ function SearchSelectField({
   defaultSubmitValue?: string;
   label: string;
   name: keyof ProductSearchInput;
-  options: Array<{ label: string; value: string }>;
+  // UX39: this custom listbox updates its hidden input via React state, not
+  // a real user interaction on the input itself, so it never fires a native
+  // bubbling change event a parent <form onChange> could catch -- callers
+  // that need to know about a selection (the mobile filter sheet's
+  // now-stale result count) call this explicitly instead.
+  onSelect?: () => void;
+  options: Array<{ count?: number; label: string; value: string }>;
   placeholder: string;
   value?: string;
 }) {
@@ -540,6 +610,7 @@ function SearchSelectField({
   function selectValue(nextValue: string) {
     setCurrentValue(nextValue === publicSelectEmptyValue ? "" : nextValue);
     closeList({ focusTrigger: true });
+    onSelect?.();
   }
 
   function handleTriggerKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
@@ -641,11 +712,22 @@ function SearchSelectField({
           >
             {selectOptions.map((option, index) => {
               const isSelected = option.value === selectedValue;
+              // UX34: surfaces the result count for each option (computed
+              // against every *other* active filter) so shoppers can see
+              // a combination would return nothing before picking it,
+              // instead of finding out only after the page reloads empty.
+              const hasZeroResults =
+                !isSelected &&
+                option.value !== publicSelectEmptyValue &&
+                option.count === 0;
 
               return (
                 <button
                   aria-selected={isSelected}
-                  className="public-select-option"
+                  className={cn(
+                    "public-select-option",
+                    hasZeroResults && "text-muted-foreground",
+                  )}
                   data-highlighted={isSelected ? "" : undefined}
                   key={option.value}
                   onClick={() => selectValue(option.value)}
@@ -655,7 +737,13 @@ function SearchSelectField({
                   role="option"
                   type="button"
                 >
-                  <span>{option.label}</span>
+                  <span className="min-w-0 truncate">
+                    {option.label}
+                    {typeof option.count === "number" &&
+                    option.value !== publicSelectEmptyValue
+                      ? ` (${option.count})`
+                      : ""}
+                  </span>
                   {isSelected ? (
                     <Check aria-hidden="true" className="size-3.5 shrink-0" />
                   ) : null}

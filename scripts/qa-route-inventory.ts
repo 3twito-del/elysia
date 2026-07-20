@@ -68,6 +68,7 @@ const staticPublicRoutes = [
   "/wishlist",
   "/branches",
   "/checkout",
+  "/checkout/mock-payment",
   "/account",
   "/account/invoices",
   "/account/service",

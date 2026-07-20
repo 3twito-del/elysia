@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ChevronLeft,
   Filter,
@@ -247,6 +247,14 @@ export default async function CategoryPage({
     Math.ceil(sortedProducts.length / productsPerPage),
   );
   const currentPage = Math.min(requestedPage, totalPages);
+
+  // UX32: an out-of-range ?page= was silently clamped for rendering while
+  // the address bar kept the requested (invalid) page number -- reload,
+  // share, or bookmark then landed back on the wrong page.
+  if (requestedPage !== currentPage) {
+    redirect(createCategoryPageHref(slug, filters, currentPage));
+  }
+
   const pageStartIndex = (currentPage - 1) * productsPerPage;
   const pageProducts = sortedProducts.slice(
     pageStartIndex,

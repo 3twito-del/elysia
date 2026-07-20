@@ -5,6 +5,8 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   cartCheckoutInputSchema,
   createCartCheckoutOrder,
+  getOrderConfirmationByOrderNumber,
+  orderConfirmationLookupInputSchema,
 } from "~/server/services/cart-checkout";
 import {
   consumeRateLimit,
@@ -65,6 +67,25 @@ export const checkoutRouter = createTRPCRouter({
       }
 
       return createCartCheckoutOrder(input);
+    }),
+
+  getOrderConfirmation: publicProcedure
+    .input(orderConfirmationLookupInputSchema)
+    .query(async ({ input }) => {
+      const rateLimit = await consumeRateLimit({
+        key: createRateLimitKey("order-confirmation-lookup", input.email),
+        limit: 20,
+        windowMs: 15 * 60_000,
+      });
+
+      if (!rateLimit.allowed) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.",
+        });
+      }
+
+      return getOrderConfirmationByOrderNumber(input);
     }),
 
   createPayment: publicProcedure

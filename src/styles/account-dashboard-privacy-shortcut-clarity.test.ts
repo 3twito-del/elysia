@@ -32,14 +32,17 @@ describe("account dashboard privacy shortcut clarity", () => {
     expect(privacyActions).toContain(
       'data-testid="account-privacy-shortcut-context"',
     );
-    expect(privacyActions).toContain('href="/account/privacy/export"');
+    // The export button now fetches client-side (so a 401 can show an inline
+    // message instead of navigating the whole tab to a raw JSON error page)
+    // rather than being a plain <a href> link.
+    expect(privacyActions).toContain('fetch("/account/privacy/export")');
     expect(privacyActions).toContain("DELETE_CONFIRMATION_VALUE");
     expect(privacyActions).toContain("deleteCustomerDataAction");
     expect(
       indexOf(privacyActions, 'data-testid="account-privacy-shortcut-context"'),
-    ).toBeLessThan(indexOf(privacyActions, 'href="/account/privacy/export"'));
+    ).toBeLessThan(indexOf(privacyActions, 'fetch("/account/privacy/export")'));
     expect(
-      indexOf(privacyActions, 'href="/account/privacy/export"'),
+      indexOf(privacyActions, 'fetch("/account/privacy/export")'),
     ).toBeLessThan(indexOf(privacyActions, 'name="confirmation"'));
   });
 

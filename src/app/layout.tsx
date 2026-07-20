@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { AnalyticsProvider } from "~/components/analytics-provider";
 import { CookieConsentBanner } from "~/components/cookie-consent-banner";
 import { DeferredAccessibilityWidget } from "~/components/deferred-accessibility-widget";
+import { DeferredFeedbackButton } from "~/components/deferred-feedback-button";
 import { ExclusiveDetailsProvider } from "~/components/exclusive-details-provider";
 import { PageTransitionFade } from "~/components/page-transition-fade";
 import { PwaProvider } from "~/components/pwa-provider";
@@ -116,6 +117,7 @@ export default async function RootLayout({
             <AnalyticsProvider />
           </Suspense>
           <DeferredAccessibilityWidget />
+          <DeferredFeedbackButton />
         </PwaProvider>
       </body>
     </html>

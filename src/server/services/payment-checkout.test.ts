@@ -65,17 +65,19 @@ describe("payment checkout failure copy", () => {
   });
 
   it("separates unavailable provider, rejected payment, callback mismatch, and webhook delay cases", () => {
+    // Hebrew now (UX22) -- this used to be the one hardcoded-English surface
+    // in an otherwise Hebrew-only checkout flow.
     expect(getPaymentCheckoutFailureMessage("provider_unavailable")).toContain(
-      "cannot be opened",
+      "לא ניתן לפתוח את התשלום",
     );
     expect(getPaymentCheckoutFailureMessage("payment_rejected")).toContain(
-      "not approved",
+      "לא אושר",
     );
     expect(getPaymentCheckoutFailureMessage("callback_mismatch")).toContain(
-      "could not be verified",
+      "לא ניתן היה לאמת",
     );
     expect(getPaymentCheckoutFailureMessage("webhook_delay")).toContain(
-      "waiting for payment confirmation",
+      "ממתינה לאישור תשלום",
     );
   });
 

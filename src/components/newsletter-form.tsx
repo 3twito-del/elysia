@@ -175,7 +175,7 @@ function SubmitButton({ label }: { label: string }) {
       variant="outline"
     >
       <Mail aria-hidden="true" className="size-4" />
-      {label}
+      {pending ? "שולחת..." : label}
     </Button>
   );
 }

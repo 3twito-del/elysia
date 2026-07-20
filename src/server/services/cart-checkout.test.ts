@@ -22,12 +22,12 @@ describe("cart checkout service", () => {
     ).toBe("ELY-20260428-AB12CD");
   });
 
-  it("reserves cart checkout orders for 30 minutes", () => {
+  it("reserves cart checkout orders for 24 hours, matching the manual-order window", () => {
     expect(
       getCartCheckoutReservationExpiresAt(
         new Date("2026-04-28T08:00:00.000Z"),
       ).toISOString(),
-    ).toBe("2026-04-28T08:30:00.000Z");
+    ).toBe("2026-04-29T08:00:00.000Z");
   });
 
   it("charges delivery shipping only for delivery", () => {

@@ -15,6 +15,7 @@ import {
 } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
 import type { CatalogProduct } from "~/server/services/catalog";
+import { TRPCReactProvider } from "~/trpc/react";
 
 type ProductCardProps = {
   contextLabel?: string;
@@ -236,10 +237,15 @@ export function ProductCard({
           className="product-card-hover-actions product-card-favorite absolute top-2.5 right-2.5 z-20"
           data-testid="product-card-hover-actions"
         >
-          <ProductCardFavoriteButton
-            productName={publicProductName}
-            productSlug={product.slug}
-          />
+          {/* ProductCard renders on pages that don't otherwise mount a tRPC
+              provider (e.g. the home page's featured grid) -- the favorite
+              button's saved-state query needs one wherever it renders. */}
+          <TRPCReactProvider>
+            <ProductCardFavoriteButton
+              productName={publicProductName}
+              productSlug={product.slug}
+            />
+          </TRPCReactProvider>
         </div>
       ) : null}
     </Card>

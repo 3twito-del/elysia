@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Download, Trash2 } from "lucide-react";
 
 import {
@@ -22,7 +22,21 @@ export function CustomerPrivacyActions() {
     deleteCustomerDataAction,
     initialState,
   );
+  const [exportState, setExportState] = useState<{
+    pending: boolean;
+    error?: string;
+  }>({ pending: false });
   const confirmationError = state.fieldErrors?.confirmation;
+  const confirmationInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // UX48: an irreversible-action form (delete account data) needs its
+    // error focused, not just visible -- otherwise a keyboard/screen-reader
+    // user gets no signal the confirmation was rejected.
+    if (confirmationError) {
+      confirmationInputRef.current?.focus();
+    }
+  }, [confirmationError]);
 
   return (
     <div className="grid gap-4">
@@ -37,12 +51,60 @@ export function CustomerPrivacyActions() {
           <li>שאלות פרטיות או נגישות ממשיכות דרך השירות.</li>
         </ul>
       </div>
-      <Button asChild className="w-fit gap-2" variant="outline">
-        <a href="/account/privacy/export">
+      <div className="grid w-fit gap-2">
+        <Button
+          className="w-fit gap-2"
+          disabled={exportState.pending}
+          onClick={async () => {
+            setExportState({ pending: true });
+
+            try {
+              const response = await fetch("/account/privacy/export");
+
+              if (response.status === 401) {
+                setExportState({
+                  pending: false,
+                  error: "החיבור לחשבון פג. נא להתחבר מחדש כדי לייצא נתונים.",
+                });
+                return;
+              }
+
+              if (!response.ok) {
+                setExportState({
+                  pending: false,
+                  error: "לא ניתן לייצא נתונים כרגע. נסי שוב בעוד רגע.",
+                });
+                return;
+              }
+
+              const blob = await response.blob();
+              const objectUrl = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+
+              link.href = objectUrl;
+              link.download = "elysia-customer-export.json";
+              link.click();
+              URL.revokeObjectURL(objectUrl);
+              setExportState({ pending: false });
+            } catch {
+              setExportState({
+                pending: false,
+                error: "לא ניתן לייצא נתונים כרגע. נסי שוב בעוד רגע.",
+              });
+            }
+          }}
+          type="button"
+          variant="outline"
+        >
           <Download aria-hidden="true" className="size-4" />
-          ייצוא נתונים
-        </a>
-      </Button>
+          {exportState.pending ? "מייצאת…" : "ייצוא נתונים"}
+        </Button>
+        {exportState.error ? (
+          <StatusMessage role="alert" tone="error" variant="plain">
+            {exportState.error}
+          </StatusMessage>
+        ) : null}
+      </div>
 
       <form
         action={action}
@@ -61,6 +123,7 @@ export function CustomerPrivacyActions() {
           name="confirmation"
           pattern={DELETE_CONFIRMATION_VALUE}
           placeholder={DELETE_CONFIRMATION_VALUE}
+          ref={confirmationInputRef}
           required
         />
         <p className="text-muted-foreground text-xs leading-5">
@@ -82,7 +145,7 @@ export function CustomerPrivacyActions() {
           variant="outline"
         >
           <Trash2 aria-hidden="true" className="size-4" />
-          מחיקת נתונים
+          {pending ? "מוחקת..." : "מחיקת נתונים"}
         </Button>
       </form>
     </div>
@@ -91,7 +154,11 @@ export function CustomerPrivacyActions() {
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   return (
-    <p className="text-destructive min-h-5 text-xs leading-5" id={id}>
+    <p
+      className="text-destructive min-h-5 text-xs leading-5"
+      id={id}
+      role={message ? "alert" : undefined}
+    >
       {message ?? ""}
     </p>
   );

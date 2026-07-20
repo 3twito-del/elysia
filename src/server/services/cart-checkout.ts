@@ -7,6 +7,7 @@ import { recordAnalyticsEvent } from "~/server/services/analytics";
 import { cartSessionKeySchema } from "~/server/services/cart";
 import { revalidateCatalogMutation } from "~/server/services/catalog-revalidation";
 import {
+  evaluateCouponCode,
   getActiveCouponValue,
   isCouponUsable,
 } from "~/server/services/coupons";
@@ -25,9 +26,16 @@ import {
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 import { calculateOrderTotal } from "~/server/services/pricing";
 
-const CART_CHECKOUT_RESERVATION_MINUTES = 30;
+// UX15: aligned with the manual-order reservation window
+// (manual-order-contract.ts's MANUAL_ORDER_RESERVATION_HOURS) and the
+// documented "InventoryReservation holds stock for 24h on checkout"
+// contract -- this used to be 30 minutes, a much tighter window than the
+// rest of the architecture assumes, especially before checkout.createPayment
+// had a client-side "pay now" step wired up.
+const CART_CHECKOUT_RESERVATION_HOURS = 24;
 const CART_CHECKOUT_PAYMENT_PROVIDER = "manual";
-const CART_CHECKOUT_RESERVATION_MS = CART_CHECKOUT_RESERVATION_MINUTES * 60_000;
+const CART_CHECKOUT_RESERVATION_MS =
+  CART_CHECKOUT_RESERVATION_HOURS * 60 * 60_000;
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -280,7 +288,7 @@ async function createCartCheckoutOrderInTransaction(
     if (!plan) {
       throw new TRPCError({
         code: "BAD_REQUEST",
-        message: "הסל אינו פנוי במלואו לשמירה.",
+        message: `${item.variant.product.name} אינו פנוי בכמות המבוקשת. עדכני את הכמות בסל ונסי שוב.`,
       });
     }
 
@@ -641,9 +649,16 @@ async function resolveCoupon(
   const coupon = await getActiveCouponValue(rawCode, tx);
 
   if (rawCode && !coupon) {
+    // UX19: reuse the same evaluator the cart-review "apply" step uses, so
+    // a coupon that lapsed between review and final submit reports the
+    // same specific reason (expired / unknown / ineligible) instead of a
+    // single generic message.
+    const evaluation = await evaluateCouponCode(rawCode, tx);
+
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "קוד ההטבה אינו תקף להזמנה הזו.",
+      message:
+        evaluation.message ?? "קוד ההטבה אינו תקף להזמנה הזו.",
     });
   }
 
@@ -674,4 +689,63 @@ async function recordCheckoutAnalyticsSafely(
       console.error("[cart-checkout:analytics-failed]", error);
     }
   }
+}
+
+export const orderConfirmationLookupInputSchema = z.object({
+  orderNumber: z.string().trim().min(3).max(64),
+  email: z.string().trim().email().toLowerCase(),
+});
+
+// UX13: lets the checkout page restore the confirmation screen after a
+// refresh or back-navigation, when the in-memory mutation result is gone
+// but the order (and its own-store items) still exist. Scoped to
+// orderNumber + email together -- the same guest-lookup contract already
+// used by the AI order-support tool -- so a bare orderNumber can't be
+// brute-forced into someone else's order details.
+export async function getOrderConfirmationByOrderNumber(
+  input: z.infer<typeof orderConfirmationLookupInputSchema>,
+) {
+  const order = await db.order.findFirst({
+    where: {
+      orderNumber: input.orderNumber,
+      email: input.email,
+    },
+    include: {
+      items: { orderBy: { id: "asc" } },
+    },
+  });
+
+  if (!order) return null;
+
+  const activeReservation = await db.inventoryReservation.findFirst({
+    where: {
+      orderId: order.id,
+      releasedAt: null,
+      expiresAt: { gt: new Date() },
+    },
+    orderBy: { expiresAt: "desc" },
+  });
+
+  return {
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    status: order.status,
+    reservationExpiresAt: activeReservation?.expiresAt ?? null,
+    totals: {
+      subtotal: Number(order.subtotal),
+      discount: Number(order.discountTotal),
+      shipping: Number(order.shippingTotal),
+      total: Number(order.total),
+    },
+    itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+    estimatedDelivery:
+      "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
+    items: order.items.map((item) => ({
+      lineTotal: Number(item.unitPrice) * item.quantity,
+      name: item.name,
+      quantity: item.quantity,
+      sku: item.sku,
+      unitPrice: Number(item.unitPrice),
+    })),
+  };
 }

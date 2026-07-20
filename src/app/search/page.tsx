@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { after } from "next/server";
 import {
   ChevronLeft,
@@ -100,6 +101,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const input = normalizeSearchInput(params, { categories, facets });
   const viewMode = normalizeSearchView(params.view);
   const result = await searchProvider.searchProducts(input);
+
+  // UX32: an out-of-range ?page= is clamped for the results shown, but the
+  // address bar previously kept the requested (invalid) page number --
+  // reload, share, or bookmark then landed back on the wrong page.
+  if (input.page !== undefined && input.page !== result.page) {
+    redirect(createSearchHref({ ...input, page: result.page, view: viewMode }));
+  }
+
   const activeFilters = getActiveSearchFilters(input, categories, viewMode);
   const hasActiveFilters = activeFilters.length > 0;
   const activeRefinementCount = getActiveSearchRefinementCount(input);
@@ -343,6 +352,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   categories={categories}
                   clearSearchHref={clearSearchHref}
                   clearFiltersHref={clearFiltersHref}
+                  facetCounts={result.facets}
                   facets={facets}
                   input={input}
                   resultTotal={result.total}
@@ -367,6 +377,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   categories={categories}
                   clearSearchHref={clearSearchHref}
                   clearFiltersHref={clearFiltersHref}
+                  facetCounts={result.facets}
                   facets={facets}
                   input={input}
                   resultTotal={result.total}

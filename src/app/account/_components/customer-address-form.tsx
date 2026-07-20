@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, type ReactNode } from "react";
+import { useActionState, useEffect, useRef, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { MapPin } from "lucide-react";
 
@@ -9,20 +9,62 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { StatusMessage } from "~/components/ui/status-message";
+import { ACCOUNT_PHONE_PATTERN } from "~/lib/account-validation-constants";
+import { useActionStateResetKey } from "~/lib/use-action-state-reset-key";
 
 const initialState: AccountActionState = {};
 const accountInputClassName = "h-12 px-4 text-base md:text-sm";
 const accountLabelClassName = "mb-2 justify-start leading-5";
+const addressFieldFocusOrder = [
+  "recipient",
+  "phone",
+  "city",
+  "street",
+  "label",
+  "postalCode",
+] as const;
 
 export function CustomerAddressForm() {
   const [state, action, pending] = useActionState(
     addCustomerAddressAction,
     initialState,
   );
+  const resetKey = useActionStateResetKey(state);
+  const formRef = useRef<HTMLFormElement>(null);
   const fieldErrors = state.fieldErrors ?? {};
+  const fieldValues = state.fieldValues ?? {};
+
+  useEffect(() => {
+    if (state.ok !== false) return;
+
+    // UX46: moves focus to (and lets a screen reader announce) the first
+    // invalid field, instead of leaving a silent status message the
+    // customer has to go hunting for.
+    const firstInvalidField = addressFieldFocusOrder.find((field) =>
+      Boolean(fieldErrors[field]),
+    );
+
+    if (!firstInvalidField) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const field = formRef.current?.elements.namedItem(firstInvalidField);
+
+      if (field instanceof HTMLElement) {
+        field.focus();
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when a new submission result arrives
+  }, [state]);
 
   return (
-    <form action={action} className="grid gap-3">
+    <form
+      action={action}
+      className="grid gap-3"
+      key={resetKey}
+      ref={formRef}
+    >
       <div className="grid gap-3 sm:grid-cols-2">
         <AddressField
           error={fieldErrors.label}
@@ -32,6 +74,7 @@ export function CustomerAddressForm() {
           <Input
             autoComplete="address-line3"
             className={accountInputClassName}
+            defaultValue={fieldValues.label ?? ""}
             disabled={pending}
             id="address-label"
             maxLength={80}
@@ -50,6 +93,7 @@ export function CustomerAddressForm() {
             aria-invalid={Boolean(fieldErrors.recipient)}
             autoComplete="name"
             className={accountInputClassName}
+            defaultValue={fieldValues.recipient ?? ""}
             disabled={pending}
             id="address-recipient"
             maxLength={80}
@@ -69,6 +113,7 @@ export function CustomerAddressForm() {
             aria-invalid={Boolean(fieldErrors.phone)}
             autoComplete="tel"
             className={accountInputClassName}
+            defaultValue={fieldValues.phone ?? ""}
             dir="ltr"
             disabled={pending}
             id="address-phone"
@@ -76,6 +121,10 @@ export function CustomerAddressForm() {
             maxLength={20}
             minLength={7}
             name="phone"
+            // UX45: mirrors the server's ACCOUNT_PHONE_PATTERN so an obviously
+            // invalid phone (e.g. letters) fails client-side instead of only
+            // being caught after a round trip to the server.
+            pattern={ACCOUNT_PHONE_PATTERN.source}
             placeholder="050..."
             required
           />
@@ -91,6 +140,7 @@ export function CustomerAddressForm() {
             aria-invalid={Boolean(fieldErrors.city)}
             autoComplete="address-level2"
             className={accountInputClassName}
+            defaultValue={fieldValues.city ?? ""}
             disabled={pending}
             id="address-city"
             maxLength={80}
@@ -110,6 +160,7 @@ export function CustomerAddressForm() {
             aria-invalid={Boolean(fieldErrors.street)}
             autoComplete="street-address"
             className={accountInputClassName}
+            defaultValue={fieldValues.street ?? ""}
             disabled={pending}
             id="address-street"
             maxLength={120}
@@ -128,6 +179,7 @@ export function CustomerAddressForm() {
             aria-invalid={Boolean(fieldErrors.postalCode)}
             autoComplete="postal-code"
             className={accountInputClassName}
+            defaultValue={fieldValues.postalCode ?? ""}
             dir="ltr"
             disabled={pending}
             id="address-postal-code"
@@ -138,7 +190,11 @@ export function CustomerAddressForm() {
         </AddressField>
       </div>
       {state.message ? (
-        <StatusMessage tone={state.ok ? "success" : "error"} variant="plain">
+        <StatusMessage
+          role={state.ok === false ? "alert" : "status"}
+          tone={state.ok ? "success" : "error"}
+          variant="plain"
+        >
           {state.message}
         </StatusMessage>
       ) : null}
@@ -173,7 +229,11 @@ function AddressField({
 
 function FieldError({ id, message }: { id: string; message?: string }) {
   return (
-    <p className="text-destructive min-h-5 text-xs leading-5" id={id}>
+    <p
+      className="text-destructive min-h-5 text-xs leading-5"
+      id={id}
+      role={message ? "alert" : undefined}
+    >
       {message ?? ""}
     </p>
   );

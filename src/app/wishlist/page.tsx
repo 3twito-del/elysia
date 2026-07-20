@@ -5,23 +5,20 @@ import {
   Heart,
   LogOut,
   Search,
-  Trash2,
   UserRound,
 } from "lucide-react";
 
 import { AdminSessionActions } from "../account/_components/admin-session-actions";
 import { BoutiqueStatePage } from "../account/_components/boutique-state-page";
 import { GuestWishlistMergeNotice } from "../account/_components/guest-wishlist-merge-notice";
+import { RemoveWishlistItemButton } from "../account/_components/remove-wishlist-item-button";
 import { customerWishlistInclude } from "../account/_lib/customer-wishlist-query";
 import {
   getWishlistDecisionSupportFromItems,
   getWishlistItemAvailabilityNote,
   getWishlistItemPriceChange,
 } from "../account/_lib/wishlist-shortlist";
-import {
-  customerLogoutAction,
-  removeWishlistItemAction,
-} from "../account/actions";
+import { customerLogoutAction } from "../account/actions";
 import { GuestWishlistProducts } from "./_components/guest-wishlist-products";
 import { CompactPageIntro } from "~/components/compact-page-intro";
 import { RevealGrid, RevealSection } from "~/components/reveal";
@@ -321,23 +318,12 @@ function CustomerWishlistItemCard({ item }: { item: CustomerWishlistItem }) {
       </Link>
       <div className="grid shrink-0 content-between justify-items-end gap-2">
         <Badge variant="outline">שמור</Badge>
-        <form
-          action={removeWishlistItemAction}
-          className="wishlist-item-remove"
-        >
-          <input name="itemId" type="hidden" value={item.id} />
-          <Button
-            aria-label={`הסרת ${product.name} מהמועדפים`}
-            data-icon-tooltip="הסרה"
-            data-icon-tooltip-placement="top"
-            size="icon"
-            type="submit"
-            variant="ghost"
-          >
-            <Trash2 aria-hidden="true" className="size-4" />
-            <span className="sr-only">הסרה</span>
-          </Button>
-        </form>
+        <div className="wishlist-item-remove">
+          <RemoveWishlistItemButton
+            itemId={item.id}
+            productName={product.name}
+          />
+        </div>
       </div>
     </article>
   );

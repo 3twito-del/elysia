@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import {
   useState,
@@ -9,7 +10,7 @@ import {
 } from "react";
 
 type CategoryPaginationLinkProps = Omit<
-  ComponentPropsWithoutRef<"a">,
+  ComponentPropsWithoutRef<typeof Link>,
   "href"
 > & {
   children: ReactNode;
@@ -41,7 +42,7 @@ export function CategoryPaginationLink({
   }
 
   return (
-    <a
+    <Link
       {...props}
       aria-busy={isLoading}
       aria-disabled={isLoading || undefined}
@@ -53,6 +54,6 @@ export function CategoryPaginationLink({
         <Loader2 aria-hidden="true" className="size-3 animate-spin" />
       ) : null}
       {isLoading ? loadingLabel : children}
-    </a>
+    </Link>
   );
 }

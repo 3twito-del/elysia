@@ -20,6 +20,7 @@ import {
   subscribeToGuestWishlist,
 } from "~/lib/guest-wishlist";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 const initialState: PublicActionState = {};
 const FAVORITE_REMOVAL_VISUAL_DELAY_MS = 3_000;
@@ -43,6 +44,7 @@ export function ProductCardFavoriteButton({
   const [pending, setPending] = useState(false);
   const [serverSavedState, setServerSavedState] =
     useState<SavedServerState | null>(null);
+  const savedSlugsQuery = api.wishlist.getSavedSlugs.useQuery();
   const [visuallySaved, setVisuallySaved] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const previousSavedRef = useRef(false);
@@ -51,7 +53,9 @@ export function ProductCardFavoriteButton({
   const removalTimeoutRef = useRef<number | null>(null);
   const statusId = useId();
   const serverSaved =
-    serverSavedState?.productSlug === productSlug && serverSavedState.saved;
+    serverSavedState?.productSlug === productSlug
+      ? serverSavedState.saved
+      : (savedSlugsQuery.data?.includes(productSlug) ?? false);
   const isSaved = guestSaved || serverSaved;
   const hasMessage = Boolean(state.message);
 
@@ -231,7 +235,7 @@ export function ProductCardFavoriteButton({
         pending={pending}
         productName={productName}
         statusId={hasMessage ? statusId : undefined}
-        visuallySaved={visuallySaved}
+        visuallySaved={visuallySaved || isSaved}
       />
       {hasMessage ? (
         <StatusMessage

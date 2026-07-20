@@ -17,7 +17,6 @@ import {
   Ruler,
   ShieldCheck,
   Sparkles,
-  Trash2,
   Truck,
   UserRound,
   type LucideIcon,
@@ -29,6 +28,8 @@ import { BoutiqueStatePage } from "./_components/boutique-state-page";
 import { CustomerOtpForm } from "./_components/customer-otp-form";
 import { CustomerAddressForm } from "./_components/customer-address-form";
 import { GuestWishlistMergeNotice } from "./_components/guest-wishlist-merge-notice";
+import { RemoveAddressButton } from "./_components/remove-address-button";
+import { RemoveWishlistItemButton } from "./_components/remove-wishlist-item-button";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
 import { createAccountServiceHref } from "./_lib/account-recovery";
@@ -38,13 +39,14 @@ import {
 } from "./_lib/order-timeline";
 import { customerWishlistInclude } from "./_lib/customer-wishlist-query";
 import { getWishlistDecisionSupportFromItems } from "./_lib/wishlist-shortlist";
-import { customerLogoutAction, removeWishlistItemAction } from "./actions";
+import { customerLogoutAction } from "./actions";
 import { RevealSection } from "~/components/reveal";
 import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { EmptyState } from "~/components/ui/empty-state";
+import { StatusMessage } from "~/components/ui/status-message";
 import {
   getOrderSourceDescription,
   getOrderSourceLabel,
@@ -152,7 +154,12 @@ async function loadCustomerAccount(userId: string) {
   return { ...customer, shopifyOrderMirrors };
 }
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string; dataDeleted?: string }>;
+}) {
+  const { callbackUrl, dataDeleted } = await searchParams;
   const session = await auth();
   const isCustomerSession = Boolean(
     session?.user?.id && !session.user.adminUserId,
@@ -248,6 +255,17 @@ export default async function AccountPage() {
             className="account-boutique-section account-entry-section mx-auto max-w-6xl scroll-mt-24 px-[var(--ui-page-x)] pt-1 pb-10 sm:scroll-mt-28 sm:pt-3 sm:pb-12 lg:px-[var(--ui-page-x-wide)]"
             id="account-login"
           >
+            {dataDeleted === "1" ? (
+              <StatusMessage
+                className="mb-5"
+                role="status"
+                testId="account-data-deleted-notice"
+                tone="success"
+              >
+                נתוני הלקוח נמחקו בהצלחה. אפשר להמשיך לגלוש כאורחת או לפתוח
+                חשבון חדש.
+              </StatusMessage>
+            ) : null}
             <div className="account-entry-layout grid gap-5 lg:grid-cols-2">
               <Card
                 className="account-boutique-panel account-entry-card account-login-panel rounded-md"
@@ -262,7 +280,7 @@ export default async function AccountPage() {
                   </p>
                 </CardHeader>
                 <CardContent className="grid gap-5">
-                  <CustomerOtpForm />
+                  <CustomerOtpForm returnTo={callbackUrl} />
                   <nav
                     aria-label="קישורי עזרה בכניסה"
                     className="account-entry-micro-links"
@@ -632,24 +650,10 @@ export default async function AccountPage() {
                                 </span>
                               </span>
                             </Link>
-                            <form action={removeWishlistItemAction}>
-                              <input
-                                name="itemId"
-                                type="hidden"
-                                value={item.id}
-                              />
-                              <Button
-                                aria-label={`הסרת ${item.variant.product.name} מהמועדפים`}
-                                data-icon-tooltip="הסרה"
-                                data-icon-tooltip-placement="top"
-                                size="icon"
-                                type="submit"
-                                variant="ghost"
-                              >
-                                <Trash2 aria-hidden="true" className="size-4" />
-                                <span className="sr-only">הסרה</span>
-                              </Button>
-                            </form>
+                            <RemoveWishlistItemButton
+                              itemId={item.id}
+                              productName={item.variant.product.name}
+                            />
                           </div>
                         ))}
                       </>
@@ -679,18 +683,24 @@ export default async function AccountPage() {
                     ) : (
                       customer.addresses.map((address) => (
                         <div
-                          className="account-record-row rounded-md border p-3"
+                          className="account-record-row flex items-start justify-between gap-3 rounded-md border p-3"
                           key={address.id}
                         >
-                          <p className="font-medium">
-                            {address.label ?? address.recipient}
-                          </p>
-                          <p className="text-muted-foreground text-sm">
-                            {address.city}, {address.street}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {address.phone}
-                          </p>
+                          <div className="min-w-0">
+                            <p className="font-medium">
+                              {address.label ?? address.recipient}
+                            </p>
+                            <p className="text-muted-foreground text-sm">
+                              {address.city}, {address.street}
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              {address.phone}
+                            </p>
+                          </div>
+                          <RemoveAddressButton
+                            addressId={address.id}
+                            addressLabel={address.label ?? address.recipient}
+                          />
                         </div>
                       ))
                     )}

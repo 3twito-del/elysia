@@ -140,7 +140,7 @@ describe("visible site improvement affordances", () => {
     expect(home).not.toContain('data-testid="home-hero-trust-notes"');
     expect(home).not.toContain("home-hero-help-cta");
     expect(accountPage).toContain('id="account-login"');
-    expect(accountPage).toContain("<CustomerOtpForm />");
+    expect(accountPage).toContain("<CustomerOtpForm returnTo={callbackUrl} />");
     expect(accountPage).toContain('id="account-benefits"');
     expect(accountPage).toContain("<AccountPageHeader");
     expect(accountPage).toContain("account-entry-layout");
@@ -310,7 +310,7 @@ describe("visible site improvement affordances", () => {
     expect(mobileNav).toContain('href: "/wishlist"');
     expect(wishlistPage).toContain('title: "מועדפים"');
     expect(wishlistPage).toContain("<GuestWishlistProducts />");
-    expect(wishlistPage).toContain("removeWishlistItemAction");
+    expect(wishlistPage).toContain("RemoveWishlistItemButton");
     expect(guestWishlist).toContain('data-testid="wishlist-guest-panel"');
     expect(guestWishlist).toContain("readGuestWishlistSlugs");
     expect(guestWishlist).toContain("removeGuestWishlistItem");
@@ -477,7 +477,11 @@ describe("visible site improvement affordances", () => {
     expect(purchasePanel).toContain("getVariantButtonLabel(");
     expect(purchasePanel).toContain("variant.availableQuantity <= 0");
     expect(purchaseUtils).toContain("getPublicStockStatusLabel");
-    expect(purchaseUtils).toContain("return `${getVariantDisplayName");
+    // UX38: the button label now names the variant's metal/stone color too
+    // (getVariantColorDescriptor), routed through a shared `displayName`
+    // instead of inlining getVariantDisplayName(variant) at each return.
+    expect(purchaseUtils).toContain("getVariantColorDescriptor(variant)");
+    expect(purchaseUtils).toContain("return `${displayName}");
     expect(purchasePanel).toContain(
       'data-testid="product-sticky-add-to-cart-button"',
     );
@@ -648,7 +652,7 @@ describe("visible site improvement affordances", () => {
     expect(privacyActions).toContain(
       'data-testid="account-privacy-shortcut-context"',
     );
-    expect(privacyActions).toContain('href="/account/privacy/export"');
+    expect(privacyActions).toContain('fetch("/account/privacy/export")');
     expect(privacyExportRoute).toContain("assertRateLimit");
     expect(privacyExportRoute).toContain("privacyExportUnauthorizedJson");
     expect(privacyExportRoute).toContain("customer_data_exported");

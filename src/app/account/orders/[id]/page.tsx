@@ -36,7 +36,7 @@ export default async function OrderDetailPage({
   const [{ id }, session] = await Promise.all([params, auth()]);
 
   if (!session?.user || session.user.adminUserId) {
-    redirect("/account");
+    redirect(`/account?callbackUrl=${encodeURIComponent(`/account/orders/${id}`)}`);
   }
 
   const customer = await db.customer.findUnique({
@@ -157,7 +157,11 @@ export default async function OrderDetailPage({
                   <p className="text-muted-foreground mt-1 text-xs">
                     {formatOptionalHebrewDateTime(
                       event.at,
-                      event.state === "pending" ? "בהמשך" : "ממתין לעדכון",
+                      event.state === "pending"
+                        ? "בהמשך"
+                        : event.state === "done"
+                          ? "הושלם"
+                          : "ממתין לעדכון",
                     )}
                   </p>
                   <p className="text-muted-foreground mt-2 text-xs leading-5">

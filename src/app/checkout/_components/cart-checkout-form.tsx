@@ -79,6 +79,8 @@ import { CheckoutStepBadge } from "./checkout-step-badge";
 
 const checkoutInputClassName = "h-12 px-4 text-base md:text-sm";
 const checkoutFormId = "cart-checkout-form";
+const checkoutConfirmationStorageKey = "elysia.checkout.confirmation";
+const checkoutContactStorageKey = "elysia.checkout.contact";
 const checkoutLegalAcceptanceErrorId = "checkout-legal-acceptance-error";
 const checkoutLegalAcceptanceMessage =
   "יש לאשר את התקנון, מדיניות הפרטיות ומדיניות המשלוחים, הביטולים וההחזרות.";
@@ -172,6 +174,7 @@ export function CartCheckoutForm() {
   const [giftWrap, setGiftWrap] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [couponCode, setCouponCode] = useState("");
+  const [offlineCouponQueued, setOfflineCouponQueued] = useState(false);
   const [legalAccepted, setLegalAccepted] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [submitLocked, setSubmitLocked] = useState(false);
@@ -182,6 +185,10 @@ export function CartCheckoutForm() {
   const checkoutProgressRef = useRef<HTMLDivElement | null>(null);
   const submitLockedRef = useRef(false);
   const [showMobileCheckoutBar, setShowMobileCheckoutBar] = useState(false);
+  const [restoredOrderRef, setRestoredOrderRef] = useState<{
+    email: string;
+    orderNumber: string;
+  } | null>(null);
 
   const cartQuery = api.cart.get.useQuery(
     { sessionKey: sessionKey ?? "" },
@@ -205,13 +212,29 @@ export function CartCheckoutForm() {
     },
   });
   const createOrder = api.checkout.createCartOrder.useMutation({
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
       dispatchCartUpdated();
+      // UX13: persist just enough (order number + email) to restore the
+      // confirmation screen after a refresh or back-navigation, since the
+      // mutation result itself only lives in memory.
+      try {
+        window.sessionStorage.setItem(
+          checkoutConfirmationStorageKey,
+          JSON.stringify({ email, orderNumber: data.orderNumber }),
+        );
+      } catch {
+        // Storage unavailable (e.g. private browsing) -- confirmation
+        // simply won't survive a refresh in that case.
+      }
     },
-    onError: () => {
+    onError: async () => {
       submitLockedRef.current = false;
       setSubmitLocked(false);
+      // UX18: a failed order (e.g. an item going unavailable mid-checkout)
+      // must not let a bare retry resubmit the same stale cart snapshot --
+      // refetch first so the customer sees the corrected availability.
+      if (sessionKey) await utils.cart.get.invalidate({ sessionKey });
     },
   });
   const createShopifyCheckout =
@@ -220,6 +243,15 @@ export function CartCheckoutForm() {
         window.location.href = checkout.checkoutUrl;
       },
     });
+  const createPayment = api.checkout.createPayment.useMutation({
+    onSuccess: (session) => {
+      window.location.href = session.redirectUrl;
+    },
+  });
+  const orderConfirmationQuery = api.checkout.getOrderConfirmation.useQuery(
+    restoredOrderRef ?? { email: "", orderNumber: "" },
+    { enabled: Boolean(restoredOrderRef) && !createOrder.data },
+  );
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() =>
@@ -228,6 +260,98 @@ export function CartCheckoutForm() {
 
     return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const raw = window.sessionStorage.getItem(
+          checkoutConfirmationStorageKey,
+        );
+        if (!raw) return;
+
+        const parsed = JSON.parse(raw) as {
+          email?: unknown;
+          orderNumber?: unknown;
+        };
+
+        if (
+          typeof parsed.email === "string" &&
+          typeof parsed.orderNumber === "string"
+        ) {
+          setRestoredOrderRef({
+            email: parsed.email,
+            orderNumber: parsed.orderNumber,
+          });
+        }
+      } catch {
+        // Malformed or blocked storage -- fall through to the normal flow.
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    if (!orderConfirmationQuery.isSuccess) return;
+    if (orderConfirmationQuery.data !== null) return;
+
+    // The restored reference no longer resolves to a real order (wrong
+    // email, or the storage entry is stale/tampered) -- stop retrying it.
+    try {
+      window.sessionStorage.removeItem(checkoutConfirmationStorageKey);
+    } catch {
+      // Ignore -- worst case we retry the lookup once more next mount.
+    }
+
+    const frame = window.requestAnimationFrame(() =>
+      setRestoredOrderRef(null),
+    );
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [orderConfirmationQuery.data, orderConfirmationQuery.isSuccess]);
+
+  useEffect(() => {
+    // UX20: restores typed contact/shipping details after a full-page
+    // navigation away and back (e.g. the Shopify dropship hand-off, or a
+    // refresh) -- plain React state doesn't survive that round trip.
+    const frame = window.requestAnimationFrame(() => {
+      try {
+        const raw = window.sessionStorage.getItem(checkoutContactStorageKey);
+        if (!raw) return;
+
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        const getStoredField = (key: string) =>
+          typeof parsed[key] === "string" ? parsed[key] : "";
+
+        setName((current) => current || getStoredField("name"));
+        setPhone((current) => current || getStoredField("phone"));
+        setEmail((current) => current || getStoredField("email"));
+        setCity((current) => current || getStoredField("city"));
+        setStreet((current) => current || getStoredField("street"));
+        setPostalCode((current) => current || getStoredField("postalCode"));
+      } catch {
+        // Malformed or blocked storage -- fields simply stay empty.
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (!name && !phone && !email && !city && !street && !postalCode) {
+        window.sessionStorage.removeItem(checkoutContactStorageKey);
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        checkoutContactStorageKey,
+        JSON.stringify({ name, phone, email, city, street, postalCode }),
+      );
+    } catch {
+      // Storage unavailable -- details just won't survive a hand-off.
+    }
+  }, [city, email, name, phone, postalCode, street]);
 
   useEffect(() => {
     const syncOnlineState = () => setIsOffline(!navigator.onLine);
@@ -241,6 +365,16 @@ export function CartCheckoutForm() {
       window.removeEventListener("offline", syncOnlineState);
     };
   }, []);
+
+  useEffect(() => {
+    if (isOffline) return;
+
+    const frame = window.requestAnimationFrame(() =>
+      setOfflineCouponQueued(false),
+    );
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isOffline]);
 
   useEffect(() => {
     if (!sessionKey || !cartQuery.data) return;
@@ -292,15 +426,20 @@ export function CartCheckoutForm() {
   );
   const orderTotal = localCheckoutTotals?.total ?? 0;
   const postDiscountSubtotal = Math.max(0, subtotal - discount);
-  const couponFeedbackMessage = updateOptions.isPending
-    ? "בודקים את קוד ההטבה."
-    : cart?.couponMessage;
-  const couponFeedbackTone =
-    cart?.couponStatus === "success"
-      ? "success"
+  const couponFeedbackMessage =
+    isOffline && offlineCouponQueued
+      ? "קוד ההטבה יבדק ויתעדכן בסיכום כשהחיבור לאינטרנט יחזור."
       : updateOptions.isPending
-        ? "neutral"
-        : "error";
+        ? "בודקים את קוד ההטבה."
+        : cart?.couponMessage;
+  const couponFeedbackTone =
+    isOffline && offlineCouponQueued
+      ? "neutral"
+      : cart?.couponStatus === "success"
+        ? "success"
+        : updateOptions.isPending
+          ? "neutral"
+          : "error";
   const hasPricingReview = Boolean(
     ownItems.length &&
     hasCheckoutPricingReview({
@@ -608,10 +747,12 @@ export function CartCheckoutForm() {
     if (!optionMutationInput) return;
 
     if (isOffline) {
+      setOfflineCouponQueued(true);
       void queueOfflineJsonAction("cart.updateOptions", optionMutationInput);
       return;
     }
 
+    setOfflineCouponQueued(false);
     updateOptions.mutate(optionMutationInput);
   }
 
@@ -688,7 +829,11 @@ export function CartCheckoutForm() {
       },
       giftWrap,
       giftMessage: giftMessage || undefined,
-      couponCode: couponCode || undefined,
+      // UX17: send the server-confirmed applied coupon (what the displayed
+      // totals were actually computed from), not the raw text box value --
+      // typing a code without pressing "החילי" must not silently change
+      // the charged total.
+      couponCode: cart?.couponCode ?? undefined,
     });
   }
 
@@ -717,7 +862,10 @@ export function CartCheckoutForm() {
     }).then(dispatchCartUpdated);
   }
 
-  if (createOrder.data) {
+  const confirmationData = createOrder.data ?? orderConfirmationQuery.data;
+  const confirmationCustomerEmail = email || (restoredOrderRef?.email ?? "");
+
+  if (confirmationData) {
     return (
       <section className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]">
         <Card className="checkout-boutique-panel rounded-md">
@@ -729,8 +877,8 @@ export function CartCheckoutForm() {
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
-              מספר ההזמנה הוא {createOrder.data.orderNumber}. התכשיטים נשמרו עד
-              לסיום חלון התשלום.
+              מספר ההזמנה הוא {confirmationData.orderNumber}. התכשיטים נשמרו
+              עד לסיום חלון התשלום.
             </p>
             <div className="glass-inset rounded-md border p-4 text-sm">
               <p className="font-medium">פרטי העסק</p>
@@ -739,12 +887,75 @@ export function CartCheckoutForm() {
               </p>
             </div>
             <ReservationCountdown
-              expiresAt={createOrder.data.reservationExpiresAt}
+              expiresAt={confirmationData.reservationExpiresAt}
             />
+            {confirmationData.status === "PENDING_PAYMENT" ? (
+              <div className="glass-inset grid gap-3 rounded-md border p-4">
+                <div>
+                  <p className="font-medium">השלמת התשלום</p>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">
+                    ההזמנה נשמרה אך טרם שולמה. יש להשלים תשלום מאובטח כדי
+                    לוודא את ההזמנה לפני שחלון השמירה יפוג.
+                  </p>
+                </div>
+                {createPayment.error ? (
+                  <StatusMessage tone="error" variant="plain">
+                    {createPayment.error.message}
+                  </StatusMessage>
+                ) : null}
+                <Button
+                  disabled={createPayment.isPending}
+                  onClick={() => {
+                    createPayment.mutate({
+                      amount: confirmationData.totals.total,
+                      customerEmail: confirmationCustomerEmail,
+                      orderId: confirmationData.orderId,
+                      orderNumber: confirmationData.orderNumber,
+                      returnUrl: `${window.location.origin}/checkout/mock-payment?order=${confirmationData.orderNumber}`,
+                    });
+                  }}
+                  type="button"
+                >
+                  {createPayment.isPending ? "פותחת תשלום…" : "המשך לתשלום"}
+                </Button>
+              </div>
+            ) : null}
+            {hasDropshipItems ? (
+              <div
+                className="glass-inset grid gap-3 rounded-md border p-4"
+                data-testid="checkout-confirmation-dropship-note"
+              >
+                <div>
+                  <p className="font-medium">פריטים נפרדים עדיין בסל</p>
+                  <p className="text-muted-foreground mt-1 text-sm leading-6">
+                    {dropshipItems.length} פריטים נוספים בסל אינם חלק
+                    מההזמנה הזו ויושלמו בקופה נפרדת.
+                  </p>
+                </div>
+                {createShopifyCheckoutErrorMessage ? (
+                  <StatusMessage tone="error" variant="plain">
+                    {createShopifyCheckoutErrorMessage}
+                  </StatusMessage>
+                ) : null}
+                <Button
+                  disabled={createShopifyCheckout.isPending || isOffline}
+                  onClick={() => {
+                    if (!sessionKey) return;
+                    createShopifyCheckout.mutate({ sessionKey });
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  {createShopifyCheckout.isPending
+                    ? "פותחת קופה נפרדת…"
+                    : "המשך לתשלום עבור הפריטים הנפרדים"}
+                </Button>
+              </div>
+            ) : null}
             <div className="glass-inset rounded-md border p-5">
               <p className="text-muted-foreground text-sm">פרטי המוצרים</p>
               <div className="mt-3 grid gap-3">
-                {createOrder.data.items.map((item) => (
+                {confirmationData.items.map((item) => (
                   <div
                     className="grid gap-1 border-b border-[var(--glass-border)] pb-3 last:border-b-0 last:pb-0"
                     key={item.sku}
@@ -766,30 +977,30 @@ export function CartCheckoutForm() {
               <dl className="mt-3 grid gap-2 text-sm">
                 <div className="flex justify-between gap-4">
                   <dt>מוצרים</dt>
-                  <dd>{formatPrice(createOrder.data.totals.subtotal)}</dd>
+                  <dd>{formatPrice(confirmationData.totals.subtotal)}</dd>
                 </div>
-                {createOrder.data.totals.discount > 0 ? (
+                {confirmationData.totals.discount > 0 ? (
                   <div className="flex justify-between gap-4">
                     <dt>הטבה</dt>
-                    <dd>{formatPrice(createOrder.data.totals.discount)}</dd>
+                    <dd>{formatPrice(confirmationData.totals.discount)}</dd>
                   </div>
                 ) : null}
                 <div className="flex justify-between gap-4">
                   <dt>משלוח</dt>
-                  <dd>{formatPrice(createOrder.data.totals.shipping)}</dd>
+                  <dd>{formatPrice(confirmationData.totals.shipping)}</dd>
                 </div>
                 <Separator />
                 <div className="flex justify-between gap-4 text-base font-semibold">
                   <dt>סה״כ לתשלום</dt>
-                  <dd>{formatPrice(createOrder.data.totals.total)}</dd>
+                  <dd>{formatPrice(confirmationData.totals.total)}</dd>
                 </div>
               </dl>
               <p className="text-muted-foreground mt-3 text-sm">
                 {vatIncludedNotice}
               </p>
               <p className="text-muted-foreground mt-2 text-sm">
-                {createOrder.data.itemCount} תכשיטים ·{" "}
-                {createOrder.data.estimatedDelivery}
+                {confirmationData.itemCount} תכשיטים ·{" "}
+                {confirmationData.estimatedDelivery}
               </p>
             </div>
             <nav
@@ -812,7 +1023,7 @@ export function CartCheckoutForm() {
               </Button>
               <Button asChild variant="secondary">
                 <Link
-                  href={createOrderServiceHref(createOrder.data.orderNumber)}
+                  href={createOrderServiceHref(confirmationData.orderNumber)}
                 >
                   יצירת קשר עם שירות הלקוחות
                 </Link>
@@ -825,6 +1036,10 @@ export function CartCheckoutForm() {
         </Card>
       </section>
     );
+  }
+
+  if (restoredOrderRef && orderConfirmationQuery.isLoading) {
+    return <CheckoutConfirmationLoadingState />;
   }
 
   if (isCartLoading) {
@@ -1306,7 +1521,7 @@ export function CartCheckoutForm() {
                       type="button"
                       variant="secondary"
                     >
-                      החילי
+                      {updateOptions.isPending ? "בודקת…" : "החילי"}
                     </Button>
                   </div>
                   {couponFeedbackMessage ? (
@@ -1795,6 +2010,22 @@ export function CartCheckoutForm() {
         ? createPortal(mobileCheckoutBar, document.body)
         : null}
     </>
+  );
+}
+
+function CheckoutConfirmationLoadingState() {
+  return (
+    <section
+      className="mx-auto max-w-3xl px-[var(--ui-page-x)] py-[var(--ui-section-y-wide)] lg:px-[var(--ui-page-x-wide)]"
+      data-testid="checkout-confirmation-loading"
+    >
+      <div className="glass-panel grid place-items-center gap-3 rounded-md border p-10 text-center">
+        <Spinner aria-hidden="true" role="presentation" />
+        <p className="text-muted-foreground text-sm">
+          טוענים את פרטי ההזמנה שנשמרה…
+        </p>
+      </div>
+    </section>
   );
 }
 

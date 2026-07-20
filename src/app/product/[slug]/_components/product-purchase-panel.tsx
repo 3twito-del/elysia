@@ -29,6 +29,7 @@ import {
   getVariantButtonLabel,
   getVariantDisplayName,
   getVariantStatusLabel,
+  hasAmbiguousVariantColors,
   isRecoverableOfflineCartError,
   isVariantSelectableForCart,
 } from "./product-purchase-utils";
@@ -114,6 +115,7 @@ export function ProductPurchasePanel({
   const sizeKind = getSizeKindForCategory(categorySlug);
   const selectedVariant =
     variants.find((variant) => variant.sku === selectedSku) ?? variants[0];
+  const showVariantColorInButtons = hasAmbiguousVariantColors(variants);
   const usesSeparateCheckout = requiresSeparateCheckout;
   const selectedVariantPrice = selectedVariant?.price ?? price;
   const selectedVariantQuantity = selectedVariant?.availableQuantity ?? 0;
@@ -386,6 +388,14 @@ export function ProductPurchasePanel({
                   variant={isSelected ? "default" : "outline"}
                 >
                   {getVariantDisplayName(variant)}
+                  {showVariantColorInButtons &&
+                  (variant.metalColor || variant.stoneColor) ? (
+                    <span className="text-xs opacity-75">
+                      {[variant.metalColor, variant.stoneColor]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  ) : null}
                 </Button>
               );
             })}

@@ -1,5 +1,6 @@
 "use server";
 
+import { TRPCError } from "@trpc/server";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -41,8 +42,15 @@ export type CustomerOtpState = {
 
 export type AccountActionState = {
   fieldErrors?: Record<string, string | undefined>;
+  // UX41: echoes back what the customer actually typed so a failed submit
+  // can re-populate the form instead of leaving it blank (React 19 resets
+  // uncontrolled form fields on every submit, success or failure).
+  fieldValues?: Record<string, string | undefined>;
   ok?: boolean;
   message?: string;
+  // UX44: return requests get a short, human-readable tracking reference,
+  // matching what service requests already give the customer.
+  requestReference?: string;
 };
 
 export type GuestWishlistMergeState = AccountActionState & {
@@ -99,7 +107,9 @@ export async function requestCustomerOtpAction(
       identifier,
       message:
         rateLimitMessage(error) ??
-        "לא ניתן לשלוח קוד כרגע. בדקי את הפרטים ונסי שוב בעוד דקה.",
+        (error instanceof TRPCError
+          ? error.message
+          : "לא ניתן לשלוח קוד כרגע. בדקי את הפרטים ונסי שוב בעוד דקה."),
     };
   }
 }
@@ -111,6 +121,9 @@ export async function verifyCustomerOtpAction(
   const identifier = getFormString(formData, "identifier");
   const code = getFormString(formData, "code");
   const sessionKey = getFormString(formData, "sessionKey");
+  const redirectTo = getSafeAccountRedirectTarget(
+    getFormString(formData, "redirectTo"),
+  );
 
   try {
     await assertRateLimit({
@@ -123,7 +136,7 @@ export async function verifyCustomerOtpAction(
       identifier,
       code,
       sessionKey: sessionKey || undefined,
-      redirectTo: "/account",
+      redirectTo,
     });
   } catch (error) {
     const message = rateLimitMessage(error);
@@ -137,17 +150,35 @@ export async function verifyCustomerOtpAction(
     }
 
     if (error instanceof AuthError) {
+      const code = "code" in error ? error.code : undefined;
+      const otpMessage =
+        code === "otp_expired"
+          ? "הקוד פג תוקף. בקשי קוד חדש."
+          : code === "otp_locked"
+            ? "בוצעו יותר מדי ניסיונות. בקשי קוד חדש."
+            : "הקוד שהוזן שגוי. אפשר לנסות שוב או לבקש קוד חדש.";
+
       return {
         ok: false,
         identifier,
-        message: "קוד האימות אינו תקין או שפג תוקף.",
+        message: otpMessage,
       };
     }
 
     throw error;
   }
 
-  redirect("/account");
+  redirect(redirectTo);
+}
+
+/** Only same-app, /account-scoped paths are honored, so a crafted redirectTo
+ * form field can't be used as an open redirect. */
+function getSafeAccountRedirectTarget(candidate: string) {
+  if (candidate === "/account" || candidate.startsWith("/account/")) {
+    return candidate;
+  }
+
+  return "/account";
 }
 
 export async function customerLogoutAction() {
@@ -167,18 +198,20 @@ export async function addCustomerAddressAction(
     return { ok: false, message: "יש להתחבר לאזור הלקוח." };
   }
 
-  const parsed = customerAddressInputSchema.safeParse({
+  const rawFieldValues = {
     label: getFormString(formData, "label"),
     recipient: getFormString(formData, "recipient"),
     phone: getFormString(formData, "phone"),
     city: getFormString(formData, "city"),
     street: getFormString(formData, "street"),
     postalCode: getFormString(formData, "postalCode"),
-  });
+  };
+  const parsed = customerAddressInputSchema.safeParse(rawFieldValues);
 
   if (!parsed.success) {
     return {
       fieldErrors: getZodFieldErrors(parsed.error),
+      fieldValues: rawFieldValues,
       ok: false,
       message: getFirstZodIssueMessage(
         parsed.error,
@@ -201,6 +234,38 @@ export async function addCustomerAddressAction(
   revalidatePath("/account");
 
   return { ok: true, message: "הכתובת נשמרה." };
+}
+
+export async function deleteCustomerAddressAction(
+  _state: AccountActionState,
+  formData: FormData,
+): Promise<AccountActionState> {
+  const session = await auth();
+  const addressId = getFormString(formData, "addressId");
+
+  if (!session?.user?.id) {
+    return { ok: false, message: "יש להתחבר לאזור הלקוח כדי להסיר כתובת." };
+  }
+
+  const customer = await db.customer.findUnique({
+    where: { userId: session.user.id },
+  });
+
+  if (!customer || !addressId) {
+    return { ok: false, message: "לא ניתן להסיר את הכתובת כרגע." };
+  }
+
+  const deleted = await db.customerAddress.deleteMany({
+    where: { id: addressId, customerId: customer.id },
+  });
+
+  if (deleted.count === 0) {
+    return { ok: false, message: "הכתובת כבר לא קיימת." };
+  }
+
+  revalidatePath("/account");
+
+  return { ok: true, message: "הכתובת הוסרה." };
 }
 
 export async function saveCustomerSizeAction(
@@ -233,6 +298,13 @@ export async function saveCustomerSizeAction(
   }
 
   if (!session?.user?.id) {
+    if (getFormString(formData, "context") === "account") {
+      return {
+        ok: false,
+        message: "החיבור לחשבון פג. נא להתחבר מחדש כדי לשמור את המידה.",
+      };
+    }
+
     return {
       ok: true,
       message: "המידה נשמרה במכשיר. התחברות תסנכרן אותה לחשבון.",
@@ -381,7 +453,10 @@ export async function syncCustomerSavedSizesAction(
   };
 }
 
-export async function removeWishlistItemAction(formData: FormData) {
+export async function removeWishlistItemAction(
+  _state: AccountActionState,
+  formData: FormData,
+): Promise<AccountActionState> {
   const session = await auth();
   const itemId = getFormString(formData, "itemId");
   const customer = session?.user?.id
@@ -391,17 +466,29 @@ export async function removeWishlistItemAction(formData: FormData) {
       })
     : null;
 
-  if (!customer?.wishlist || !itemId) return;
+  if (!session?.user?.id) {
+    return { ok: false, message: "יש להתחבר לאזור הלקוח כדי להסיר פריט." };
+  }
 
-  await db.wishlistItem.deleteMany({
+  if (!customer?.wishlist || !itemId) {
+    return { ok: false, message: "לא ניתן להסיר את הפריט כרגע." };
+  }
+
+  const deleted = await db.wishlistItem.deleteMany({
     where: {
       id: itemId,
       wishlistId: customer.wishlist.id,
     },
   });
 
+  if (deleted.count === 0) {
+    return { ok: false, message: "הפריט כבר לא נמצא במועדפים." };
+  }
+
   revalidatePath("/account");
   revalidatePath("/wishlist");
+
+  return { ok: true };
 }
 
 export async function mergeGuestWishlistAction(
@@ -516,6 +603,8 @@ export async function mergeGuestWishlistAction(
     revalidatePath("/wishlist");
   }
 
+  const unavailableCount = Math.max(uniqueSlugs.length - variantIds.length, 0);
+
   return {
     duplicateCount: Math.max(variantIds.length - newVariantIds.length, 0),
     mergedCount: newVariantIds.length,
@@ -524,7 +613,11 @@ export async function mergeGuestWishlistAction(
     message:
       newVariantIds.length > 0
         ? `${newVariantIds.length} פריטים מהמועדפים המקומיים נוספו לחשבון.`
-        : "המועדפים המקומיים כבר קיימים בחשבון.",
+        : unavailableCount > 0 && unavailableCount === uniqueSlugs.length
+          ? "הפריטים השמורים מהדפדפן כבר אינם זמינים ולא נוספו לחשבון."
+          : unavailableCount > 0
+            ? "חלק מהפריטים השמורים מהדפדפן כבר אינם זמינים ולא נוספו לחשבון. השאר כבר קיימים בחשבון."
+            : "המועדפים המקומיים כבר קיימים בחשבון.",
   };
 }
 
@@ -578,7 +671,7 @@ export async function requestReturnAction(
     return { ok: false, message: "כבר קיימת בקשת החזרה פעילה להזמנה." };
   }
 
-  await db.$transaction(async (tx) => {
+  const returnRequest = await db.$transaction(async (tx) => {
     const request = await tx.returnRequest.create({
       data: {
         orderId: order.id,
@@ -613,12 +706,29 @@ export async function requestReturnAction(
         template: "return_requested",
       },
     });
+
+    return request;
   });
 
   revalidatePath("/account");
   revalidatePath(`/account/orders/${order.id}`);
 
-  return { ok: true, message: "בקשת ההחזרה נפתחה ותועבר לטיפול." };
+  const requestReference = createReturnRequestReference(returnRequest.id);
+
+  return {
+    ok: true,
+    requestReference,
+    message: `בקשת ההחזרה נפתחה ותועבר לטיפול. מספר בקשה: ${requestReference}.`,
+  };
+}
+
+function createReturnRequestReference(id: string) {
+  const compactId = id
+    .replace(/[^a-z0-9]/giu, "")
+    .slice(-8)
+    .toUpperCase();
+
+  return `RR-${compactId || "NEW"}`;
 }
 
 export async function deleteCustomerDataAction(
@@ -735,7 +845,7 @@ export async function deleteCustomerDataAction(
     }
   });
 
-  await signOut({ redirectTo: "/account" });
+  await signOut({ redirectTo: "/account?dataDeleted=1" });
 
   return { ok: true, message: "נתוני הלקוח נמחקו." };
 }

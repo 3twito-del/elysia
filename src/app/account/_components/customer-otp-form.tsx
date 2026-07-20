@@ -21,7 +21,11 @@ const accountLabelClassName = "mb-2 justify-start leading-5";
 const otpRequestStatusId = "account-otp-request-status";
 const otpVerifyStatusId = "account-otp-verify-status";
 
-export function CustomerOtpForm() {
+export function CustomerOtpForm({
+  returnTo = "/account",
+}: {
+  returnTo?: string;
+}) {
   const sessionKey = useSyncExternalStore(
     subscribeToNoopStore,
     getClientCartSessionSnapshot,
@@ -111,6 +115,7 @@ export function CustomerOtpForm() {
             value={verificationIdentifier}
           />
           <input name="sessionKey" type="hidden" value={sessionKey} />
+          <input name="redirectTo" type="hidden" value={returnTo} />
           <p className="text-muted-foreground text-sm leading-6">
             קוד האימות נשלח אל{" "}
             <span className="text-foreground font-medium" dir="ltr">
@@ -190,7 +195,11 @@ function RequestButton({
       type="submit"
     >
       <Send aria-hidden="true" className="size-4" />
-      {hasVerificationTarget ? "שליחת קוד נוסף" : "שליחת קוד"}
+      {pending
+        ? "שולחת..."
+        : hasVerificationTarget
+          ? "שליחת קוד נוסף"
+          : "שליחת קוד"}
     </Button>
   );
 }
@@ -206,7 +215,7 @@ function VerifyButton() {
       variant="secondary"
     >
       <LogIn aria-hidden="true" className="size-4" />
-      כניסה לאזור אישי
+      {pending ? "מתחברת..." : "כניסה לאזור אישי"}
     </Button>
   );
 }

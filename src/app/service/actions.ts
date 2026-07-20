@@ -19,31 +19,50 @@ import {
 
 export type ServiceRequestActionState = {
   fieldErrors?: FormFieldErrors;
+  // UX41: echoes back what the customer actually typed so a failed submit
+  // can re-populate the form instead of leaving it blank (React 19 resets
+  // uncontrolled form fields on every submit, success or failure).
+  fieldValues?: Record<string, string | undefined>;
   message?: string;
   ok?: boolean;
   requestReference?: string;
 };
 
+function getFormStringValue(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  return typeof value === "string" ? value : undefined;
+}
+
+function getServiceRequestFieldValues(formData: FormData) {
+  return {
+    topicSlug: getFormStringValue(formData, "topicSlug"),
+    name: getFormStringValue(formData, "name"),
+    phone: getFormStringValue(formData, "phone"),
+    email: getFormStringValue(formData, "email"),
+    orderNumber: getFormStringValue(formData, "orderNumber"),
+    productReference: getFormStringValue(formData, "productReference"),
+    preferredContact: getFormStringValue(formData, "preferredContact") ?? "ANY",
+    preferredContactTime: getFormStringValue(
+      formData,
+      "preferredContactTime",
+    ),
+    message: getFormStringValue(formData, "message"),
+  };
+}
+
 export async function createServiceRequestAction(
   _state: ServiceRequestActionState,
   formData: FormData,
 ): Promise<ServiceRequestActionState> {
-  const parsed = publicServiceRequestInputSchema.safeParse({
-    topicSlug: formData.get("topicSlug"),
-    name: formData.get("name"),
-    phone: formData.get("phone"),
-    email: formData.get("email"),
-    orderNumber: formData.get("orderNumber"),
-    productReference: formData.get("productReference"),
-    preferredContact: formData.get("preferredContact") ?? "ANY",
-    preferredContactTime: formData.get("preferredContactTime"),
-    message: formData.get("message"),
-  });
+  const fieldValues = getServiceRequestFieldValues(formData);
+  const parsed = publicServiceRequestInputSchema.safeParse(fieldValues);
 
   if (!parsed.success) {
     return {
       ok: false,
       fieldErrors: getZodFieldErrors(parsed.error),
+      fieldValues,
       message: getFirstZodIssueMessage(parsed.error),
     };
   }
@@ -57,6 +76,7 @@ export async function createServiceRequestAction(
   } catch (error) {
     return {
       ok: false,
+      fieldValues,
       message:
         rateLimitMessage(error) ??
         "נשלחו יותר מדי פניות בזמן קצר. נסו שוב מאוחר יותר.",
@@ -93,6 +113,7 @@ export async function createServiceRequestAction(
   } catch (error) {
     return {
       ok: false,
+      fieldValues,
       message:
         error instanceof Error
           ? error.message

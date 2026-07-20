@@ -88,10 +88,17 @@ export function CheckoutPaymentStatus({
   );
 }
 
-export function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
+export function ReservationCountdown({
+  expiresAt,
+}: {
+  expiresAt: Date | null;
+}) {
   const [now, setNow] = useState<number | null>(null);
   const remainingMs =
-    now === null ? null : Math.max(0, expiresAt.getTime() - now);
+    now === null || expiresAt === null
+      ? null
+      : Math.max(0, expiresAt.getTime() - now);
+  const isExpired = remainingMs === 0;
   const remainingMinutes =
     remainingMs === null ? null : Math.floor(remainingMs / 60_000);
   const remainingSeconds =
@@ -104,6 +111,8 @@ export function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
         ).padStart(2, "0")}`;
 
   useEffect(() => {
+    if (expiresAt === null) return;
+
     function updateNow() {
       setNow(Date.now());
     }
@@ -112,7 +121,22 @@ export function ReservationCountdown({ expiresAt }: { expiresAt: Date }) {
     const interval = window.setInterval(updateNow, 1000);
 
     return () => window.clearInterval(interval);
-  }, []);
+  }, [expiresAt]);
+
+  if (expiresAt === null || isExpired) {
+    return (
+      <div
+        className="glass-inset rounded-md border p-4"
+        data-reservation-expired="true"
+      >
+        <p className="font-medium">חלון השמירה לפריטים הסתיים</p>
+        <p className="text-muted-foreground mt-1 text-sm leading-6">
+          ההזמנה עצמה נשמרה, אך המלאי אינו מובטח יותר. יש לפנות לשירות
+          הלקוחות כדי לוודא זמינות לפני השלמת התשלום.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-inset rounded-md border p-4">

@@ -44,7 +44,7 @@ export default async function CustomerServiceRequestsPage() {
   const session = await auth();
 
   if (!session?.user || session.user.adminUserId) {
-    redirect("/account");
+    redirect(`/account?callbackUrl=${encodeURIComponent("/account/service")}`);
   }
 
   const customer = await db.customer.findUnique({
@@ -53,11 +53,7 @@ export default async function CustomerServiceRequestsPage() {
 
   if (!customer) redirect("/account");
 
-  const requests = await getCustomerServiceRequests(customer.id).catch(
-    () => null,
-  );
-
-  if (!requests) redirect("/account");
+  const requests = await getCustomerServiceRequests(customer.id);
 
   return (
     <main className="elysia-page">

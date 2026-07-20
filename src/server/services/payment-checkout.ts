@@ -26,17 +26,17 @@ export type PaymentCheckoutFailureKind =
 
 const paymentCheckoutFailureMessages = {
   provider_unavailable:
-    "Payment cannot be opened right now. Please keep the order page open and contact service if this continues.",
+    "לא ניתן לפתוח את התשלום כרגע. השאירי את עמוד ההזמנה פתוח ופני לשירות הלקוחות אם זה נמשך.",
   own_commerce_disabled:
-    "Direct payment is not available yet. Please contact service to complete this order.",
+    "תשלום ישיר עדיין לא זמין. נא לפנות לשירות הלקוחות כדי להשלים את ההזמנה.",
   payment_rejected:
-    "The payment was not approved. No payment was recorded, so please try again or use service support.",
+    "התשלום לא אושר. לא נגבה חיוב, אפשר לנסות שוב או לפנות לשירות הלקוחות.",
   callback_mismatch:
-    "The payment link could not be verified for this order. Please return to checkout and create a fresh payment link.",
+    "לא ניתן היה לאמת את קישור התשלום להזמנה זו. נא לחזור לקופה וליצור קישור תשלום חדש.",
   webhook_delay:
-    "The order is still waiting for payment confirmation. Please refresh in a moment before trying again.",
+    "ההזמנה עדיין ממתינה לאישור תשלום. נא לרענן בעוד רגע ולנסות שוב.",
   payment_already_recorded:
-    "Payment is already recorded for this order. Please refresh the order page before creating another payment link.",
+    "התשלום עבור הזמנה זו כבר נרשם. נא לרענן את עמוד ההזמנה לפני יצירת קישור תשלום נוסף.",
 } as const satisfies Record<PaymentCheckoutFailureKind, string>;
 
 export function getPaymentCheckoutFailureMessage(

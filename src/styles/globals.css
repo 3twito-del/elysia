@@ -989,8 +989,17 @@ html[data-accessibility-motion="reduce"] .media-color-rich {
 .public-motion-content {
   position: relative;
   z-index: 1;
-  padding-top: var(--public-top-safe-offset, 0px);
-  padding-bottom: 0;
+  /* UX23/UX24: the cookie-consent banner deliberately never joins the
+     data-public-floating-bar collision system (a near-full-width, up-to-
+     24dvh-tall panel would badly skew that system's corner-only guard
+     zones) -- it stacks other floating chrome above itself via its own
+     --floating-stack-bottom/--floating-stack-top instead (see
+     accessibility-widget.tsx). Page content needs the same signal so the
+     banner doesn't just sit on top of it. */
+  padding-top: calc(
+    var(--public-top-safe-offset, 0px) + var(--floating-stack-top, 0px)
+  );
+  padding-bottom: var(--floating-stack-bottom, 0px);
   transition:
     padding-top var(--motion-ui) var(--ease-motion-standard),
     padding-bottom var(--motion-ui) var(--ease-motion-standard);
@@ -4291,34 +4300,6 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   );
 }
 
-.site-header .site-header-scroll-cta {
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-0.25rem);
-  border-color: var(--glass-border);
-  background: rgb(255 250 244 / 72%);
-  color: var(--foreground);
-  transition:
-    opacity var(--motion-fast) var(--ease-motion-standard),
-    transform var(--motion-fast) var(--ease-motion-standard),
-    border-color var(--motion-fast) var(--ease-motion-standard),
-    background-color var(--motion-fast) var(--ease-motion-standard),
-    color var(--motion-fast) var(--ease-motion-standard);
-}
-
-.site-header[data-condensed-cta="true"] .site-header-scroll-cta {
-  pointer-events: auto;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.site-header .site-header-scroll-cta:hover,
-.site-header .site-header-scroll-cta:focus-visible {
-  border-color: var(--glass-border-hover);
-  background: var(--background);
-  color: var(--foreground);
-}
-
 .site-header .site-header-action:hover,
 .site-header .site-header-action[aria-expanded="true"] {
   border-color: transparent !important;
@@ -6512,6 +6493,17 @@ footer nav a:focus-visible {
     both;
 }
 
+/* UX29 -- floating chrome z-index contract: .site-header, the cookie
+   banner, the accessibility trigger, and the feedback button all sit at
+   z-50 on purpose, not by accident. They never need paint-order tiebreaks
+   because the stacking system below (--floating-stack-bottom /
+   --floating-stack-top / --public-floating-bar-offset, set in
+   cookie-consent-banner.tsx and consumed by every other bottom-corner or
+   checkout-top-placed trigger) keeps them geometrically disjoint instead.
+   If a new floating element can't be positioned to avoid the others via
+   that system, give it its own z-index rather than fighting DOM order --
+   current mount order (see layout.tsx) is header -> page content ->
+   cookie banner -> accessibility widget -> feedback button. */
 .public-floating-control {
   transition:
     opacity var(--motion-ui) var(--ease-motion-standard),
@@ -6519,6 +6511,12 @@ footer nav a:focus-visible {
     visibility var(--motion-ui) var(--ease-motion-standard);
 }
 
+/* UX27: the accessibility trigger is exempt from every hide-on-collision
+   rule below on purpose -- it's the one floating control that must stay
+   reachable at all times (WCAG 2.1 SC 2.4.11-style expectation), not an
+   oversight. It already renders with an opaque bg-background circle
+   (accessibility-widget.tsx) so it never becomes unreadable card content;
+   it just floats above it like any other fixed corner control. */
 html[data-public-overlay-open="true"] .public-floating-control,
 html[data-anchor-scroll-active="true"] .public-floating-control,
 html[data-public-floating-collision="true"]
@@ -7279,12 +7277,6 @@ html[data-accessibility-motion="reduce"]
 
 .dark .site-header[data-header-state="solid"] {
   background: rgb(22 18 16 / 97%);
-}
-
-.dark .site-header .site-header-scroll-cta {
-  border-color: var(--glass-border);
-  background: rgb(31 26 21 / 80%);
-  color: var(--foreground);
 }
 
 .dark .commerce-page-hero-metric {

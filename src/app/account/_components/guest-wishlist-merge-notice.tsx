@@ -37,11 +37,12 @@ export function GuestWishlistMergeNotice() {
 
       clearGuestWishlistItems();
 
+      if (result.message) {
+        setTone((result.mergedCount ?? 0) > 0 ? "success" : "neutral");
+        setMessage(result.message);
+      }
+
       if ((result.mergedCount ?? 0) > 0) {
-        setTone("success");
-        setMessage(
-          `${result.mergedCount} פריטים מהמועדפים המקומיים נוספו לחשבון.`,
-        );
         router.refresh();
       }
     });

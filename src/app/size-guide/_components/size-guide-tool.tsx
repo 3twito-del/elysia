@@ -182,7 +182,7 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
     defaultManualValues[initialKind],
   );
   const [localMessage, setLocalMessage] = useState<string | null>(null);
-  const [state, action] = useActionState<AccountActionState, FormData>(
+  const [state, action, pending] = useActionState<AccountActionState, FormData>(
     saveCustomerSizeAction,
     {},
   );
@@ -393,13 +393,17 @@ export function SizeGuideTool({ initialKind }: SizeGuideToolProps) {
               : "המידה עדיין לא תקינה לשמירה."}
           </div>
 
-          <Button className="w-full gap-2" type="submit">
+          <Button className="w-full gap-2" disabled={pending} type="submit">
             <Save aria-hidden="true" className="size-4" />
-            שמירת מידה
+            {pending ? "שומרת..." : "שמירת מידה"}
           </Button>
 
           <div aria-live="polite" className="grid gap-2">
-            {localMessage ? (
+            {/* UX43: once the server responds with an error, the optimistic
+                "saved to device" line is dropped -- showing it next to an
+                error reads as contradictory even though both are true (the
+                device save did succeed; the account sync didn't). */}
+            {localMessage && state.ok !== false ? (
               <StatusMessage tone="success" variant="plain">
                 {localMessage}
               </StatusMessage>

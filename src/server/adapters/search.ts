@@ -919,9 +919,33 @@ function mapTypesenseFacets(
 }
 
 async function buildLocalFacets(input: ProductSearchInput) {
-  const [categories, products, facets] = await Promise.all([
+  // UX34: each dimension's counts are computed against products filtered by
+  // every *other* active filter but not its own -- otherwise, e.g. with
+  // material=Gold already selected, every other material would incorrectly
+  // show a count of 0 (since `products` would already be Gold-only) even
+  // though picking "Silver" replaces the Gold filter rather than adding to
+  // it. Mirrors category-filter-utils.ts's matchesCategoryFilterSelection
+  // exclude-self pattern. searchCatalogProducts's category fetch is
+  // request-cached, so these extra calls just re-filter in memory.
+  const [
+    categories,
+    categoryProducts,
+    materialProducts,
+    stoneProducts,
+    collectionProducts,
+    styleProducts,
+    giftProducts,
+    colorProducts,
+    facets,
+  ] = await Promise.all([
     getCatalogCategories(),
     searchCatalogProducts({ ...input, category: undefined }),
+    searchCatalogProducts({ ...input, material: undefined }),
+    searchCatalogProducts({ ...input, stone: undefined }),
+    searchCatalogProducts({ ...input, collection: undefined }),
+    searchCatalogProducts({ ...input, style: undefined }),
+    searchCatalogProducts({ ...input, gift: undefined }),
+    searchCatalogProducts({ ...input, color: undefined }),
     getCatalogFacets(),
   ]);
 
@@ -930,7 +954,7 @@ async function buildLocalFacets(input: ProductSearchInput) {
       field: "category",
       values: categories.map((category) => ({
         value: category.name,
-        count: products.filter(
+        count: categoryProducts.filter(
           (product) => product.categorySlug === category.slug,
         ).length,
       })),
@@ -939,38 +963,42 @@ async function buildLocalFacets(input: ProductSearchInput) {
       field: "material",
       values: facets.materials.map((material) => ({
         value: material,
-        count: products.filter((product) => product.material === material)
-          .length,
+        count: materialProducts.filter(
+          (product) => product.material === material,
+        ).length,
       })),
     },
     {
       field: "stone",
       values: facets.stones.map((stone) => ({
         value: stone,
-        count: products.filter((product) => product.stone === stone).length,
+        count: stoneProducts.filter((product) => product.stone === stone)
+          .length,
       })),
     },
     {
       field: "collection",
       values: facets.collections.map((collection) => ({
         value: collection,
-        count: products.filter((product) => product.collection === collection)
-          .length,
+        count: collectionProducts.filter(
+          (product) => product.collection === collection,
+        ).length,
       })),
     },
     {
       field: "style",
       values: facets.styles.map((style) => ({
         value: style,
-        count: products.filter((product) => product.collections.includes(style))
-          .length,
+        count: styleProducts.filter((product) =>
+          product.collections.includes(style),
+        ).length,
       })),
     },
     {
       field: "gift",
       values: facets.giftTags.map((gift) => ({
         value: gift,
-        count: products.filter(
+        count: giftProducts.filter(
           (product) => filterCatalogProducts([product], { gift }).length > 0,
         ).length,
       })),
@@ -979,7 +1007,7 @@ async function buildLocalFacets(input: ProductSearchInput) {
       field: "color",
       values: facets.colors.map((color) => ({
         value: color,
-        count: products.filter((product) =>
+        count: colorProducts.filter((product) =>
           [
             ...product.metalColors,
             ...product.variants.flatMap((variant) => [

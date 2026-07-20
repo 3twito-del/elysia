@@ -159,6 +159,7 @@ function SavedSizeRow({
       onSubmit={handleSubmit}
     >
       <input name="kind" type="hidden" value={kind} />
+      <input name="context" type="hidden" value="account" />
       <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div className="grid gap-2">
           <Label htmlFor={inputId} required>

@@ -27,6 +27,7 @@ import {
   getServiceRequestAttachmentPolicy,
   getServiceContactPreferenceLabel,
 } from "~/lib/service-validation";
+import { useActionStateResetKey } from "~/lib/use-action-state-reset-key";
 
 type ServiceRequestFormProps = {
   defaultMessage?: string;
@@ -75,6 +76,8 @@ export function ServiceRequestForm({
     createServiceRequestAction,
     initialState,
   );
+  const resetKey = useActionStateResetKey(state);
+  const fieldValues = state.fieldValues;
   const [offlineState, setOfflineState] = useState<ServiceRequestActionState>(
     {},
   );
@@ -150,6 +153,7 @@ export function ServiceRequestForm({
     <form
       action={formAction}
       className="brand-surface grid gap-3.5 rounded-md p-4"
+      key={resetKey}
       onSubmit={handleSubmit}
       ref={formRef}
     >
@@ -166,7 +170,7 @@ export function ServiceRequestForm({
           aria-invalid={Boolean(state.fieldErrors?.topicSlug)}
           autoComplete="off"
           className="glass-control h-11 rounded-md border px-3 text-sm"
-          defaultValue={initialSelectedTopic}
+          defaultValue={fieldValues?.topicSlug ?? initialSelectedTopic}
           disabled={pending}
           id="topicSlug"
           name="topicSlug"
@@ -202,6 +206,7 @@ export function ServiceRequestForm({
       <div className="grid gap-3 sm:grid-cols-2">
         <Field
           autoComplete="name"
+          defaultValue={fieldValues?.name}
           error={state.fieldErrors?.name}
           label="שם מלא"
           name="name"
@@ -210,6 +215,7 @@ export function ServiceRequestForm({
         />
         <Field
           autoComplete="tel"
+          defaultValue={fieldValues?.phone}
           dir="ltr"
           error={state.fieldErrors?.phone}
           label="טלפון"
@@ -223,6 +229,7 @@ export function ServiceRequestForm({
 
       <Field
         autoComplete="email"
+        defaultValue={fieldValues?.email}
         dir="ltr"
         error={state.fieldErrors?.email}
         label="אימייל"
@@ -235,7 +242,7 @@ export function ServiceRequestForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Field
-          defaultValue={defaultOrderNumber}
+          defaultValue={fieldValues?.orderNumber ?? defaultOrderNumber}
           error={state.fieldErrors?.orderNumber}
           label="מספר הזמנה"
           name="orderNumber"
@@ -243,7 +250,9 @@ export function ServiceRequestForm({
           placeholder="אופציונלי"
         />
         <Field
-          defaultValue={defaultProductReference}
+          defaultValue={
+            fieldValues?.productReference ?? defaultProductReference
+          }
           error={state.fieldErrors?.productReference}
           label="שם התכשיט או קישור"
           name="productReference"
@@ -258,7 +267,7 @@ export function ServiceRequestForm({
           <select
             autoComplete="off"
             className="glass-control h-11 rounded-md border px-3 text-sm"
-            defaultValue="ANY"
+            defaultValue={fieldValues?.preferredContact ?? "ANY"}
             disabled={pending}
             id="preferredContact"
             name="preferredContact"
@@ -271,6 +280,7 @@ export function ServiceRequestForm({
           </select>
         </div>
         <Field
+          defaultValue={fieldValues?.preferredContactTime}
           error={state.fieldErrors?.preferredContactTime}
           label="זמן נוח לחזרה"
           name="preferredContactTime"
@@ -291,7 +301,7 @@ export function ServiceRequestForm({
           aria-describedby={getFieldErrorId("message")}
           aria-invalid={Boolean(state.fieldErrors?.message)}
           className="min-h-32"
-          defaultValue={defaultMessage}
+          defaultValue={fieldValues?.message ?? defaultMessage}
           disabled={pending}
           id="message"
           name="message"

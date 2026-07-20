@@ -12,6 +12,7 @@ import {
   subscribeToGuestWishlist,
 } from "~/lib/guest-wishlist";
 import { cn } from "~/lib/utils";
+import { api } from "~/trpc/react";
 
 const initialState: PublicActionState = {};
 
@@ -32,8 +33,11 @@ export function WishlistButton({
   const [pending, setPending] = useState(false);
   const [serverSavedState, setServerSavedState] =
     useState<SavedServerState | null>(null);
+  const savedSlugsQuery = api.wishlist.getSavedSlugs.useQuery();
   const serverSaved =
-    serverSavedState?.productSlug === productSlug && serverSavedState.saved;
+    serverSavedState?.productSlug === productSlug
+      ? serverSavedState.saved
+      : (savedSlugsQuery.data?.includes(productSlug) ?? false);
   const isSaved = guestSaved || serverSaved;
 
   useEffect(() => {

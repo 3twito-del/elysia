@@ -1,11 +1,40 @@
+import { TRPCError } from "@trpc/server";
 import type { AdminPermission } from "@prisma/client";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import {
+  CredentialsSignin,
+  type DefaultSession,
+  type NextAuthConfig,
+} from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 
 import { db } from "~/server/db";
 import { recordAdminSecurityEvent } from "~/server/services/admin-security";
-import { verifyCustomerOtp } from "~/server/services/customer-otp";
+import {
+  OTP_EXPIRED_MESSAGE,
+  OTP_LOCKED_MESSAGE,
+  verifyCustomerOtp,
+} from "~/server/services/customer-otp";
+
+/** Distinguishes why OTP verification failed without re-verifying the code
+ * (which would double-count the attempt). `.code` surfaces to the server
+ * action's catch block via `error.code` -- see account/actions.ts. */
+class OtpSignInError extends CredentialsSignin {
+  constructor(otpError: unknown) {
+    super();
+
+    if (otpError instanceof TRPCError && otpError.message === OTP_EXPIRED_MESSAGE) {
+      this.code = "otp_expired";
+    } else if (
+      otpError instanceof TRPCError &&
+      otpError.message === OTP_LOCKED_MESSAGE
+    ) {
+      this.code = "otp_locked";
+    } else {
+      this.code = "otp_invalid";
+    }
+  }
+}
 import { verifyAdminLoginTicket } from "./admin-mfa-ticket";
 import {
   type AdminSessionTokenFields,
@@ -78,8 +107,8 @@ export const authConfig = {
             adminUserId: null,
             permissions: [],
           };
-        } catch {
-          return null;
+        } catch (error) {
+          throw new OtpSignInError(error);
         }
       },
     }),

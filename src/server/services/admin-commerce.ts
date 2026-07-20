@@ -977,7 +977,7 @@ export async function updateAdminCouponStatus(input: {
  * clicking the button. Only allowed once the order has a genuine financial
  * commitment (paid or further along); fulfilling stock against an unpaid
  * order makes no business sense. A far-future `expiresAt` is used since this
- * reservation isn't a "waiting for payment" hold (the existing 30-minute
+ * reservation isn't a "waiting for payment" hold (the existing 24-hour
  * checkout window) -- the order is already paid, so nothing should
  * auto-release it; the reservation-expiry job only ever acts on orders
  * still `PENDING_PAYMENT` (see K-05), which this guard already excludes.

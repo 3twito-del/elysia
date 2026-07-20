@@ -87,15 +87,15 @@ export function PushOptInButton({
       setTone("success");
       setMessage(
         result.unsubscribed
-          ? "׳”׳¢׳“׳›׳•׳ ׳™׳ ׳›׳•׳‘׳• ׳‘׳׳›׳©׳™׳¨ ׳”׳–׳”."
-          : "׳׳™׳ ׳¢׳“׳›׳•׳ ׳™׳ ׳₪׳¢׳™׳׳™׳ ׳‘׳׳›׳©׳™׳¨ ׳”׳–׳”.",
+          ? "העדכונים כובו במכשיר הזה."
+          : "אין עדכונים פעילים במכשיר הזה.",
       );
     } catch (error) {
       setTone("error");
       setMessage(
         error instanceof Error
           ? error.message
-          : "׳׳ ׳”׳¦׳׳—׳ ׳• ׳׳›׳‘׳•׳× ׳¢׳“׳›׳•׳ ׳™׳ ׳›׳¨׳’׳¢.",
+          : "לא הצלחנו לכבות עדכונים כרגע.",
       );
     } finally {
       setPending(false);
@@ -105,7 +105,7 @@ export function PushOptInButton({
   const handleClick = isSubscribed ? unsubscribe : subscribe;
   const Icon = isSubscribed ? BellOff : Bell;
   const buttonLabel = isSubscribed
-    ? "׳›׳™׳‘׳•׳™ ׳¢׳“׳›׳•׳ ׳™׳ ׳‘׳׳›׳©׳™׳¨ ׳”׳–׳”"
+    ? "כיבוי עדכונים במכשיר הזה"
     : label;
 
   return (

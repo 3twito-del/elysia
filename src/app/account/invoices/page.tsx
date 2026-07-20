@@ -30,10 +30,10 @@ export default async function CustomerInvoicesPage() {
   const session = await auth();
 
   if (!session?.user || session.user.adminUserId) {
-    redirect("/account");
+    redirect(`/account?callbackUrl=${encodeURIComponent("/account/invoices")}`);
   }
 
-  const portal = await getCustomerPortalData(session.user.id).catch(() => null);
+  const portal = await getCustomerPortalData(session.user.id);
 
   if (!portal) redirect("/account");
 
