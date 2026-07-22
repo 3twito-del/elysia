@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { ShieldCheck } from "lucide-react";
 
-import { adminMfaConfirmEnrollAction, type AdminMfaEnrollState } from "../actions";
+import {
+  adminMfaConfirmEnrollAction,
+  type AdminMfaEnrollState,
+} from "../actions";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -51,11 +55,12 @@ export function AdminMfaEnrollForm({
           יש לסרוק את הקוד באפליקציית אימות (כגון Google Authenticator או
           Authy), או להזין את המפתח באופן ידני.
         </p>
-        <img
+        <Image
           alt="קוד QR להפעלת אימות דו-שלבי"
           className="mx-auto rounded-md border border-[var(--glass-border)] bg-white p-2"
           height={220}
           src={qrDataUrl}
+          unoptimized
           width={220}
         />
         <div className="elysia-inset glass-inset rounded-md border p-3">
