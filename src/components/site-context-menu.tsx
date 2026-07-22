@@ -42,6 +42,22 @@ type ContextMenuItem = {
   label: string;
 };
 
+const contextLinkKinds = [
+  "account",
+  "category",
+  "external",
+  "page",
+  "product",
+  "search",
+] as const;
+
+type ContextLinkKind = (typeof contextLinkKinds)[number];
+
+type ContextTarget = {
+  href: string;
+  kind: ContextLinkKind;
+};
+
 const menuWidth = 304;
 const viewportGutter = 12;
 const excludedPathPrefixes = ["/admin", "/checkout"];
@@ -80,18 +96,25 @@ export function SiteContextMenu() {
   );
   const [canScrollTop, setCanScrollTop] = useState(false);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
-  const [contextHref, setContextHref] = useState<string | null>(null);
+  const [contextTarget, setContextTarget] = useState<ContextTarget | null>(
+    null,
+  );
   const isProductPath = pathname.startsWith("/product/");
   const shouldDisableMenu = excludedPathPrefixes.some((prefix) =>
     pathname === prefix ? true : pathname.startsWith(`${prefix}/`),
   );
-  const supportLabel = isProductPath ? "שירות אישי על הפריט" : "שירות לקוחות";
+  const isProductContext = contextTarget
+    ? contextTarget.kind === "product"
+    : isProductPath;
+  const supportLabel = isProductContext
+    ? "שירות אישי על הפריט"
+    : "שירות לקוחות";
   const copyLabel =
     copyStatus === "copied"
       ? "הקישור הועתק"
-      : contextHref || isProductPath
-        ? "העתקת קישור לפריט"
-        : "העתקת קישור לעמוד";
+      : getContextCopyLabel(
+          contextTarget?.kind ?? (isProductPath ? "product" : "page"),
+        );
   const supportLinks = useMemo(
     () =>
       [
@@ -109,7 +132,7 @@ export function SiteContextMenu() {
     setMenuPoint(null);
     setMenuPosition(null);
     setCopyStatus("idle");
-    setContextHref(null);
+    setContextTarget(null);
   }, []);
 
   const openMenu = useCallback(
@@ -125,7 +148,7 @@ export function SiteContextMenu() {
       setCopyStatus("idle");
       setMenuPoint(point);
       setMenuPosition(point);
-      setContextHref(resolveContextHref(target));
+      setContextTarget(resolveContextTarget(target));
     },
     [shouldDisableMenu],
   );
@@ -234,7 +257,7 @@ export function SiteContextMenu() {
   }, [menuPoint]);
 
   const copyPageLink = async () => {
-    const href = contextHref ?? window.location.href;
+    const href = contextTarget?.href ?? window.location.href;
 
     try {
       await navigator.clipboard.writeText(href);
@@ -278,7 +301,7 @@ export function SiteContextMenu() {
 
   return createPortal(
     <div
-      aria-label={isProductPath ? "תפריט תכשיט של Elysia" : "תפריט Elysia"}
+      aria-label={isProductContext ? "תפריט תכשיט של Elysia" : "תפריט Elysia"}
       className="fixed z-[95] w-[min(calc(100vw-1.5rem),19rem)] rounded-md border border-[var(--glass-border)] bg-[var(--background)] p-2 text-right text-sm text-[var(--foreground)] shadow-[0_18px_48px_var(--glass-shadow-deep)] outline-none"
       data-site-context-menu="true"
       dir="rtl"
@@ -296,7 +319,7 @@ export function SiteContextMenu() {
           Elysia
         </p>
         <p className="mt-1 text-sm font-semibold">
-          {isProductPath ? "פעולות לתכשיט" : "פעולות מהירות"}
+          {isProductContext ? "פעולות לתכשיט" : "פעולות מהירות"}
         </p>
       </div>
 
@@ -455,18 +478,71 @@ function copyTextWithFallback(text: string) {
 }
 
 export function resolveContextHref(target?: Element | null) {
+  return resolveContextTarget(target)?.href ?? null;
+}
+
+export function resolveContextTarget(
+  target?: Element | null,
+): ContextTarget | null {
   if (!target) return null;
 
-  const explicit = target.closest<HTMLElement>("[data-context-href]")?.dataset
-    .contextHref;
+  const explicitTarget = target.closest<HTMLElement>("[data-context-href]");
+  const explicit = explicitTarget?.dataset.contextHref;
   const anchor = target.closest<HTMLAnchorElement>("a[href]");
   const href = explicit ?? anchor?.getAttribute("href");
 
   if (!href) return null;
 
   try {
-    return new URL(href, document.baseURI).toString();
+    const url = new URL(href, document.baseURI);
+    const explicitKind = parseContextLinkKind(
+      explicitTarget?.dataset.contextKind ?? anchor?.dataset.contextKind,
+    );
+    const kind = explicitKind ?? inferContextLinkKind(url);
+
+    if (kind === "product") {
+      url.search = "";
+      url.hash = "";
+    }
+
+    return { href: url.toString(), kind };
   } catch {
     return null;
   }
+}
+
+function getContextCopyLabel(kind: ContextLinkKind) {
+  const labels: Record<ContextLinkKind, string> = {
+    account: "העתקת קישור לאזור האישי",
+    category: "העתקת קישור לקטגוריה",
+    external: "העתקת קישור",
+    page: "העתקת קישור לעמוד",
+    product: "העתקת קישור לפריט",
+    search: "העתקת קישור לחיפוש",
+  };
+
+  return labels[kind];
+}
+
+function inferContextLinkKind(url: URL): ContextLinkKind {
+  if (url.origin !== window.location.origin) return "external";
+  if (url.pathname.startsWith("/product/")) return "product";
+  if (
+    url.pathname.startsWith("/category/") ||
+    (url.pathname === "/search" && url.searchParams.has("category"))
+  ) {
+    return "category";
+  }
+  if (url.pathname === "/search") return "search";
+  if (url.pathname === "/account" || url.pathname.startsWith("/account/")) {
+    return "account";
+  }
+
+  return "page";
+}
+
+function parseContextLinkKind(value?: string): ContextLinkKind | null {
+  return contextLinkKinds.includes(value as ContextLinkKind)
+    ? (value as ContextLinkKind)
+    : null;
 }

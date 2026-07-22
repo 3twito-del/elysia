@@ -108,6 +108,7 @@ export function ProductCard({
       data-product-card-display={display}
       data-product-card-sale={sale ? "true" : "false"}
       data-context-href={`/product/${product.slug}`}
+      data-context-kind="product"
       data-testid="product-card"
       dir="rtl"
     >

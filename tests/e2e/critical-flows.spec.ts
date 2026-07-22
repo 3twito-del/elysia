@@ -1401,9 +1401,11 @@ test.describe("accessibility and responsive guardrails", () => {
     const menu = page.getByRole("menu");
 
     await expect(menu).toBeVisible();
-    await menu
-      .getByRole("menuitem", { name: "העתקת קישור לפריט" })
-      .evaluate((element) => (element as HTMLElement).click());
+    const productCopyAction = menu.getByRole("menuitem").first();
+    await expect(productCopyAction).toHaveText("העתקת קישור לפריט");
+    await productCopyAction.evaluate((element) =>
+      (element as HTMLElement).click(),
+    );
     const canonicalProductUrl = new URL(productHref ?? "", page.url());
     canonicalProductUrl.search = "";
     canonicalProductUrl.hash = "";
@@ -1422,13 +1424,42 @@ test.describe("accessibility and responsive guardrails", () => {
       clientY: 120,
     });
     await expect(menu).toBeVisible();
-    await menu
-      .getByRole("menuitem")
-      .first()
-      .evaluate((element) => (element as HTMLElement).click());
+    const categoryCopyAction = menu.getByRole("menuitem").first();
+    await expect(categoryCopyAction).toHaveText("העתקת קישור לקטגוריה");
+    await categoryCopyAction.evaluate((element) =>
+      (element as HTMLElement).click(),
+    );
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       new URL(categoryHref ?? "", page.url()).toString(),
     );
+
+    for (const contextCase of [
+      {
+        href: "/category/rings",
+        label: "העתקת קישור לקטגוריה",
+      },
+      { href: "/search", label: "העתקת קישור לחיפוש" },
+      { href: "/account", label: "העתקת קישור לאזור האישי" },
+      {
+        href: "https://www.instagram.com/elysia_jewellery",
+        label: "העתקת קישור",
+      },
+    ]) {
+      const contextualLink = page
+        .locator(`a[href="${contextCase.href}"]`)
+        .last();
+      await contextualLink.dispatchEvent("contextmenu", {
+        button: 2,
+        clientX: 120,
+        clientY: 120,
+      });
+      await expect(menu).toBeVisible();
+      await expect(menu.getByRole("menuitem").first()).toHaveText(
+        contextCase.label,
+      );
+      await page.keyboard.press("Escape");
+      await expect(menu).toHaveCount(0);
+    }
 
     await categoryTile.focus();
     await page.keyboard.press("Shift+F10");
@@ -1463,10 +1494,11 @@ test.describe("accessibility and responsive guardrails", () => {
       clientY: 1,
     });
     await expect(menu).toBeVisible();
-    await menu
-      .getByRole("menuitem")
-      .first()
-      .evaluate((element) => (element as HTMLElement).click());
+    const pageCopyAction = menu.getByRole("menuitem").first();
+    await expect(pageCopyAction).toHaveText("העתקת קישור לעמוד");
+    await pageCopyAction.evaluate((element) =>
+      (element as HTMLElement).click(),
+    );
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       page.url(),
     );
@@ -1484,7 +1516,7 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page.getByTestId("account-otp-request-form")).toBeAttached();
   });
 
-  test("keeps search categories wrapped, the active search state subtle, and one footer newsletter", async ({
+  test("keeps search categories in one clear horizontal rail, the active search state subtle, and one footer newsletter", async ({
     page,
   }) => {
     for (const viewport of [
@@ -1500,11 +1532,46 @@ test.describe("accessibility and responsive guardrails", () => {
         .filter({ visible: true });
       await expect(categoryChips).toBeVisible();
       expect(
-        await categoryChips.evaluate((element) => ({
-          fits: element.scrollWidth <= element.clientWidth,
-          wrap: getComputedStyle(element).flexWrap,
-        })),
-      ).toEqual({ fits: true, wrap: "wrap" });
+        await categoryChips.evaluate((element) => {
+          const styles = getComputedStyle(element);
+
+          return {
+            mask: styles.maskImage,
+            overflowX: styles.overflowX,
+            webkitMask: styles.getPropertyValue("-webkit-mask-image"),
+            wrap: styles.flexWrap,
+          };
+        }),
+      ).toEqual({
+        mask: "none",
+        overflowX: "auto",
+        webkitMask: "none",
+        wrap: "nowrap",
+      });
+
+      const categoryLinks = categoryChips.getByRole("link");
+
+      for (const edgeCategory of [
+        categoryLinks.first(),
+        categoryLinks.last(),
+      ]) {
+        await edgeCategory.evaluate((element) =>
+          element.scrollIntoView({ block: "nearest", inline: "nearest" }),
+        );
+        await expect(edgeCategory).toBeInViewport();
+        expect(
+          await edgeCategory.evaluate((element) => {
+            const item = element.getBoundingClientRect();
+            const rail = element.parentElement?.getBoundingClientRect();
+
+            return Boolean(
+              rail &&
+              item.left >= rail.left - 1 &&
+              item.right <= rail.right + 1,
+            );
+          }),
+        ).toBe(true);
+      }
 
       const activeSearch = page
         .getByLabel("חיפוש", { exact: true })

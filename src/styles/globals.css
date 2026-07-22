@@ -4297,13 +4297,27 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
   font-variant-numeric: tabular-nums;
 }
 
-/* The mobile category-chip row (search-category-chips) scrolls
-   horizontally with no scrollbar on touch devices — without a fade, the
-   trailing chip gets hard-clipped mid-pill and reads as a rendering glitch
-   rather than "swipe for more". Direction-agnostic (fades both edges) so it
-   is correct regardless of scroll position, not just the RTL start edge. */
+/* Category chips remain a single horizontal rail at every viewport. The
+   inline padding lets both edge chips scroll fully into view, while keeping
+   the rail free of masks or fades that would blur the first/last item. */
 .search-category-chips-scroll {
+  -webkit-mask-image: none;
   mask-image: none;
+  overscroll-behavior-inline: contain;
+  padding-inline: 0.125rem;
+  padding-block: 0.125rem 0.375rem;
+  scroll-padding-inline: 0.125rem;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: none;
+  touch-action: pan-x pinch-zoom;
+}
+
+.search-category-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.search-category-chips-scroll > * {
+  scroll-snap-align: start;
 }
 
 .font-editorial-latin:lang(en) {

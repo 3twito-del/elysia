@@ -473,7 +473,7 @@ function SearchCategoryChips({
       data-testid="search-category-chips"
     >
       <span className="text-muted-foreground shrink-0">קטגוריה</span>
-      <div className="search-category-chips-scroll flex flex-wrap gap-2">
+      <div className="search-category-chips-scroll flex min-w-0 flex-1 flex-nowrap gap-2 overflow-x-auto">
         <Button
           asChild
           className="h-11 shrink-0 sm:h-8"
@@ -482,6 +482,7 @@ function SearchCategoryChips({
         >
           <Link
             aria-current={!input.category ? "page" : undefined}
+            data-context-kind="category"
             href={allCategoriesHref}
             scroll={false}
           >
@@ -507,6 +508,7 @@ function SearchCategoryChips({
             >
               <Link
                 aria-current={active ? "page" : undefined}
+                data-context-kind="category"
                 href={href}
                 scroll={false}
               >
