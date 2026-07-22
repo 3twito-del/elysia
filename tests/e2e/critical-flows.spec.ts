@@ -1441,7 +1441,7 @@ test.describe("accessibility and responsive guardrails", () => {
       { href: "/search", label: "העתקת קישור לחיפוש" },
       { href: "/account", label: "העתקת קישור לאזור האישי" },
       {
-        href: "https://www.instagram.com/elysia_jewellery",
+        href: "https://www.instagram.com/elysia.one/",
         label: "העתקת קישור",
       },
     ]) {
@@ -1461,19 +1461,15 @@ test.describe("accessibility and responsive guardrails", () => {
       await expect(menu).toHaveCount(0);
     }
 
-    await categoryTile.focus();
-    await page.keyboard.press("Shift+F10");
+    await categoryTile.press("Shift+F10");
     await expect(menu).toBeVisible();
     const menuItems = menu.getByRole("menuitem");
-    const initialFocusIndex = await menuItems.evaluateAll((items) =>
-      items.findIndex((item) => item === document.activeElement),
-    );
-    expect([-1, 0]).toContain(initialFocusIndex);
+    await expect(menuItems.first()).toBeFocused();
     await page.keyboard.press("ArrowDown");
     const nextFocusIndex = await menuItems.evaluateAll((items) =>
       items.findIndex((item) => item === document.activeElement),
     );
-    expect(nextFocusIndex).toBe(initialFocusIndex === -1 ? 0 : 1);
+    expect(nextFocusIndex).toBe(1);
     await page.keyboard.press("ArrowDown");
     const followingFocusIndex = await menuItems.evaluateAll((items) =>
       items.findIndex((item) => item === document.activeElement),
