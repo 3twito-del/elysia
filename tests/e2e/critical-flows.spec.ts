@@ -1461,7 +1461,10 @@ test.describe("accessibility and responsive guardrails", () => {
       await expect(menu).toHaveCount(0);
     }
 
-    await categoryTile.press("Shift+F10");
+    await categoryTile.dispatchEvent("keydown", {
+      key: "F10",
+      shiftKey: true,
+    });
     await expect(menu).toBeVisible();
     const menuItems = menu.getByRole("menuitem");
     await expect(menuItems.first()).toBeFocused();
