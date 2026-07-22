@@ -1653,30 +1653,31 @@ test.describe("accessibility and responsive guardrails", () => {
     const focused = await input.evaluate((element) => {
       const styles = getComputedStyle(element);
       const parseColor = (value: string) => {
-        const channelPattern = /[\d.]+/g;
-        const channels: number[] = [];
-        let match = channelPattern.exec(value);
+        const canvas = document.createElement("canvas");
+        canvas.width = 1;
+        canvas.height = 1;
+        const context = canvas.getContext("2d");
 
-        while (match) {
-          channels.push(Number(match[0]));
-          match = channelPattern.exec(value);
-        }
-
-        if (channels.length < 3) {
+        if (!context)
+          throw new Error("Unable to create a color parsing context");
+        if (!CSS.supports("color", value)) {
           throw new Error(`Unable to parse focus color: ${value}`);
         }
 
-        const channelScale = value.startsWith("color(srgb") ? 255 : 1;
+        context.clearRect(0, 0, 1, 1);
+        context.fillStyle = value;
+        context.fillRect(0, 0, 1, 1);
+        const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data;
 
         return {
-          red: (channels[0] ?? 0) * channelScale,
-          green: (channels[1] ?? 0) * channelScale,
-          blue: (channels[2] ?? 0) * channelScale,
-          alpha: channels[3] ?? 1,
+          red: red ?? 0,
+          green: green ?? 0,
+          blue: blue ?? 0,
+          alpha: (alpha ?? 255) / 255,
         };
       };
       const background = parseColor(styles.backgroundColor);
-      const shadowColorValue = /rgba?\([^)]+\)|color\(srgb [^)]+\)/.exec(
+      const shadowColorValue = /(?:rgba?|color|oklch)\([^)]+\)/.exec(
         styles.boxShadow,
       )?.[0];
 
@@ -1786,6 +1787,10 @@ test.describe("accessibility and responsive guardrails", () => {
   }) => {
     await setCookieConsent(page, "all");
     await page.goto("/search", { waitUntil: "domcontentloaded" });
+    const productLinks = page.locator(
+      '[data-testid="product-card"] a[href^="/product/"]',
+    );
+    await expect(productLinks.first()).toBeVisible();
     const viewedSlugs = await page
       .locator('[data-testid="product-card"] a[href^="/product/"]')
       .evaluateAll((links) =>
@@ -1794,6 +1799,7 @@ test.describe("accessibility and responsive guardrails", () => {
           .filter((slug): slug is string => Boolean(slug))
           .slice(0, 4),
       );
+    expect(viewedSlugs.length).toBeGreaterThan(0);
     await page.evaluate(
       ({ key, slugs }) => localStorage.setItem(key, JSON.stringify(slugs)),
       { key: recentlyViewedStorageKey, slugs: viewedSlugs },
@@ -1804,21 +1810,21 @@ test.describe("accessibility and responsive guardrails", () => {
       .getByTestId("recently-viewed-products")
       .locator(".product-horizontal-rail");
     await expect(rail).toBeVisible();
-    expect(
-      await rail.evaluate((element) => {
-        const styles = getComputedStyle(element);
+    const railBehavior = await rail.evaluate((element) => {
+      const styles = getComputedStyle(element);
 
-        return {
-          overflowX: styles.overflowX,
-          paddingInline: styles.paddingInline,
-          snap: styles.scrollSnapType,
-        };
-      }),
-    ).toEqual({
+      return {
+        overflowX: styles.overflowX,
+        paddingInline: styles.paddingInline,
+        snap: styles.scrollSnapType,
+      };
+    });
+    expect(railBehavior).toMatchObject({
       overflowX: "auto",
       paddingInline: "4px",
-      snap: "inline proximity",
     });
+    expect(railBehavior.snap).toMatch(/^inline(?: proximity)?$/);
+    expect(railBehavior.snap).not.toContain("mandatory");
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {
