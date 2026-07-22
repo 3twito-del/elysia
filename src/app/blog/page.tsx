@@ -12,7 +12,7 @@ import { listPublishedBlogPosts } from "~/server/services/blog";
 
 export const metadata: Metadata = {
   title: "מגזין Elysia",
-  description: "מדריכים קצרים על תכשיטים, סטיילינג, חומרים וטיפול יומיומי.",
+  description: "מדריכים קצרים על תכשיטים, התאמה, חומרים וטיפול יומיומי.",
   alternates: { canonical: "/blog" },
 };
 

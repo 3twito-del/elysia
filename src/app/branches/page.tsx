@@ -33,7 +33,7 @@ const onlineServiceHighlights = [
   },
   {
     title: "שירות לקוחות",
-    text: "שאלות על מידה, מתנה או הזמנה מקבלות מענה מתועד.",
+    text: "שאלות על מידה, התאמה או הזמנה מקבלות מענה מתועד.",
     icon: Headphones,
   },
   {
@@ -46,7 +46,7 @@ const onlineServiceHighlights = [
 const onlineContinuitySteps = [
   "מוצאים תכשיט דרך הקטלוג, החיפוש או מדריך המידות.",
   "בוחרים מידה, חומר ומחיר באתר לפני שמוסיפים לסל.",
-  "שאלות על התאמה, מתנה או הזמנה נשלחות לשירות הלקוחות.",
+  "שאלות על התאמה, מידה או הזמנה נשלחות לשירות הלקוחות.",
 ] as const;
 
 export default async function BranchesPage() {
@@ -200,7 +200,7 @@ export default async function BranchesPage() {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <a
-                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
+                    className="border-border rounded-md border p-3 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
                     href={`tel:${profile.settings.phoneE164}`}
                   >
                     <Phone aria-hidden="true" className="mb-3 size-4" />
@@ -210,7 +210,7 @@ export default async function BranchesPage() {
                     </span>
                   </a>
                   <a
-                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
+                    className="border-border rounded-md border p-3 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
                     href={`mailto:${profile.settings.serviceEmail}`}
                   >
                     <Mail aria-hidden="true" className="mb-3 size-4" />
@@ -220,7 +220,7 @@ export default async function BranchesPage() {
                     </span>
                   </a>
                   <Link
-                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
+                    className="border-border rounded-md border p-3 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
                     href="/service?topic=general"
                   >
                     <Headphones aria-hidden="true" className="mb-3 size-4" />

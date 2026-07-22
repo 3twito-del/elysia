@@ -49,9 +49,7 @@ describe("sitemap", () => {
     // secondary page for crawl-priority purposes.
     const home = entries.find((entry) => entry.url.endsWith(".com/"));
     expect(home?.priority).toBe(1);
-    expect(
-      entries.filter((entry) => entry.priority === 1),
-    ).toHaveLength(1);
+    expect(entries.filter((entry) => entry.priority === 1)).toHaveLength(1);
   });
 
   it("includes every documented static route", async () => {
@@ -66,7 +64,7 @@ describe("sitemap", () => {
     for (const route of [
       "/",
       "/search",
-      "/gifts",
+      "/elys-ai",
       "/wishlist",
       "/service",
       "/blog",

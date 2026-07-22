@@ -12,12 +12,10 @@ const siteUrl = env.SITE_URL ?? "https://elysia-jewellery.com";
 const staticRoutes = [
   "/",
   "/search",
-  "/gifts",
   "/wishlist",
   "/service",
   "/blog",
-  "/stylist",
-  "/ai",
+  "/elys-ai",
   "/about",
   "/faq",
   "/size-guide",

@@ -20,17 +20,11 @@ describe("AI fallback recovery UI", () => {
     expect(fallback).toContain('topic: "general"');
   });
 
-  it("uses the shared fallback on stylist chat and gift recommendation errors", () => {
+  it("uses the shared fallback in the elys-ai chat", () => {
     const stylistChat = read("src/app/stylist/_components/stylist-chat.tsx");
-    const giftRecommender = read(
-      "src/app/ai/_components/ai-gift-recommender.tsx",
-    );
 
     expect(stylistChat).toContain("AiFallbackRecovery");
-    expect(stylistChat).toContain('source="stylist"');
-    expect(giftRecommender).toContain("AiFallbackRecovery");
-    expect(giftRecommender).toContain('source="gift"');
-    expect(giftRecommender).toContain("recommendGift.error.message");
+    expect(stylistChat).toContain('source="elys-ai"');
   });
 
   it("keeps benchmark support evidence available after backlog replacement", () => {

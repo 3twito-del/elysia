@@ -42,7 +42,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).not.toContain('id="materials"');
     expect(home).toContain('id="about-elysia"');
     expect(home).toContain('id="first-collection"');
-    expect(home).toContain('id="collection-updates"');
+    expect(home).not.toContain('id="collection-updates"');
     expect(home).toContain('data-layout-equal-group="home-category-tiles"');
     expect(home).toContain('data-testid="home-featured-products"');
     expect(home).toContain("<RecentlyViewedProducts");
@@ -53,7 +53,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(home).toContain("home-story-secondary-copy");
     expect(home).toContain("home-story-secondary-note");
     expect(home).toContain("storySignatureNote");
-    expect(home).toContain("<NewsletterForm />");
+    expect(home).not.toContain("<NewsletterForm />");
     expect(home).toContain("<CommerceSectionHeader");
     expect(home).toContain('data-title-direction="rtl"');
 
@@ -78,9 +78,7 @@ describe("homepage boutique commerce bridge", () => {
     expect(indexOf(home, 'id="about-elysia"')).toBeLessThan(
       indexOf(home, 'id="first-collection"'),
     );
-    expect(indexOf(home, 'id="first-collection"')).toBeLessThan(
-      indexOf(home, 'id="collection-updates"'),
-    );
+    expect(indexOf(home, 'id="first-collection"')).toBeGreaterThan(-1);
   });
 
   it("keeps the materials section aligned with a single-line title", () => {

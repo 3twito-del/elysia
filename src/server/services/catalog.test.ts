@@ -54,7 +54,6 @@ describe("catalog filtering", () => {
         branch: "tel-aviv",
         collection: "bridal",
         color: "זהב לבן",
-        gift: "מתאים למתנה",
         material: "זהב לבן 14K",
         maxPrice: 1500,
         query: "gift",

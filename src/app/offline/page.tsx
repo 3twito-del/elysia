@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gem, Gift, LifeBuoy, RefreshCw, Ruler, Search } from "lucide-react";
+import { Gem, LifeBuoy, RefreshCw, Ruler, Search } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 
@@ -97,12 +97,6 @@ export default function OfflinePage() {
             <Link href="/search">
               <Search aria-hidden="true" className="size-4" />
               המבחר
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/gifts">
-              <Gift aria-hidden="true" className="size-4" />
-              מתנות
             </Link>
           </Button>
           <Button asChild variant="outline">

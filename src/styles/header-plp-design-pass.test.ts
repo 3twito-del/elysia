@@ -25,12 +25,16 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
         `aria-current={pathname === "${href}" ? "page" : undefined}`,
       );
     }
-    expect(css).toContain('.site-header .site-header-label-action[aria-current="page"]');
+    expect(css).toContain(
+      '.site-header .site-header-label-action[aria-current="page"]',
+    );
     expect(css).toContain('.mobile-nav-link[aria-current="page"]');
   });
 
   it("tracks header scroll state on every route, not just hero-overlay routes", () => {
-    expect(header).toContain('data-scrolled={hasScrolled ? "true" : undefined}');
+    expect(header).toContain(
+      'data-scrolled={hasScrolled ? "true" : undefined}',
+    );
     expect(header).not.toContain("if (!isMediaOverlayRoute) return;");
   });
 
@@ -39,7 +43,9 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
       "The condensed feel instead comes from\n   shrinking the brand mark alone",
     );
     expect(css).toContain('.site-header[data-scrolled="true"] .brand-logo');
-    expect(css).not.toContain('.site-header[data-scrolled="true"],\n  .site-header[data-scrolled="true"] .site-header-row');
+    expect(css).not.toContain(
+      '.site-header[data-scrolled="true"],\n  .site-header[data-scrolled="true"] .site-header-row',
+    );
   });
 
   it("keeps the solid header flush at rest and gives it an edge only after scroll", () => {
@@ -54,7 +60,9 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
   });
 
   it("gives the mobile drawer a bronze focus ring and clear catalog/service separation", () => {
-    expect(mobileNav).toContain('data-testid="mobile-nav-catalog-service-separator"');
+    expect(mobileNav).toContain(
+      'data-testid="mobile-nav-catalog-service-separator"',
+    );
     expect(mobileNav).toContain("catalogServiceSeparatorIndex");
   });
 
@@ -69,7 +77,9 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
   });
 
   it("auto-focuses the search query field on open and returns focus to the toggle on Escape", () => {
-    expect(searchControls).toContain('detailsElement.addEventListener("toggle"');
+    expect(searchControls).toContain(
+      'detailsElement.addEventListener("toggle"',
+    );
     expect(searchControls).toContain("function closeSearchPanel(");
     expect(searchControls).toContain('event.key !== "Escape"');
     expect(searchControls).toContain("summaryRef.current?.focus();");
@@ -78,21 +88,28 @@ describe("header + PLP design pass (owner-selected DP 11-20)", () => {
   });
 
   it("gives mobile active-filter chips a larger, clearer removal target", () => {
-    expect(searchPage).toContain('className="h-9 max-w-full gap-1.5 pr-3 pl-2.5 sm:h-8"');
-    expect(searchPage).toContain('<X aria-hidden="true" className="size-3.5 shrink-0" />');
+    expect(searchPage).toContain(
+      'className="h-9 max-w-full gap-1.5 pr-3 pl-2.5 sm:h-8"',
+    );
+    expect(searchPage).toContain(
+      '<X aria-hidden="true" className="size-3.5 shrink-0" />',
+    );
     expect(categoryPage).toContain(
       'className="h-9 max-w-full gap-1.5 pr-2.5 pl-1.5 sm:h-7"',
     );
-    expect(categoryPage).toContain('<X aria-hidden="true" className="size-3.5" />');
+    expect(categoryPage).toContain(
+      '<X aria-hidden="true" className="size-3.5" />',
+    );
   });
 
-  it("shows one uniform secondary-typography result count next to the heading on every PLP route", () => {
-    expect(format).toContain("export function formatPlpResultCount(count: number)");
+  it("shows one uniform secondary-typography result count on active PLP routes and redirects gifts", () => {
+    expect(format).toContain(
+      "export function formatPlpResultCount(count: number)",
+    );
     expect(searchPage).toContain('data-testid="search-result-count-badge"');
     expect(searchPage).toContain("formatPlpResultCount(result.total)");
     expect(categoryPage).toContain('data-testid="category-result-count-badge"');
-    expect(giftsPage).toContain('data-testid="gift-result-count-badge"');
-    expect(giftsPage).toContain("formatPlpResultCount(products.length)");
+    expect(giftsPage).toContain('permanentRedirect("/search")');
     expect(css).toContain(".plp-result-count-badge {");
     expect(css).not.toContain("plp-result-count-badge rounded-full");
   });

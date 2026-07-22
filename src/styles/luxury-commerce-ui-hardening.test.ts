@@ -66,7 +66,7 @@ describe("luxury commerce UI hardening", () => {
     );
     expect(mobileNav).not.toContain("׳³");
     expect(mobileNav).toContain("after:h-px");
-    expect(mobileNav).toContain('href: "/gifts"');
+    expect(mobileNav).not.toContain('href: "/gifts"');
     expect(mobileNav).not.toContain("grid-cols-4");
     expect(mobileNav).not.toContain("<Gem");
     expect(read("src/styles/globals.css")).toContain(
@@ -81,7 +81,7 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain("max-w-[92rem]");
     expect(footer).toContain("gap-14");
     expect(footer).toContain(
-      "lg:grid-cols-[minmax(22rem,0.95fr)_minmax(0,1.35fr)]",
+      "lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.35fr)_minmax(18rem,0.85fr)]",
     );
     expect(footer).toContain("site-footer-nav grid gap-0 md:grid-cols-2");
     expect(footer).toContain("md:gap-x-14 md:gap-y-12");
@@ -154,7 +154,7 @@ describe("luxury commerce UI hardening", () => {
     expect(search).toContain(
       "mt-4 border-b border-[var(--glass-border)] pb-4 sm:mt-6",
     );
-    expect(gifts).toContain("border-b border-[var(--glass-border)] pb-4");
+    expect(gifts).toContain('permanentRedirect("/search")');
   });
 
   it("keeps non-action labels and cookie consent from returning to aqua pills or top overlays", () => {

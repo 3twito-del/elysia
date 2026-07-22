@@ -27,13 +27,13 @@ describe("AI bundle boundary", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("keeps the AI gift panel deferred behind a dynamic import", () => {
-    const deferredPanel = read(
-      "src/app/ai/_components/deferred-ai-gift-panel.tsx",
+  it("does not retain the retired public gift recommender", () => {
+    expect(walk("src/app/ai").map(normalizePath)).not.toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("ai-gift-recommender"),
+        expect.stringContaining("ai-gift-panel"),
+      ]),
     );
-
-    expect(deferredPanel).toContain('import dynamic from "next/dynamic"');
-    expect(deferredPanel).toContain('() => import("./ai-gift-panel")');
   });
 });
 
@@ -48,8 +48,4 @@ function walk(directory: string): string[] {
 
 function normalizePath(filePath: string) {
   return filePath.replaceAll(path.sep, "/");
-}
-
-function read(relativePath: string) {
-  return readFileSync(path.join(process.cwd(), relativePath), "utf8");
 }

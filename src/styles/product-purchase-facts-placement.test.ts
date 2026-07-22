@@ -7,9 +7,7 @@ const root = process.cwd();
 
 describe("PDP purchase fact placement", () => {
   it("keeps the I-025 benchmark gate attached to the PDP implementation", () => {
-    const benchmark = read(
-      "docs/QA_EVIDENCE.md",
-    );
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("`Backlog Item`: I-025");
     expect(benchmark).toContain("`Weighted Score`: 16.5");
@@ -57,7 +55,7 @@ describe("PDP purchase fact placement", () => {
     expect(purchaseUtils).toContain('key: "returns"');
     expect(purchaseUtils).toContain('key: "warranty"');
     expect(purchaseUtils).toContain('key: "care"');
-    expect(purchaseUtils).toContain('key: "gift"');
+    expect(purchaseUtils).toContain('key: "service"');
     expect(purchaseUtils).toContain("משלוח, טיפול ואחריות");
     expect(purchaseUtils).toContain("אחריות: ${input.warranty}");
     expect(purchaseUtils).toContain("טיפול: ${input.careInstructions}");

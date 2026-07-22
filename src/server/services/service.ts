@@ -68,7 +68,7 @@ export const defaultContactTopics = [
     id: "topic_sizing",
     slug: "sizing",
     label: "מידות",
-    description: "ייעוץ מידה, התאמה או בחירת מתנה.",
+    description: "ייעוץ מידה, התאמה או בחירת תכשיט.",
     sortOrder: 50,
   },
   {

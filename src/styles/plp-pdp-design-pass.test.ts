@@ -29,17 +29,13 @@ describe("PLP + PDP design pass (owner-selected DP 21-30)", () => {
     expect(searchControls).toContain("formatPlpResultCount(resultTotal)");
   });
 
-  it("adds a route-level loading skeleton only where safe (gifts is a cold-entry route; category re-navigates on every filter click, which is why a category loading.tsx is a separate, standing guardrail)", () => {
+  it("does not retain a loading surface for the redirected gifts route", () => {
     expect(existsSync(path.join(root, "src/app/gifts/loading.tsx"))).toBe(
-      true,
+      false,
     );
     expect(
       existsSync(path.join(root, "src/app/category/[slug]/loading.tsx")),
     ).toBe(false);
-    const giftsLoading = read("src/app/gifts/loading.tsx");
-    expect(giftsLoading).toContain(
-      "aspect-[5/4] w-full rounded-md sm:aspect-[4/5]",
-    );
   });
 
   it("puts no-results recovery ahead of the repeated search field", () => {
@@ -87,7 +83,9 @@ describe("PLP + PDP design pass (owner-selected DP 21-30)", () => {
     expect(productGallery).toContain("sr-only lg:not-sr-only");
     expect(productGallery).toContain('aria-live="polite"');
     expect(css).toContain(".product-gallery-position-dot {");
-    expect(css).toContain('.product-gallery-position-dot[data-gallery-dot-active="true"]');
+    expect(css).toContain(
+      '.product-gallery-position-dot[data-gallery-dot-active="true"]',
+    );
   });
 
   it("keeps desktop hover-zoom wired to real source images (audit: already shipped)", () => {

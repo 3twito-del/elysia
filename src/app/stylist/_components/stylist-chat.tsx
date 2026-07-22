@@ -33,9 +33,10 @@ import type { AiRecommendedProductInput } from "~/lib/ai-product-recommendations
 import { cn } from "~/lib/utils";
 
 const suggestions = [
-  "מתנה עד 700 ₪",
-  "טבעת זהב צהוב ליום־יום",
-  "עגילים נקיים לאירוע",
+  "סגנון עדין ליום־יום",
+  "עגילים נקיים לאירוע ערב",
+  "אפשרויות עד 700 ₪",
+  "עזרה בבחירת מידה לטבעת",
 ];
 
 type StylistChatProps = {
@@ -87,11 +88,10 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                     compact ? "text-xl" : "text-2xl",
                   )}
                 >
-                  סטיילינג אישי
+                  elys-ai
                 </h2>
                 <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי
-                  הזמין.
+                  מאתרים תכשיטים לפי מחיר, אירוע, חומר וסגנון, מתוך המלאי הזמין.
                 </p>
               </div>
             </div>
@@ -193,17 +193,17 @@ export function StylistChat({ compact = false }: StylistChatProps) {
                 }
                 className="mb-4 text-sm"
                 reason={error.message}
-                source="stylist"
+                source="elys-ai"
               />
             ) : null}
 
             <PromptInput className="relative" dir="rtl" onSubmit={handleSubmit}>
               <PromptInputTextarea
-                aria-label="תיאור הבקשה לסטיילינג"
+                aria-label="תיאור הבקשה ל־elys-ai"
                 className="max-h-32 min-h-14 py-3 pr-4 pl-14 leading-6"
                 id="stylist-message"
                 onChange={(event) => setInput(event.currentTarget.value)}
-                placeholder="לדוגמה: מתנה סביב 900 ש״ח למישהי שאוהבת זהב לבן"
+                placeholder="לדוגמה: לוק ערב סביב 900 ש״ח בזהב לבן"
                 value={input}
               />
               <PromptInputSubmit
@@ -314,9 +314,7 @@ function SearchCatalogToolResult({
   queryText?: string;
 }) {
   if (part.state === "output-error") {
-    return (
-      <StatusMessage tone="error">החיפוש אינו זמין כרגע.</StatusMessage>
-    );
+    return <StatusMessage tone="error">החיפוש אינו זמין כרגע.</StatusMessage>;
   }
 
   if (part.state !== "output-available") {
@@ -333,7 +331,7 @@ function SearchCatalogToolResult({
       layout="inline"
       products={products}
       queryText={queryText}
-      source="stylist"
+      source="elys-ai"
       title="בחירות שמתאימות לבקשה"
     />
   );

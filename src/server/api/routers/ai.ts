@@ -13,22 +13,12 @@ import {
   getCustomerIdForAiSession,
   orderSupportInputSchema,
   orderSupportWithAiAudit,
-  recommendGiftInputSchema,
-  recommendGiftWithAiAudit,
   saveStyleProfileInputSchema,
   saveStyleProfileWithAiAudit,
   type AiActionContext,
 } from "~/server/ai/commerce-actions";
 
 export const aiRouter = createTRPCRouter({
-  recommendGift: publicProcedure
-    .input(recommendGiftInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      await assertAiPublicRateLimit(ctx.headers, "gift");
-
-      return recommendGiftWithAiAudit(input, await createAiActionContext(ctx));
-    }),
-
   createTryOnSession: publicProcedure
     .input(createTryOnSessionInputSchema)
     .mutation(async ({ ctx, input }) => {
@@ -75,7 +65,7 @@ export const aiRouter = createTRPCRouter({
       }),
     )
     .query(({ input }) => ({
-      shortDescription: `${input.name} ב${input.material}${input.stone ? ` עם ${input.stone}` : ""}, בעיצוב נקי לשימוש יומיומי או למתנה.`,
+      shortDescription: `${input.name} ב${input.material}${input.stone ? ` עם ${input.stone}` : ""}, בעיצוב נקי לשימוש יומיומי ולאירועים.`,
       description: [
         `${input.name} הוא תכשיט ${input.category} מודרני עם נוכחות מאוזנת.`,
         `החומר המרכזי הוא ${input.material}${input.stone ? ` בשילוב ${input.stone}` : ""}.`,

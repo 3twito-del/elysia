@@ -7,7 +7,6 @@ import {
 import type {
   createTryOnSessionInputSchema,
   orderSupportInputSchema,
-  recommendGiftInputSchema,
   saveStyleProfileInputSchema,
   searchCatalogToolInputSchema,
 } from "~/lib/ai-commerce-validation";
@@ -26,12 +25,10 @@ import {
   AI_RUN_KIND,
   AI_TOOL_WORKFLOW_MODEL,
 } from "~/server/ai/constants";
-import { createStructuredRecommendationContract } from "~/server/ai/recommendation-contract";
 
 export {
   createTryOnSessionInputSchema,
   orderSupportInputSchema,
-  recommendGiftInputSchema,
   saveStyleProfileInputSchema,
   searchCatalogToolInputSchema,
 } from "~/lib/ai-commerce-validation";
@@ -80,7 +77,6 @@ export type CreateTryOnSessionInput = z.infer<
   typeof createTryOnSessionInputSchema
 >;
 export type OrderSupportInput = z.infer<typeof orderSupportInputSchema>;
-export type RecommendGiftInput = z.infer<typeof recommendGiftInputSchema>;
 
 export type AiActionContext = {
   customerId?: string;
@@ -193,80 +189,6 @@ export async function executeOrderSupport(input: OrderSupportInput) {
   };
 }
 
-export async function recommendGiftWithAiAudit(
-  input: RecommendGiftInput,
-  context: AiActionContext,
-) {
-  const run = await startAiRun({
-    kind: AI_RUN_KIND.giftRecommendation,
-    model: AI_TOOL_WORKFLOW_MODEL,
-    promptVersion: AI_PROMPT_VERSION,
-    input,
-    customerId: context.customerId,
-  });
-
-  try {
-    const products = (
-      await traceAiToolCall(
-        {
-          aiRunId: run.id,
-          name: "searchCatalog",
-          input: {
-            query: input.style.join(" "),
-            maxPrice: input.budget,
-          },
-        },
-        () =>
-          executeSearchCatalog({
-            query: input.style.join(" "),
-            maxPrice: input.budget,
-          }),
-      )
-    ).slice(0, 3);
-
-    const summary = createGiftSummary(input);
-    const recommendation = createStructuredRecommendationContract({
-      summary,
-      products,
-      requestedSignals: {
-        budget: input.budget,
-        style: input.style,
-        relation: input.relation,
-        occasion: input.occasion,
-      },
-      maxProducts: 3,
-    });
-
-    const output = {
-      runId: run.id,
-      summary,
-      products,
-      recommendation,
-    };
-
-    await db.recommendationSession.create({
-      data: {
-        customerId: context.customerId,
-        input,
-        output: {
-          summary: output.summary,
-          productSlugs: recommendation.productSlugs,
-          recommendation,
-          aiRunId: run.id,
-        },
-        model: AI_TOOL_WORKFLOW_MODEL,
-      },
-    });
-
-    await finishAiRun(run.id, { recommendation });
-
-    return output;
-  } catch (error) {
-    await failAiRun(run.id, error);
-    throw error;
-  }
-}
-
 export async function saveStyleProfileWithAiAudit(
   input: SaveStyleProfileInput,
   context: AiActionContext,
@@ -346,8 +268,4 @@ export async function orderSupportWithAiAudit(
     await failAiRun(run.id, error);
     throw error;
   }
-}
-
-function createGiftSummary(input: RecommendGiftInput) {
-  return `ל-${input.occasion} עבור ${input.relation}, הייתי מתחיל מבחירות זמינות בקולקציה לפי מחיר וסגנון.`;
 }

@@ -1,4 +1,9 @@
 import "~/styles/globals.css";
+import "@fontsource/rubik/400.css";
+import "@fontsource/rubik/500.css";
+import "@fontsource/rubik/600.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
 
 import { type Metadata, type Viewport } from "next";
 import { headers } from "next/headers";
@@ -20,7 +25,7 @@ import { env } from "~/env";
 
 const appName = "Elysia";
 const appDescription =
-  "תכשיטי Elysia ללוק יומי, למתנה ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.";
+  "תכשיטי Elysia ללוק יומי ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.";
 
 const sharePreviewImage = "/brand/boutique/lifestyle-hero.avif";
 
@@ -31,7 +36,7 @@ export const metadata: Metadata = {
     template: "%s | Elysia",
   },
   description:
-    "תכשיטי Elysia ללוק יומי, למתנה ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.",
+    "תכשיטי Elysia ללוק יומי ולערב: טבעות, שרשראות, עגילים וצמידים עם פרטי חומר, מידה ומחיר.",
   manifest: "/manifest.webmanifest",
   icons: [
     { rel: "icon", type: "image/svg+xml", url: "/favicon.svg" },
@@ -56,7 +61,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Elysia",
-    description: "תכשיטי Elysia ללוק יומי, למתנה ולערב.",
+    description: "תכשיטי Elysia ללוק יומי ולערב.",
     url: "/",
     images: [{ url: sharePreviewImage }],
     locale: "he_IL",

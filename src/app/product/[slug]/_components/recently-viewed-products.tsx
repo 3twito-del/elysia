@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
+import { ProductRail } from "~/components/product-rail";
 import { RECENTLY_VIEWED_STORAGE_KEY } from "~/lib/cookie-consent";
 import { useCookieConsentValue } from "~/lib/use-cookie-consent";
 import type { CatalogProduct } from "~/server/services/catalog";
@@ -94,14 +95,15 @@ function RecentlyViewedProductsContent({
         id="recently-viewed-products-heading"
         title={heading}
       />
-      <div
+      <ProductRail
+        ariaLabel={heading}
         className={gridClassName}
-        data-layout-equal-group="recently-viewed-products"
+        equalGroup="recently-viewed-products"
       >
         {viewed.map((product) => (
           <ProductCard key={product.slug} product={product} />
         ))}
-      </div>
+      </ProductRail>
     </section>
   );
 }

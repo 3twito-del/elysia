@@ -141,8 +141,6 @@ describe("cart service", () => {
     const activeCart = makeCart({ id: "cart_1" });
     const updatedCart = makeCart({
       couponCode: "SAVE20",
-      giftMessage: "Happy birthday",
-      giftWrap: true,
       id: "cart_1",
       items: [makeCartItem({ quantity: 1, unitPrice: 500 })],
     });
@@ -164,16 +162,12 @@ describe("cart service", () => {
     const summary = await updateCartOptions({
       couponCode: " save20 ",
       fulfillmentMethod: "PICKUP",
-      giftMessage: "Happy birthday",
-      giftWrap: true,
       sessionKey: "session-key-123456789",
     });
 
     const updateInput = getFirstMockArg(dbMocks.cartUpdate) as {
       data: {
         couponCode: string;
-        giftMessage: string;
-        giftWrap: boolean;
       };
       include?: unknown;
       where: { id: string };
@@ -183,16 +177,12 @@ describe("cart service", () => {
     expect(updateInput.where).toEqual({ id: "cart_1" });
     expect(updateInput.data).toEqual({
       couponCode: "SAVE20",
-      giftMessage: "Happy birthday",
-      giftWrap: true,
     });
     expect(summary).toMatchObject({
       couponCode: "SAVE20",
       couponMessage: "קוד ההטבה נקלט והסכום עודכן בסיכום.",
       couponStatus: "success",
       couponValid: true,
-      giftMessage: "Happy birthday",
-      giftWrap: true,
       totals: {
         discount: 20,
         shipping: 0,

@@ -78,6 +78,8 @@
     "@ai-sdk/openai-compatible": "^2.0.47",
     "@ai-sdk/react": "^3.0.170",
     "@auth/prisma-adapter": "^2.7.2",
+    "@fontsource/cormorant-garamond": "5.2.8",
+    "@fontsource/rubik": "5.2.8",
     "@prisma/client": "^6.6.0",
     "@streamdown/cjk": "^1.0.3",
     "@streamdown/code": "^1.1.1",

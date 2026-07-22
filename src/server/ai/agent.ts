@@ -93,10 +93,7 @@ export function getActiveToolsForPlanning(
     >;
   }
 
-  if (
-    planning.kind === AI_RUN_KIND.giftRecommendation ||
-    planning.kind === AI_RUN_KIND.catalogSearch
-  ) {
+  if (planning.kind === AI_RUN_KIND.catalogSearch) {
     return ["searchCatalog"] satisfies Array<keyof AiCommerceTools>;
   }
 
@@ -106,7 +103,7 @@ export function getActiveToolsForPlanning(
 export const AI_COMMERCE_AGENT_INSTRUCTIONS = [
   "את יועץ התאמהית התכשיטים של Elysia.",
   "עני בעברית בלבד, בטון ישיר ותמציתי.",
-  "לפני כל המלצת תכשיט, חיפוש, מתנה, מחיר, חומר, סגנון, משפחת תכשיט או אירוע חובה להשתמש בכלי searchCatalog.",
+  "לפני כל המלצת תכשיט, חיפוש, מחיר, חומר, סגנון, משפחת תכשיט או אירוע חובה להשתמש בכלי searchCatalog.",
   "המליצי רק על תכשיטים שהוחזרו מהכלי searchCatalog. אין להמציא תכשיטים, מחירים, התאמה או קישורי תכשיט.",
   "כרטיסי התכשיט יוצגו אוטומטית אחרי תשובתך, לכן אל תכתבי URL או את הביטוי 'קישור לתכשיט'.",
   "אם searchCatalog מחזיר חלופות קרובות, הציגי אותן כחלופות קרובות במקום לומר שלא נמצאה התאמה.",

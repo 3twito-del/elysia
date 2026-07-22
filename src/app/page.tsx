@@ -6,7 +6,6 @@ import { ArrowLeft } from "lucide-react";
 import { env } from "~/env";
 import { stringifyJsonLd } from "~/lib/json-ld";
 import { getTextDirection } from "~/lib/text-direction";
-import { NewsletterForm } from "~/components/newsletter-form";
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { DeferredFixedBackgroundBand } from "~/components/deferred-fixed-background-band";
 import { HomeHeroVideo } from "~/components/home-hero-video";
@@ -168,7 +167,10 @@ export default async function Home() {
           data-testid="home-hero-copy"
           dir={homeHeroDirection}
         >
-          <h1 className="storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]">
+          <h1
+            className="font-editorial-latin storefront-hero-title motion-copy-item [--motion-copy-delay:90ms]"
+            lang="en"
+          >
             {homeHeroTitle}
           </h1>
           <p
@@ -176,8 +178,7 @@ export default async function Home() {
             data-testid="home-hero-statement"
             dir="auto"
           >
-            תכשיטי כסף 925 וציפוי זהב בעיצוב קלאסי, לכל יום ולאירועים
-            מיוחדים.
+            תכשיטי כסף 925 וציפוי זהב בעיצוב קלאסי, לכל יום ולאירועים מיוחדים.
           </p>
           <div
             className="home-hero-actions motion-copy-item storefront-hero-actions [--motion-copy-delay:130ms]"
@@ -386,23 +387,6 @@ export default async function Home() {
                   צרי קשר
                 </Link>
               </Button>
-            </div>
-          </section>
-
-          <section
-            className="storefront-final-updates"
-            data-title-direction="rtl"
-            id="collection-updates"
-          >
-            <div>
-              <p className="storefront-eyebrow">ניוזלטר</p>
-              <h2 className="storefront-final-subtitle">הישארי מעודכנת</h2>
-              <p className="storefront-final-text">
-                הירשמי לניוזלטר וקבלי עדכונים על קולקציות חדשות ופריטים נבחרים.
-              </p>
-            </div>
-            <div className="storefront-final-newsletter">
-              <NewsletterForm />
             </div>
           </section>
         </div>

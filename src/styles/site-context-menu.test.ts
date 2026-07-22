@@ -72,7 +72,8 @@ describe("site context menu contract", () => {
     expect(component).toContain('href: "/category/necklaces"');
     expect(component).toContain('href: "/category/earrings"');
     expect(component).toContain('href: "/category/bracelets"');
-    expect(component).toContain('href: "/gifts"');
+    expect(component).not.toContain('href: "/gifts"');
+    expect(component).toContain("resolveContextHref");
     expect(component).toContain('href: "/wishlist"');
     expect(component).toContain('href: "/size-guide"');
     expect(component).toContain('href: "/service"');

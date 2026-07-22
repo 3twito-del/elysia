@@ -29,7 +29,7 @@ export function formatInlinePrice(amount: number) {
   return isolateBidiText(formatPrice(amount));
 }
 
-/** Shared PLP result-count phrasing (search, category, gifts) — one wording. */
+/** Shared PLP result-count phrasing for search and category pages. */
 export function formatPlpResultCount(count: number) {
   return count === 1 ? "תוצאה אחת" : `${count} תוצאות`;
 }

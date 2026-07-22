@@ -37,8 +37,8 @@ describe("public structure benchmark v4 policy", () => {
     );
   });
 
-  it("keeps PLP, gifts, PDP, checkout, and legal archetypes explicit", () => {
-    expect(routeStructurePolicy["/gifts"].archetype).toBe("plp");
+  it("keeps PLP, elys-ai, PDP, checkout, and legal archetypes explicit", () => {
+    expect(routeStructurePolicy["/elys-ai"].archetype).toBe("ai");
     expect(routeStructurePolicy["/category/[slug]"].archetype).toBe("plp");
     expect(routeStructurePolicy["/search"].archetype).toBe("plp");
     expect(routeStructurePolicy["/product/[slug]"].archetype).toBe("pdp");
@@ -109,8 +109,6 @@ describe("public structure benchmark v4 policy", () => {
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
-      "/category/sets",
-      "/gifts",
       "/search?sort=popular",
       "/size-guide",
       "/blog",
@@ -132,7 +130,11 @@ describe("public structure benchmark v4 policy", () => {
       expect(
         section.every((item) => knownRoutes.has(toRoutePath(item.href))),
       ).toBe(true);
-      expect(section.every((item) => !/[A-Za-z]/u.test(item.label))).toBe(true);
+      expect(
+        section.every(
+          (item) => item.label === "elys-ai" || !/[A-Za-z]/u.test(item.label),
+        ),
+      ).toBe(true);
     }
   });
 

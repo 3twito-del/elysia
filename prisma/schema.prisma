@@ -122,6 +122,11 @@ enum OtpChannel {
   SMS
 }
 
+enum OtpPurpose {
+  CUSTOMER_SIGN_IN
+  GUEST_ORDER_ACCESS
+}
+
 enum BranchKind {
   ONLINE
   PHYSICAL
@@ -2257,10 +2262,14 @@ model OtpChallenge {
   attempts   Int        @default(0)
   expiresAt  DateTime
   consumedAt DateTime?
+  purpose    OtpPurpose @default(CUSTOMER_SIGN_IN)
+  /// Purpose-scoped reference. Guest order access stores the matching Order.id.
+  contextKey String?
   customer   Customer?  @relation(fields: [customerId], references: [id])
   createdAt  DateTime   @default(now())
 
   @@index([identifier, channel])
+  @@index([identifier, channel, purpose, createdAt])
 }
 
 model NewsletterSubscription {

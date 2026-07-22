@@ -7,7 +7,6 @@ import {
   Circle,
   Diamond,
   Copy,
-  Gift,
   Gem,
   Heart,
   Headphones,
@@ -60,7 +59,6 @@ const nativeContextMenuSelector = [
 const primaryLinks = [
   { href: "/search", label: "חיפוש תכשיט", icon: Search },
   { href: "/search", label: "כל הקולקציה", icon: ShoppingBag },
-  { href: "/gifts", label: "מתנות", icon: Gift },
   { href: "/wishlist", label: "מועדפים", icon: Heart },
 ] satisfies ContextMenuItem[];
 
@@ -69,19 +67,20 @@ const categoryLinks = [
   { href: "/category/necklaces", label: "שרשראות", icon: Gem },
   { href: "/category/earrings", label: "עגילים", icon: Sparkles },
   { href: "/category/bracelets", label: "צמידים", icon: Diamond },
-  { href: "/category/sets", label: "סטים", icon: Gift },
 ] satisfies ContextMenuItem[];
 
 export function SiteContextMenu() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const [menuPoint, setMenuPoint] = useState<ContextMenuPoint | null>(null);
   const [menuPosition, setMenuPosition] = useState<ContextMenuPoint | null>(
     null,
   );
   const [canScrollTop, setCanScrollTop] = useState(false);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+  const [contextHref, setContextHref] = useState<string | null>(null);
   const isProductPath = pathname.startsWith("/product/");
   const shouldDisableMenu = excludedPathPrefixes.some((prefix) =>
     pathname === prefix ? true : pathname.startsWith(`${prefix}/`),
@@ -90,8 +89,8 @@ export function SiteContextMenu() {
   const copyLabel =
     copyStatus === "copied"
       ? "הקישור הועתק"
-      : isProductPath
-        ? "קישור לתכשיט"
+      : contextHref || isProductPath
+        ? "העתקת קישור לפריט"
         : "העתקת קישור לעמוד";
   const supportLinks = useMemo(
     () =>
@@ -103,19 +102,30 @@ export function SiteContextMenu() {
   );
 
   const closeMenu = useCallback(() => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
     setMenuPoint(null);
     setMenuPosition(null);
     setCopyStatus("idle");
+    setContextHref(null);
   }, []);
 
   const openMenu = useCallback(
-    (point: ContextMenuPoint) => {
+    (point: ContextMenuPoint, target?: Element | null) => {
       if (shouldDisableMenu) return;
+
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
 
       setCanScrollTop(window.scrollY > 80);
       setCopyStatus("idle");
       setMenuPoint(point);
       setMenuPosition(point);
+      setContextHref(resolveContextHref(target));
     },
     [shouldDisableMenu],
   );
@@ -133,7 +143,10 @@ export function SiteContextMenu() {
       if (shouldDisableMenu || shouldUseNativeContextMenu(event)) return;
 
       event.preventDefault();
-      openMenu({ x: event.clientX, y: event.clientY });
+      openMenu(
+        { x: event.clientX, y: event.clientY },
+        event.target instanceof Element ? event.target : null,
+      );
     };
 
     const handleKeyboardOpen = (event: globalThis.KeyboardEvent) => {
@@ -148,7 +161,7 @@ export function SiteContextMenu() {
       if (hasSelectedText()) return;
 
       event.preventDefault();
-      openMenu(getKeyboardMenuPoint(target));
+      openMenu(getKeyboardMenuPoint(target), target);
     };
 
     document.addEventListener("contextmenu", handleContextMenu);
@@ -221,14 +234,16 @@ export function SiteContextMenu() {
   }, [menuPoint]);
 
   const copyPageLink = async () => {
+    const href = contextHref ?? window.location.href;
+
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(href);
     } catch {
-      copyTextWithFallback(window.location.href);
+      copyTextWithFallback(href);
     }
 
     setCopyStatus("copied");
-    window.setTimeout(closeMenu, 650);
+    closeTimerRef.current = window.setTimeout(closeMenu, 650);
   };
 
   const scrollToTop = () => {
@@ -437,4 +452,21 @@ function copyTextWithFallback(text: string) {
   textarea.select();
   document.execCommand("copy");
   textarea.remove();
+}
+
+export function resolveContextHref(target?: Element | null) {
+  if (!target) return null;
+
+  const explicit = target.closest<HTMLElement>("[data-context-href]")?.dataset
+    .contextHref;
+  const anchor = target.closest<HTMLAnchorElement>("a[href]");
+  const href = explicit ?? anchor?.getAttribute("href");
+
+  if (!href) return null;
+
+  try {
+    return new URL(href, document.baseURI).toString();
+  } catch {
+    return null;
+  }
 }

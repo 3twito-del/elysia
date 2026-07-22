@@ -123,7 +123,7 @@ describe("Serwist route", () => {
     expect(source).toContain("category\\/");
     expect(source).toContain("product\\/");
     expect(source).toContain("search");
-    expect(source).toContain("gifts");
+    expect(source).not.toContain('pathname === "/gifts"');
     expect(source).toContain("branches");
     expect(source).toContain("about");
     expect(source).toContain("faq");
@@ -134,8 +134,8 @@ describe("Serwist route", () => {
     expect(source).toContain("warranty");
     expect(source).toContain("jewellery-care");
     expect(source).toContain("service");
-    expect(source).toContain("ai");
-    expect(source).toContain("stylist");
+    expect(source).toContain("elys-ai");
+    expect(source).not.toContain("stylist");
     expect(source).toContain("size-guide");
     expect(source).toContain("offline");
     expect(source).toContain("api\\/");
@@ -155,7 +155,7 @@ describe("Serwist route", () => {
       expect.arrayContaining([
         "/",
         "/search",
-        "/gifts",
+        "/elys-ai",
         "/branches",
         "/about",
         "/faq",

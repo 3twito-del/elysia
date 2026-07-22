@@ -100,10 +100,6 @@ const semanticStopWords = [
 
 const softSignalRules = [
   {
-    signal: "gift",
-    terms: ["מתנה", "למתנה", "gift", "present"],
-  },
-  {
     signal: "bridal",
     terms: ["כלה", "לכלה", "חתונה", "bridal", "bride", "wedding"],
   },
@@ -261,8 +257,6 @@ export function createSemanticMatchReason(
     reasons.push("מתאים לענידה יומיומית");
   } else if (intent.softSignals.includes("delicate")) {
     reasons.push("מראה נקי ולא כבד");
-  } else if (intent.softSignals.includes("gift")) {
-    reasons.push("רעיון טוב למתנה");
   }
 
   return reasons.length > 0

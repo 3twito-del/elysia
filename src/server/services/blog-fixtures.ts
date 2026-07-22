@@ -54,7 +54,7 @@ export const fixtureBlogCategories: BlogCategory[] = [
   {
     id: "blog_category_styling",
     slug: "styling",
-    name: "סטיילינג",
+    name: "התאמה",
     description: "בחירות שכבות, מידות ומתנות לפי רגע.",
     sortOrder: 1,
     createdAt: fixtureDate,

@@ -21,10 +21,6 @@ const boutiqueMedia = {
     alt: "טבעות זהב עדינות על משי ואבן בהירה",
     src: "/brand/boutique/category-rings.avif",
   },
-  sets: {
-    alt: "תכשיטים עדינים בעריכה מוכנה למתנה",
-    src: "/brand/boutique/product-detail.avif",
-  },
 } satisfies Record<string, CinematicHeroSlide>;
 
 export const brandHeroSlides = [
@@ -40,19 +36,17 @@ export const cinematicRouteMedia = {
   about: [boutiqueMedia.necklaces, boutiqueMedia.hero],
   checkout: [boutiqueMedia.bracelets, boutiqueMedia.rings],
   faq: [boutiqueMedia.hero, boutiqueMedia.earrings],
-  gifts: [boutiqueMedia.bracelets, boutiqueMedia.rings],
   home: [boutiqueMedia.hero, boutiqueMedia.necklaces, boutiqueMedia.rings],
   legal: [boutiqueMedia.hero, boutiqueMedia.earrings],
   product: [boutiqueMedia.hero, boutiqueMedia.rings],
   search: [boutiqueMedia.rings, boutiqueMedia.necklaces],
   service: [boutiqueMedia.bracelets, boutiqueMedia.hero],
-  stylist: [boutiqueMedia.necklaces, boutiqueMedia.earrings],
+  elysAi: [boutiqueMedia.necklaces, boutiqueMedia.earrings],
 } satisfies Record<string, CinematicHeroSlide[]>;
 
 export const brandMedia = {
   about: cinematicRouteMedia.about,
   ai: cinematicRouteMedia.ai,
-  gifts: cinematicRouteMedia.gifts,
   policy: cinematicRouteMedia.legal,
   search: cinematicRouteMedia.search,
   service: cinematicRouteMedia.service,
@@ -63,7 +57,6 @@ const categorySlides = {
   earrings: [boutiqueMedia.earrings, boutiqueMedia.hero],
   necklaces: [boutiqueMedia.necklaces, boutiqueMedia.hero],
   rings: [boutiqueMedia.rings, boutiqueMedia.hero],
-  sets: [boutiqueMedia.sets, boutiqueMedia.necklaces],
 } satisfies Record<string, CinematicHeroSlide[]>;
 
 export type CinematicRouteMediaKey = keyof typeof cinematicRouteMedia;

@@ -7,12 +7,11 @@
 
 @theme inline {
   --font-heading:
-    "Segoe UI Rounded", "Varela Round", "Rubik", "Rubik Fallback",
-    "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif, system-ui,
-    sans-serif;
+    "Rubik", "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
+    system-ui, sans-serif;
   --font-sans:
-    "Rubik", "Rubik Fallback", "Noto Sans Hebrew", "Noto Sans Hebrew Fallback",
-    ui-sans-serif, system-ui, sans-serif;
+    "Rubik", "Noto Sans Hebrew", "Noto Sans Hebrew Fallback", ui-sans-serif,
+    system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -67,8 +66,7 @@
     "Rubik", "Noto Sans Hebrew", "Arial Hebrew", Arial, ui-sans-serif,
     system-ui, sans-serif;
   --font-rounded-heading:
-    "Segoe UI Rounded", "Varela Round", var(--font-rubik), "Rubik",
-    "Noto Sans Hebrew", "Arial Hebrew", Arial, ui-rounded, ui-sans-serif,
+    var(--font-rubik), "Noto Sans Hebrew", "Arial Hebrew", Arial, ui-sans-serif,
     system-ui, sans-serif;
   --background: #fbf8f4;
   --foreground: var(--brand-ink);
@@ -86,7 +84,7 @@
   --accent-foreground: var(--brand-ink);
   --destructive: oklch(0.47 0.15 27);
   --border: #ece6df;
-  --input: #d8d0c8;
+  --input: #e4ddd5;
   --ring: var(--elysia-focus);
   --chart-1: #1d1916;
   --chart-2: #7d6b5a;
@@ -125,10 +123,18 @@
   --elysia-border-strong: #c0b4a6;
   --elysia-focus: rgb(138 106 63 / 90%);
   --elysia-border-hover: rgb(29 25 22 / 16%);
-  --elysia-hover-overlay: color-mix(in srgb, var(--brand-ink) 4.5%, transparent);
+  --elysia-hover-overlay: color-mix(
+    in srgb,
+    var(--brand-ink) 4.5%,
+    transparent
+  );
   --glass-blur: 10px;
   --elysia-shadow-hairline: oklch(0 0 0 / 2%);
-  --elysia-success: color-mix(in srgb, var(--brand-sage) 55%, var(--brand-ink) 45%);
+  --elysia-success: color-mix(
+    in srgb,
+    var(--brand-sage) 55%,
+    var(--brand-ink) 45%
+  );
   --elysia-shadow-surface: oklch(0 0 0 / 3%);
   --elysia-shadow-lift: oklch(0 0 0 / 5%);
   --elysia-shadow-popover: oklch(0 0 0 / 8%);
@@ -279,7 +285,11 @@
   --sidebar-border: rgb(243 237 230 / 14%);
   --sidebar-ring: #c7a982;
   --elysia-page-bg: var(--background);
-  --elysia-page-wash: linear-gradient(180deg, #1b1613 0%, var(--background) 34rem);
+  --elysia-page-wash: linear-gradient(
+    180deg,
+    #1b1613 0%,
+    var(--background) 34rem
+  );
   --elysia-surface-bg: var(--card);
   --elysia-surface-raised: var(--card);
   --elysia-surface-control: #1a1512;
@@ -291,7 +301,11 @@
   --elysia-border-strong: rgb(243 237 230 / 34%);
   --elysia-focus: color-mix(in srgb, var(--brand-champagne) 65%, transparent);
   --elysia-border-hover: rgb(243 237 230 / 30%);
-  --elysia-hover-overlay: color-mix(in srgb, var(--brand-porcelain) 6%, transparent);
+  --elysia-hover-overlay: color-mix(
+    in srgb,
+    var(--brand-porcelain) 6%,
+    transparent
+  );
   --elysia-success: var(--brand-sage);
   --elysia-shadow-surface: oklch(0 0 0 / 16%);
   --elysia-shadow-lift: oklch(0 0 0 / 20%);
@@ -2557,8 +2571,7 @@ main
   width: 2.35rem;
   height: 2.35rem;
   overflow: hidden;
-  border: 1px solid
-    color-mix(in srgb, var(--brand-porcelain) 52%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-porcelain) 52%, transparent);
   border-radius: 999px;
   background: color-mix(in srgb, var(--brand-porcelain) 14%, transparent);
   color: var(--brand-porcelain);
@@ -3050,7 +3063,6 @@ html[data-accessibility-motion="reduce"] .boutique-collection-action::before {
     line-height: 1.68;
   }
 }
-
 
 /* ════════════════════════════════════════════════════════════════════════
    About redesign — cinematic editorial sections
@@ -4185,7 +4197,7 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
 .site-header .site-header-link:hover,
 .site-header .site-header-link:focus-visible,
 .site-header .site-header-link[aria-current="page"] {
-  background: var(--glass-hover-overlay);
+  background: transparent;
   color: var(--site-header-link-hover);
 }
 
@@ -4291,13 +4303,41 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
    rather than "swipe for more". Direction-agnostic (fades both edges) so it
    is correct regardless of scroll position, not just the RTL start edge. */
 .search-category-chips-scroll {
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    black 1.25rem,
-    black calc(100% - 1.25rem),
-    transparent
-  );
+  mask-image: none;
+}
+
+.font-editorial-latin:lang(en) {
+  font-family: var(--font-cormorant-garamond);
+  font-weight: 600;
+}
+
+.product-horizontal-rail {
+  display: flex !important;
+  max-width: 100%;
+  gap: clamp(1rem, 2.5vw, 1.75rem) !important;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-block: 0.25rem 0.85rem;
+  scroll-padding-inline: 0.25rem;
+  scroll-snap-type: inline mandatory;
+  touch-action: pan-x pinch-zoom;
+}
+
+.product-horizontal-rail > * {
+  flex: 0 0 clamp(15rem, 72vw, 19rem);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .product-horizontal-rail > * {
+    flex-basis: clamp(17rem, 31vw, 21rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .product-horizontal-rail > * {
+    flex-basis: clamp(18rem, 24vw, 22rem);
+  }
 }
 
 .site-header .site-header-action:hover,
@@ -5532,8 +5572,16 @@ footer nav a:focus-visible {
 }
 
 .product-card-quick-add-button {
-  border-color: color-mix(in srgb, var(--brand-ink) 12%, transparent) !important;
-  background: color-mix(in srgb, var(--brand-porcelain) 88%, transparent) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--brand-ink) 12%,
+    transparent
+  ) !important;
+  background: color-mix(
+    in srgb,
+    var(--brand-porcelain) 88%,
+    transparent
+  ) !important;
 }
 
 .product-card-favorite {
@@ -6341,7 +6389,11 @@ footer nav a:focus-visible {
 
 .cookie-button-secondary:not(:disabled):hover,
 .cookie-button-secondary:not(:disabled):focus-visible {
-  border-color: color-mix(in srgb, var(--brand-ink) 18%, transparent) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--brand-ink) 18%,
+    transparent
+  ) !important;
   background: var(--background) !important;
   color: var(--foreground) !important;
   box-shadow: 0 8px 18px color-mix(in srgb, var(--brand-ink) 4%, transparent);
@@ -7180,7 +7232,8 @@ html[data-accessibility-motion="reduce"]
 
 .dark .storefront-home-page,
 .dark .about-cinematic-page {
-  background: linear-gradient(180deg, var(--background), #1b1613 68%), var(--background);
+  background:
+    linear-gradient(180deg, var(--background), #1b1613 68%), var(--background);
   color: var(--foreground);
 }
 
@@ -7247,7 +7300,8 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .boutique-fixed-image-band {
-  background: linear-gradient(180deg, #1b1613, var(--background)), var(--background);
+  background:
+    linear-gradient(180deg, #1b1613, var(--background)), var(--background);
 }
 
 .dark .boutique-fixed-image-band[data-fixed-bg-loaded="true"]::before {
@@ -7334,8 +7388,16 @@ html[data-accessibility-motion="reduce"]
 }
 
 .dark .product-card-quick-add-button {
-  border-color: color-mix(in srgb, var(--brand-porcelain) 18%, transparent) !important;
-  background: color-mix(in srgb, var(--brand-espresso) 88%, transparent) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--brand-porcelain) 18%,
+    transparent
+  ) !important;
+  background: color-mix(
+    in srgb,
+    var(--brand-espresso) 88%,
+    transparent
+  ) !important;
 }
 
 .dark .product-card-favorite {
@@ -7368,9 +7430,10 @@ html[data-accessibility-motion="reduce"]
     0 6px 18px oklch(0 0 0 / 36%);
 }
 
-.dark .product-card-favorite:has(
-  .product-card-favorite-button[data-favorite-saved="true"]
-) {
+.dark
+  .product-card-favorite:has(
+    .product-card-favorite-button[data-favorite-saved="true"]
+  ) {
   border-color: rgb(243 237 230 / 18%);
   background: rgb(31 26 21 / 92%);
   box-shadow:
@@ -7533,7 +7596,8 @@ html[data-accessibility-motion="reduce"]
 .home-hero-video-control:focus-visible,
 .mobile-nav-close:focus-visible,
 .home-hero-actions [data-slot="button"]:not(:disabled):focus-visible,
-.public-motion-shell [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
+.public-motion-shell
+  [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
 [data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
   box-shadow: 0 0 0 3px var(--glass-focus) !important;
 }

@@ -168,8 +168,8 @@ describe("mobile commerce density", () => {
     expect(home).toContain('id="collections"');
     expect(home).toContain('id="featured"');
     expect(home).not.toContain('id="materials"');
-    expect(home).toContain('id="collection-updates"');
-    expect(home).toContain("<NewsletterForm />");
+    expect(home).not.toContain('id="collection-updates"');
+    expect(home).not.toContain("<NewsletterForm />");
     expect(home).toContain('data-layout-equal-group="home-category-tiles"');
     expect(home).toContain('data-layout-equal-group="home-featured-products"');
     expect(home).not.toContain("brand-surface interactive-lift group/card");

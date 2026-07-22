@@ -13,7 +13,6 @@ export type SearchParams = {
   stone?: string;
   collection?: string;
   style?: string;
-  gift?: string;
   color?: string;
   maxPrice?: string;
   availableOnly?: string;
@@ -57,7 +56,6 @@ export function normalizeSearchInput(
     options.facets.collections,
   );
   const style = normalizeCatalogValue(params.style, options.facets.styles);
-  const gift = normalizeCatalogValue(params.gift, options.facets.giftTags);
   const color = normalizeCatalogValue(params.color, options.facets.colors);
 
   return {
@@ -67,7 +65,6 @@ export function normalizeSearchInput(
     stone,
     collection,
     style,
-    gift,
     color,
     maxPrice,
     availableOnly: params.availableOnly === "1",
@@ -91,15 +88,7 @@ export function normalizeBudgetAwareQuery(query?: string, maxPrice?: number) {
     .replace(/\s+/g, " ")
     .trim();
 
-  if (isGenericGiftSearch(withoutBudget)) return undefined;
-
   return withoutBudget || undefined;
-}
-
-export function isGenericGiftSearch(query: string) {
-  return /^(?:\u05de\u05ea\u05e0\u05d4|\u05dc\u05de\u05ea\u05e0\u05d4|gift|present)$/i.test(
-    query,
-  );
 }
 
 export function getActiveSearchRefinementCount(input: ProductSearchInput) {
@@ -109,7 +98,6 @@ export function getActiveSearchRefinementCount(input: ProductSearchInput) {
     input.stone,
     input.collection,
     input.style,
-    input.gift,
     input.color,
     input.maxPrice,
     input.availableOnly,
@@ -143,7 +131,6 @@ export function createSearchHref(input: SearchHrefInput) {
   if (input.stone) params.set("stone", input.stone);
   if (input.collection) params.set("collection", input.collection);
   if (input.style) params.set("style", input.style);
-  if (input.gift) params.set("gift", input.gift);
   if (input.color) params.set("color", input.color);
   if (input.maxPrice) params.set("maxPrice", String(input.maxPrice));
   if (input.availableOnly) params.set("availableOnly", "1");

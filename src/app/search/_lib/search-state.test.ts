@@ -24,7 +24,6 @@ const categories = [
 const facets = {
   collections: ["atelier"],
   colors: ["אדום"],
-  giftTags: ["מתאים למתנה"],
   materials: ["gold"],
   stones: ["diamond"],
   styles: ["modern"],
@@ -45,7 +44,6 @@ describe("search state helpers", () => {
           stone: "unknown",
           collection: "atelier",
           style: "modern",
-          gift: "מתאים למתנה",
           color: "אדום",
           maxPrice: "700",
           availableOnly: "1",
@@ -56,13 +54,12 @@ describe("search state helpers", () => {
         { categories, facets },
       ),
     ).toEqual({
-      query: undefined,
+      query: "gift",
       category: "rings",
       material: "gold",
       stone: undefined,
       collection: "atelier",
       style: "modern",
-      gift: "מתאים למתנה",
       color: "אדום",
       maxPrice: 700,
       availableOnly: true,
@@ -86,7 +83,6 @@ describe("search state helpers", () => {
         category: "rings",
         material: "gold",
         style: "modern",
-        gift: "מתאים למתנה",
         color: "אדום",
         maxPrice: 700,
         availableOnly: true,
@@ -96,7 +92,7 @@ describe("search state helpers", () => {
         page: 3,
       }),
     ).toBe(
-      "/search?q=ring&category=rings&material=gold&style=modern&gift=%D7%9E%D7%AA%D7%90%D7%99%D7%9D+%D7%9C%D7%9E%D7%AA%D7%A0%D7%94&color=%D7%90%D7%93%D7%95%D7%9D&maxPrice=700&availableOnly=1&sort=price-desc&mode=classic&view=list&page=3",
+      "/search?q=ring&category=rings&material=gold&style=modern&color=%D7%90%D7%93%D7%95%D7%9D&maxPrice=700&availableOnly=1&sort=price-desc&mode=classic&view=list&page=3",
     );
     expect(createProductSearchHref("venus-ring")).toBe("/product/venus-ring");
     expect(
@@ -130,7 +126,6 @@ describe("search state helpers", () => {
         stone: "",
         collection: "",
         style: "",
-        gift: "",
         color: "",
         sort: "relevance",
         mode: "semantic",
@@ -145,14 +140,13 @@ describe("search state helpers", () => {
         query: "ring",
         category: "rings",
         style: "modern",
-        gift: "מתאים למתנה",
         color: "אדום",
         maxPrice: 700,
         availableOnly: true,
         sort: "relevance",
         mode: "semantic",
       }),
-    ).toBe(6);
+    ).toBe(5);
     expect(
       getActiveSearchRefinementCount({
         query: "ring",

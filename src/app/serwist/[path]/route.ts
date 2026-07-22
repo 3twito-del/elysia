@@ -97,7 +97,7 @@ function createDevelopmentSerwistRoute(): SerwistRoute {
 const localFallbackServiceWorkerSource = String.raw`
 const publicPagesCacheName = "elysia-v2-public-pages";
 const publicPagePattern =
-  /^\/(?:$|category\/|product\/|search|gifts|branches|about|faq|privacy|terms|accessibility|shipping-returns|warranty|jewellery-care|service|ai|stylist|size-guide|offline)/;
+  /^\/(?:$|category\/|product\/|search|branches|about|faq|privacy|terms|accessibility|shipping-returns|warranty|jewellery-care|service|elys-ai|size-guide|offline)/;
 const liveOnlyPattern =
   /^\/(?:api\/|admin(?:\/|$)|account(?:\/|$)|checkout(?:\/|$))/;
 

@@ -24,7 +24,11 @@ import { SiteHeader } from "~/components/site-header";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { EmptyState } from "~/components/ui/empty-state";
-import { formatInlinePrice, formatPlpResultCount, formatPrice } from "~/lib/format";
+import {
+  formatInlinePrice,
+  formatPlpResultCount,
+  formatPrice,
+} from "~/lib/format";
 import { getPublicProductName } from "~/lib/product-display";
 import { cn } from "~/lib/utils";
 import { db } from "~/server/db";
@@ -152,7 +156,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           category: input.category,
           collection: input.collection,
           color: input.color,
-          gift: input.gift,
           material: input.material,
           maxPrice: input.maxPrice,
           mode: input.mode ?? "semantic",
@@ -470,7 +473,7 @@ function SearchCategoryChips({
       data-testid="search-category-chips"
     >
       <span className="text-muted-foreground shrink-0">קטגוריה</span>
-      <div className="search-category-chips-scroll flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0 sm:[mask-image:none]">
+      <div className="search-category-chips-scroll flex flex-wrap gap-2">
         <Button
           asChild
           className="h-11 shrink-0 sm:h-8"
@@ -855,18 +858,6 @@ function getActiveSearchFilters(
     });
   }
 
-  if (input.gift) {
-    filters.push({
-      key: "gift",
-      label: `מתנה: ${input.gift}`,
-      href: createSearchHref({
-        ...hrefInput,
-        gift: undefined,
-        page: undefined,
-      }),
-    });
-  }
-
   if (input.color) {
     filters.push({
       key: "color",
@@ -1147,7 +1138,6 @@ async function recordSearchEvent(
           stone: input.stone ?? null,
           collection: input.collection ?? null,
           style: input.style ?? null,
-          gift: input.gift ?? null,
           color: input.color ?? null,
           maxPrice: input.maxPrice ?? null,
           availableOnly: input.availableOnly ?? false,

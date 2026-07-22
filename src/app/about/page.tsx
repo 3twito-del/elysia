@@ -65,7 +65,7 @@ const editorialPrinciples = [
   },
   {
     title: "שירות",
-    text: "מענה אישי לכל שאלה על מידה, מתנה או משלוח, לפני ההזמנה ואחריה.",
+    text: "מענה אישי לכל שאלה על מידה, התאמה או משלוח, לפני ההזמנה ואחריה.",
   },
 ] as const;
 
@@ -132,7 +132,6 @@ const trustCards = [
     icon: Truck,
   },
 ] satisfies LinkCard[];
-
 
 export const metadata: Metadata = {
   title: "אודות | Elysia Jewellery",
@@ -471,7 +470,7 @@ export default function AboutPage() {
             />
             <h2 className="about-final-title">מצאי את התכשיט הבא שלך</h2>
             <p className="about-final-text">
-              גלי את הקולקציה שלנו. לכל שאלה על מידה, חומר או מתנה, צוות השירות
+              גלי את הקולקציה שלנו. לכל שאלה על מידה, חומר או התאמה, צוות השירות
               זמין בשבילך.
             </p>
             <div className="about-final-actions">

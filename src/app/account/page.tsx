@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 
 import { AdminSessionActions } from "./_components/admin-session-actions";
 import { BoutiqueStatePage } from "./_components/boutique-state-page";
@@ -32,6 +33,7 @@ import { RemoveAddressButton } from "./_components/remove-address-button";
 import { RemoveWishlistItemButton } from "./_components/remove-wishlist-item-button";
 import { CustomerPrivacyActions } from "./_components/customer-privacy-actions";
 import { CustomerSavedSizesForm } from "./_components/customer-saved-sizes-form";
+import { GuestAccountCenter } from "./_components/guest-account-center";
 import { createAccountServiceHref } from "./_lib/account-recovery";
 import {
   createAccountOrderTimeline,
@@ -64,6 +66,10 @@ import {
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 import { DEFAULT_CATALOG_IMAGE } from "~/server/services/catalog";
+import {
+  GUEST_ORDER_ACCESS_COOKIE,
+  getGuestOrderSummary,
+} from "~/server/services/guest-order-access";
 
 export const metadata = {
   title: "אזור אישי",
@@ -96,7 +102,7 @@ const guestAccountBenefitItems = [
 
 const accountServiceStripItems = [
   {
-    description: "עזרה בבחירת תכשיט, מידה או מתנה.",
+    description: "עזרה בבחירת תכשיט, מידה או התאמה.",
     icon: Sparkles,
     label: "ייעוץ לפני רכישה",
   },
@@ -176,6 +182,11 @@ export default async function AccountPage({
           return null;
         })
       : null;
+  const guestOrder = !session?.user
+    ? await getGuestOrderSummary(
+        (await cookies()).get(GUEST_ORDER_ACCESS_COOKIE)?.value,
+      )
+    : null;
 
   if (session?.user?.adminUserId) {
     return (
@@ -237,7 +248,34 @@ export default async function AccountPage({
     );
   }
 
-  if (!session?.user || !customer) {
+  if (!session?.user) {
+    return (
+      <>
+        <SiteHeader />
+        <main className="elysia-page account-boutique-page" dir="rtl">
+          <AccountPageHeader
+            description="מועדפים, מידות, פריטים שראית ומעקב הזמנה — זמינים גם ללא הרשמה."
+            eyebrow="אזור אישי"
+            title="המרכז האישי שלך"
+          />
+          <RevealSection
+            aria-label="מרכז אישי לאורחת"
+            className="account-boutique-section mx-auto max-w-7xl px-[var(--ui-page-x)] pb-12 lg:px-[var(--ui-page-x-wide)]"
+            id="guest-account"
+          >
+            {dataDeleted === "1" ? (
+              <StatusMessage className="mb-5" role="status" tone="success">
+                נתוני הלקוח נמחקו בהצלחה. אפשר להמשיך להשתמש במרכז האישי המקומי.
+              </StatusMessage>
+            ) : null}
+            <GuestAccountCenter order={guestOrder} />
+          </RevealSection>
+        </main>
+      </>
+    );
+  }
+
+  if (!customer) {
     return (
       <>
         <SiteHeader />
@@ -764,7 +802,7 @@ export default async function AccountPage({
                   <CardHeader className="account-boutique-card-header">
                     <CardTitle>שירות אישי</CardTitle>
                     <p className="text-muted-foreground text-sm leading-7">
-                      צריכה עזרה בבחירת תכשיט, התאמת מידה, מתנה או מעקב אחרי
+                      צריכה עזרה בבחירת תכשיט, התאמת מידה, חומר או מעקב אחרי
                       הזמנה?
                     </p>
                   </CardHeader>
@@ -780,7 +818,7 @@ export default async function AccountPage({
                             <Link href="/faq">שאלות נפוצות</Link>
                           </Button>
                           <Button asChild variant="outline">
-                            <Link href="/stylist">ייעוץ אישי</Link>
+                            <Link href="/elys-ai">elys-ai</Link>
                           </Button>
                           <Button asChild>
                             <Link href="/service">פנייה לשירות</Link>
@@ -1004,7 +1042,7 @@ function AccountSummaryPanel({
     },
     {
       action: "פנייה",
-      detail: "שירות אישי זמין ללוק, מידה, מתנה ומעקב הזמנה.",
+      detail: "שירות אישי זמין ללוק, מידה, התאמה ומעקב הזמנה.",
       href: "#account-service",
       icon: MessageCircle,
       label: "פניות שירות",

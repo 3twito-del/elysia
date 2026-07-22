@@ -81,7 +81,6 @@ const catalogMocks = vi.hoisted(() => {
     getCatalogFacets: vi.fn(async () => ({
       collections: ["Signature"],
       colors: [],
-      giftTags: [],
       materials: ["Gold"],
       priceRange: { min: 100, max: 200 },
       stones: ["Diamond"],

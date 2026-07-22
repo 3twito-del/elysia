@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { ProductRail } from "~/components/product-rail";
 
 import {
   normalizeAiRecommendedProducts,
@@ -48,11 +49,10 @@ export function AiProductRecommendations({
         </div>
       </div>
 
-      <div
-        className={cn(
-          "grid gap-3",
-          resolvedLayout === "grid" && "lg:grid-cols-2",
-        )}
+      <ProductRail
+        ariaLabel={title ?? "המלצות elys-ai"}
+        className="gap-3"
+        equalGroup="elys-ai-recommendations"
       >
         {normalizedProducts.map((product) => (
           <article
@@ -123,7 +123,7 @@ export function AiProductRecommendations({
             </div>
           </article>
         ))}
-      </div>
+      </ProductRail>
     </section>
   );
 }

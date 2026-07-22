@@ -37,7 +37,6 @@ const searchProductName = "טבעת Venus Line";
 const checkoutEmptyTitle = "התחילי מהנמכרים ביותר";
 const checkoutEmptySupportCopy = "שלושה תכשיטים שנבחרים שוב ושוב";
 const checkoutCatalogCta = "התחילי מהנמכרים ביותר";
-const checkoutGiftCta = "מצאי מתנה";
 const homeHeroTitle = "Timeless Elegance";
 const homeHeroDirection = "ltr";
 const zeroShekelPattern = /^\D*0\D*\u20aa\D*$/u;
@@ -51,12 +50,10 @@ const publicRoutes = [
   "/search?q=venus",
   `/product/${cartProductSlug}`,
   "/category/earrings",
-  "/gifts",
   "/branches",
   "/checkout",
   "/account",
-  "/ai",
-  "/stylist",
+  "/elys-ai",
   "/size-guide",
   "/blog",
   "/blog/elysia-jewellery-care-guide",
@@ -425,9 +422,7 @@ test.describe("critical shopping flows", () => {
 
     // Both source lanes render side by side — the cart is neither treated as
     // own-only nor as supplier-only.
-    await expect(
-      page.getByTestId("checkout-source-group-own"),
-    ).toBeVisible();
+    await expect(page.getByTestId("checkout-source-group-own")).toBeVisible();
     await expect(
       page.getByTestId("checkout-source-group-dropship_shopify"),
     ).toBeVisible();
@@ -598,12 +593,7 @@ test.describe("critical shopping flows", () => {
     await expect(
       checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
     ).toBeVisible();
-    await expect(
-      checkoutEmptyState.getByRole("link", {
-        exact: true,
-        name: checkoutGiftCta,
-      }),
-    ).toBeVisible();
+    await expect(checkoutEmptyState.locator('a[href="/gifts"]')).toHaveCount(0);
     await expect(
       page.getByTestId("checkout-empty-recommended-product"),
     ).toHaveCount(3);
@@ -628,7 +618,7 @@ test.describe("critical shopping flows", () => {
     expect(html).toContain(checkoutEmptyTitle);
     expect(html).toContain(checkoutEmptySupportCopy);
     expect(html).toContain(checkoutCatalogCta);
-    expect(html).toContain(checkoutGiftCta);
+    expect(html).not.toContain('href="/gifts"');
     expect(html).toContain("checkout-empty-recommended-product");
     expect(html).not.toContain("checkout-loading-skeleton");
 
@@ -660,12 +650,9 @@ test.describe("critical shopping flows", () => {
       await expect(
         checkoutEmptyState.getByRole("link", { name: checkoutCatalogCta }),
       ).toBeVisible();
-      await expect(
-        checkoutEmptyState.getByRole("link", {
-          exact: true,
-          name: checkoutGiftCta,
-        }),
-      ).toBeVisible();
+      await expect(checkoutEmptyState.locator('a[href="/gifts"]')).toHaveCount(
+        0,
+      );
       await expect(
         page.getByTestId("checkout-empty-recommended-product"),
       ).toHaveCount(3);
@@ -1366,14 +1353,12 @@ test.describe("accessibility and responsive guardrails", () => {
     page,
   }) => {
     for (const route of [
-      "/gifts",
       "/category/earrings",
       "/search?q=venus",
       "/checkout",
       "/service",
       "/account",
-      "/ai",
-      "/stylist",
+      "/elys-ai",
       "/size-guide",
       "/faq",
       "/privacy",
@@ -1388,12 +1373,200 @@ test.describe("accessibility and responsive guardrails", () => {
       await expect(page.getByRole("heading").first()).toBeVisible();
     }
 
-    await page.goto("/gifts", { waitUntil: "domcontentloaded" });
-    await expectDomSelectorVisible(
-      page,
-      "[data-testid='gift-results-summary']",
+    for (const legacyRoute of ["/gifts", "/ai", "/stylist", "/category/sets"]) {
+      await page.goto(legacyRoute, { waitUntil: "domcontentloaded" });
+      await expect(page).toHaveURL(
+        legacyRoute === "/gifts" || legacyRoute === "/category/sets"
+          ? /\/search$/u
+          : /\/elys-ai$/u,
+      );
+    }
+  });
+
+  test("copies the canonical object URL while preserving native input context menus", async ({
+    context,
+    page,
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/search?q=venus", { waitUntil: "domcontentloaded" });
+
+    const productCard = page.getByTestId("product-card").first();
+    const productLink = productCard.locator('a[href^="/product/"]').first();
+    const productHref = await productLink.getAttribute("href");
+    await productLink.dispatchEvent("contextmenu", {
+      button: 2,
+      clientX: 120,
+      clientY: 120,
+    });
+    const menu = page.getByRole("menu");
+
+    await expect(menu).toBeVisible();
+    await menu
+      .getByRole("menuitem", { name: "העתקת קישור לפריט" })
+      .evaluate((element) => (element as HTMLElement).click());
+    const canonicalProductUrl = new URL(productHref ?? "", page.url());
+    canonicalProductUrl.search = "";
+    canonicalProductUrl.hash = "";
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      canonicalProductUrl.toString(),
     );
-    await expectDomSelectorVisible(page, "[data-testid='gift-results-grid']");
+
+    const categoryTile = page
+      .getByTestId("search-category-chips")
+      .getByRole("link")
+      .first();
+    const categoryHref = await categoryTile.getAttribute("href");
+    await categoryTile.dispatchEvent("contextmenu", {
+      button: 2,
+      clientX: 120,
+      clientY: 120,
+    });
+    await expect(menu).toBeVisible();
+    await menu
+      .getByRole("menuitem")
+      .first()
+      .evaluate((element) => (element as HTMLElement).click());
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      new URL(categoryHref ?? "", page.url()).toString(),
+    );
+
+    await categoryTile.focus();
+    await page.keyboard.press("Shift+F10");
+    await expect(menu).toBeVisible();
+    const menuItems = menu.getByRole("menuitem");
+    const initialFocusIndex = await menuItems.evaluateAll((items) =>
+      items.findIndex((item) => item === document.activeElement),
+    );
+    expect([-1, 0]).toContain(initialFocusIndex);
+    await page.keyboard.press("ArrowDown");
+    const nextFocusIndex = await menuItems.evaluateAll((items) =>
+      items.findIndex((item) => item === document.activeElement),
+    );
+    expect(nextFocusIndex).toBe(initialFocusIndex === -1 ? 0 : 1);
+    await page.keyboard.press("ArrowDown");
+    const followingFocusIndex = await menuItems.evaluateAll((items) =>
+      items.findIndex((item) => item === document.activeElement),
+    );
+    expect(followingFocusIndex).toBe(nextFocusIndex + 1);
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveCount(0);
+
+    const searchInput = page
+      .locator('input[name="q"]')
+      .filter({ visible: true });
+    await searchInput.dispatchEvent("contextmenu", { button: 2 });
+    await expect(page.getByRole("menu")).toHaveCount(0);
+
+    await page.locator("#main-content").dispatchEvent("contextmenu", {
+      button: 2,
+      clientX: 1,
+      clientY: 1,
+    });
+    await expect(menu).toBeVisible();
+    await menu
+      .getByRole("menuitem")
+      .first()
+      .evaluate((element) => (element as HTMLElement).click());
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      page.url(),
+    );
+  });
+
+  test("opens the guest account center without registration or tracking consent", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "essential");
+    await page.goto("/account", { waitUntil: "domcontentloaded" });
+
+    await expect(page.getByTestId("guest-account-center")).toBeVisible();
+    await expect(page.getByText("מעקב הזמנה", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("recently-viewed-products")).toHaveCount(0);
+    await expect(page.getByTestId("account-otp-request-form")).toBeAttached();
+  });
+
+  test("keeps search categories wrapped, the active search state subtle, and one footer newsletter", async ({
+    page,
+  }) => {
+    for (const viewport of [
+      { width: 390, height: 844 },
+      { width: 1440, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/search", { waitUntil: "domcontentloaded" });
+
+      const categoryChips = page
+        .getByTestId("search-category-chips")
+        .locator(".search-category-chips-scroll")
+        .filter({ visible: true });
+      await expect(categoryChips).toBeVisible();
+      expect(
+        await categoryChips.evaluate((element) => ({
+          fits: element.scrollWidth <= element.clientWidth,
+          wrap: getComputedStyle(element).flexWrap,
+        })),
+      ).toEqual({ fits: true, wrap: "wrap" });
+
+      const activeSearch = page
+        .getByLabel("חיפוש", { exact: true })
+        .filter({ visible: true });
+      await expect(activeSearch).toHaveAttribute("aria-current", "page");
+      expect(
+        await activeSearch.evaluate(
+          (element) => getComputedStyle(element).backgroundColor,
+        ),
+      ).toMatch(/rgba?\(0, 0, 0, 0\)|transparent/u);
+      await expect(page.locator("form.newsletter-form")).toHaveCount(1);
+      await expectNoHorizontalOverflow(page);
+    }
+
+    await page.goto("/checkout", { waitUntil: "domcontentloaded" });
+    await expect(page.locator("form.newsletter-form")).toHaveCount(0);
+  });
+
+  test("keeps recommendation rails horizontal, RTL, touch-ready, and keyboard scrollable", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const slug = await resolveOwnCatalogProductSlug(page, "rings");
+    await page.goto(`/product/${slug}`, { waitUntil: "domcontentloaded" });
+
+    const rail = page.locator(".product-horizontal-rail").first();
+    await expect(rail).toBeVisible();
+    await rail.evaluate((element) => {
+      const firstCard = element.firstElementChild;
+
+      element.setAttribute("style", "width: 320px; max-width: 320px");
+
+      while (
+        firstCard &&
+        element.scrollWidth <= element.clientWidth &&
+        element.childElementCount < 4
+      ) {
+        const clone = firstCard.cloneNode(true) as HTMLElement;
+        clone.style.flex = "0 0 280px";
+        element.append(clone);
+      }
+    });
+    const before = await rail.evaluate((element) => ({
+      direction: getComputedStyle(element).direction,
+      overflow: element.scrollWidth > element.clientWidth,
+      scrollLeft: element.scrollLeft,
+      snap: getComputedStyle(element).scrollSnapType,
+      touchAction: getComputedStyle(element).touchAction,
+    }));
+
+    expect(before).toMatchObject({
+      direction: "rtl",
+      overflow: true,
+      snap: "inline mandatory",
+      touchAction: "pan-x pinch-zoom",
+    });
+
+    await rail.focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect
+      .poll(() => rail.evaluate((element) => element.scrollLeft))
+      .not.toBe(before.scrollLeft);
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {
@@ -1700,9 +1873,7 @@ test.describe("access control surfaces", () => {
         page.getByText("אין הרשאה למסך המבוקש"),
         `expected ${route} to deny a CATALOG_READ-only admin`,
       ).toBeVisible();
-      await expect(
-        page.getByRole("heading", { name: "קטלוג" }),
-      ).toHaveCount(0);
+      await expect(page.getByRole("heading", { name: "קטלוג" })).toHaveCount(0);
     }
   });
 
@@ -1727,9 +1898,7 @@ test.describe("access control surfaces", () => {
     // The chart-of-accounts reset button requires no form input, is always
     // rendered, and is gated by requireAdmin("FINANCE_WRITE") in
     // seedChartAction -- the simplest real write reachable from this page.
-    await page
-      .getByRole("button", { name: "אתחל תרשים ברירת מחדל" })
-      .click();
+    await page.getByRole("button", { name: "אתחל תרשים ברירת מחדל" }).click();
 
     await expect(page.getByTestId("admin-error-boundary")).toBeVisible();
   });
@@ -1746,9 +1915,7 @@ test.describe("access control surfaces", () => {
 
     const before = new Date();
 
-    await page
-      .getByRole("button", { name: "יצירת קודי גיבוי חדשים" })
-      .click();
+    await page.getByRole("button", { name: "יצירת קודי גיבוי חדשים" }).click();
     await expect(
       page.getByRole("heading", { name: "קודי גיבוי חדשים" }),
     ).toBeVisible();
@@ -2008,11 +2175,11 @@ test.describe("access control surfaces", () => {
 
       // Convert to an opportunity, then edit the opportunity's own details.
       const opportunityTitle = `E2E Opportunity ${suffix}`;
-      const convertForm = leadCard
-        .locator("form")
-        .filter({ hasText: "המר" });
+      const convertForm = leadCard.locator("form").filter({ hasText: "המר" });
 
-      await convertForm.getByPlaceholder("כותרת הזדמנות").fill(opportunityTitle);
+      await convertForm
+        .getByPlaceholder("כותרת הזדמנות")
+        .fill(opportunityTitle);
       await convertForm.getByPlaceholder("סכום").fill("1000");
       await convertForm.getByRole("button", { name: "המר" }).click();
       await page.goto("/admin/crm");
@@ -2047,14 +2214,15 @@ test.describe("access control surfaces", () => {
       await page.goto("/admin/crm");
       await expect(opportunityRow.getByText(/2,500/)).toBeVisible();
 
-      const updatedOpportunity = await getTestDb().opportunity.findUniqueOrThrow(
-        { where: { id: opportunityId } },
-      );
+      const updatedOpportunity =
+        await getTestDb().opportunity.findUniqueOrThrow({
+          where: { id: opportunityId },
+        });
 
       expect(Number(updatedOpportunity.amount)).toBe(2500);
-      expect(updatedOpportunity.expectedCloseDate?.toISOString().slice(0, 10)).toBe(
-        "2026-12-31",
-      );
+      expect(
+        updatedOpportunity.expectedCloseDate?.toISOString().slice(0, 10),
+      ).toBe("2026-12-31");
 
       const opportunityAuditRow = await getTestDb().auditLog.findFirst({
         orderBy: { createdAt: "desc" },
@@ -2106,9 +2274,7 @@ test.describe("access control surfaces", () => {
       await page.getByRole("button", { name: /ביצוע זיכוי/ }).click();
       await page.getByRole("button", { name: "אישור זיכוי" }).click();
 
-      await expect(
-        page.getByText("הזיכוי נשמר וההזמנה עודכנה."),
-      ).toBeVisible();
+      await expect(page.getByText("הזיכוי נשמר וההזמנה עודכנה.")).toBeVisible();
 
       const updatedOrder = await getTestDb().order.findUniqueOrThrow({
         where: { id: fixture.orderId },
@@ -2149,9 +2315,9 @@ test.describe("access control surfaces", () => {
         auditRow,
         "expected an order_refunded AuditLog row for this partial refund",
       ).not.toBeNull();
-      expect((auditRow?.metadata as { partial?: boolean } | null)?.partial).toBe(
-        true,
-      );
+      expect(
+        (auditRow?.metadata as { partial?: boolean } | null)?.partial,
+      ).toBe(true);
 
       const returnRequestLine = await getTestDb().returnRequestLine.findFirst({
         where: { orderItemId: fixture.itemAId },
@@ -2186,18 +2352,14 @@ test.describe("access control surfaces", () => {
     await signInAdminWithFixture(page);
     await page.goto(`/admin/orders/${orderId}`);
 
-    await page
-      .getByPlaceholder("סיבת זיכוי")
-      .fill("החזרה עקב פגם - בדיקת E2E");
+    await page.getByPlaceholder("סיבת זיכוי").fill("החזרה עקב פגם - בדיקת E2E");
 
     const before = new Date();
 
     await page.getByRole("button", { name: /ביצוע זיכוי/ }).click();
     await page.getByRole("button", { name: "אישור זיכוי" }).click();
 
-    await expect(
-      page.getByText("הזיכוי נשמר וההזמנה עודכנה."),
-    ).toBeVisible();
+    await expect(page.getByText("הזיכוי נשמר וההזמנה עודכנה.")).toBeVisible();
 
     const auditRow = await getTestDb().auditLog.findFirst({
       orderBy: { createdAt: "desc" },
@@ -2341,9 +2503,7 @@ test.describe("degraded network and provider states", () => {
     await expect(
       page.getByRole("heading", { name: /חיפוש תכשיטים/ }),
     ).toBeVisible();
-    await expect(
-      page.getByTestId("search-result-count").first(),
-    ).toBeVisible();
+    await expect(page.getByTestId("search-result-count").first()).toBeVisible();
 
     const resultsGrid = page.getByTestId("search-results-grid");
     await expect(resultsGrid).toBeVisible();

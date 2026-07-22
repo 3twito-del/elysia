@@ -5,7 +5,6 @@ import { useEffect, useState, type CSSProperties } from "react";
 import {
   ArrowLeft,
   CircleHelp,
-  Gift,
   Heart,
   Headphones,
   History,
@@ -62,17 +61,11 @@ const quickActions = [
 
 const serviceActions = [
   { href: "/service", label: "שירות לקוחות", icon: Headphones },
-  { href: "/stylist", label: "סטיילינג אישי", icon: Sparkles },
+  { href: "/elys-ai", label: "elys-ai", icon: Sparkles },
   { href: "/faq", label: "שאלות ותשובות", icon: CircleHelp },
 ] as const;
 
 const spotlightActions = [
-  {
-    href: "/gifts",
-    label: "מתנות",
-    description: "רעיונות לפי אירוע, תקציב וסגנון",
-    icon: Gift,
-  },
   {
     href: "/size-guide",
     label: "מדריך מידות",
@@ -109,9 +102,7 @@ export function MobileNav({
   const editorialItems = items
     .filter((item) => !isCollectionNavigationItem(item))
     .filter(
-      (item) =>
-        item.href !== "/gifts" &&
-        !serviceActions.some((action) => action.href === item.href),
+      (item) => !serviceActions.some((action) => action.href === item.href),
     );
   const quickActionStartIndex = 2;
   const themeToggleIndex = quickActionStartIndex + quickActions.length;
@@ -221,7 +212,7 @@ export function MobileNav({
             </SheetClose>
             <Link
               aria-label="Elysia - עמוד הבית"
-              className="brand-header-mark site-header-link mobile-nav-animated-item outline-none inline-flex min-h-10 items-center justify-self-end focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+              className="brand-header-mark site-header-link mobile-nav-animated-item inline-flex min-h-10 items-center justify-self-end outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
               href="/"
               onClick={closeNav}
               prefetch={false}

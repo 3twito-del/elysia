@@ -20,7 +20,7 @@ describe("checkout empty cart recovery", () => {
     expect(source).toContain('href: "/product/venus-line-ring"');
     expect(emptyState).toContain('data-testid="checkout-empty-cart"');
     expect(emptyState).toContain('href="/search"');
-    expect(emptyState).toContain('href="/gifts"');
+    expect(emptyState).not.toContain('href="/gifts"');
     expect(emptyState).toContain("התחילי מהנמכרים ביותר");
     expect(emptyState).toContain("שלושה תכשיטים שנבחרים שוב ושוב");
     expect(emptyState).toContain("checkoutEmptyRecommendedProducts.map");

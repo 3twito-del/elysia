@@ -18,13 +18,11 @@ describe("massive ready design items implementation", () => {
     expect(controls).toContain("סינון ומיון");
   });
 
-  it("keeps gifts guided through a compact decision bar before the grid", () => {
+  it("keeps the removed gifts route as a permanent search redirect", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("const giftDecisionGroups");
-    expect(gifts).toContain('data-testid="gift-finder-decision-bar"');
-    expect(gifts).toContain("לכל המתנות בחיפוש");
-    expect(gifts).toContain('data-testid="gift-results-grid"');
+    expect(gifts).toContain('permanentRedirect("/search")');
+    expect(gifts).not.toContain("ProductCard");
   });
 
   it("keeps the category mobile result bar specific and compact", () => {

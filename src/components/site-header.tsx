@@ -21,8 +21,6 @@ const navItems: HeaderNavItem[] = [
   { href: "/category/necklaces", label: "שרשראות" },
   { href: "/category/earrings", label: "עגילים" },
   { href: "/category/bracelets", label: "צמידים" },
-  { href: "/category/sets", label: "סטים" },
-  { href: "/gifts", label: "מתנות" },
   { href: "/search?sort=popular", label: "מבוקשים" },
   { href: "/size-guide", label: "מידות" },
   { href: "/blog", label: "מגזין" },
@@ -96,8 +94,8 @@ export function SiteHeader() {
         dir="rtl"
       >
         <p className="sr-only">
-          Elysia: ניווט ראשי לקולקציה, קטגוריות, מתנות, מידות, תמיכה, מועדפים
-          ואזור אישי.
+          Elysia: ניווט ראשי לקולקציה, קטגוריות, מידות, תמיכה, מועדפים ואזור
+          אישי.
         </p>
         <div
           className="site-header-row grid h-16 w-full grid-cols-[1fr_auto_1fr] items-center px-3 sm:px-6 md:h-[4.25rem] md:px-10 lg:h-[6.125rem] lg:px-16"
@@ -130,7 +128,7 @@ export function SiteHeader() {
           </div>
 
           <Link
-            className="brand-header-mark site-header-link outline-none [grid-column:2] [grid-row:1] flex min-h-11 min-w-0 shrink-0 items-center justify-self-center rounded-md focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)]"
+            className="brand-header-mark site-header-link [grid-column:2] [grid-row:1] flex min-h-11 min-w-0 shrink-0 items-center justify-self-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-[var(--site-header-focus)]"
             aria-label="Elysia - עמוד הבית"
             dir="ltr"
             href="/"

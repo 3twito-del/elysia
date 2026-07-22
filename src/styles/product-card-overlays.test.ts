@@ -17,7 +17,7 @@ describe("product card overlay budget", () => {
     expect(source).toContain("function getProductCardBadge");
     expect(source).toContain("function getProductCardLabel");
     expect(source).toContain('key: "new"');
-    expect(source).toContain('key: "gift"');
+    expect(source).not.toContain('key: "gift"');
     expect(source).toContain('key: "silver-925"');
     expect(source).toContain('key: "gold-plated"');
     expect(source).toContain("כסף 925");
@@ -114,9 +114,7 @@ describe("product card overlay budget", () => {
   });
 
   it("keeps quick facts benchmark evidence available", () => {
-    const benchmark = read(
-      "docs/QA_EVIDENCE.md",
-    );
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("Weighted Score`: 12.0");
     expect(benchmark).toContain("Decision`: Supported");

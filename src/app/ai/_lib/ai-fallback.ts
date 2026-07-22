@@ -18,7 +18,7 @@ export function getAiFallbackCopy(reason?: string | null): AiFallbackCopy {
     return {
       detail: "ניתן להמשיך דרך החיפוש, מדריך המידות או פנייה לשירות.",
       kind: "quota",
-      serviceMessage: "כלי ההתאמה היה עמוס. אבקש עזרה במציאת תכשיט או מתנה.",
+      serviceMessage: "כלי ההתאמה היה עמוס. אבקש עזרה במציאת תכשיט.",
       title: "כלי ההתאמה עמוס כרגע",
     };
   }

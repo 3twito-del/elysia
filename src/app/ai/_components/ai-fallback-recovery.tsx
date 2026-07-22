@@ -13,7 +13,7 @@ type AiFallbackRecoveryProps = {
   actions?: ReactNode;
   className?: string;
   reason?: string | null;
-  source: "gift" | "stylist";
+  source: "elys-ai";
 };
 
 const fallbackLinks = [

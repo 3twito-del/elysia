@@ -63,7 +63,6 @@ export const cartRouter = createTRPCRouter({
             }),
           )
           .max(50),
-        giftWrap: z.boolean().default(false),
         couponCode: z.string().trim().max(64).optional(),
         fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
       }),

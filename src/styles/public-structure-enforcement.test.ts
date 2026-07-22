@@ -75,17 +75,11 @@ describe("public structure enforcement", () => {
     expect(violations).toEqual([]);
   });
 
-  it("keeps gifts as a product-listing route, not a scroll-gated landing page", () => {
+  it("removes the gifts experience behind a permanent search redirect", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("<CompactPageIntro");
-    expect(gifts).toContain('variant="catalog"');
-    expect(gifts).toContain("const GIFT_RESULTS_LIMIT = 24");
-    expect(gifts).toContain("sourceProducts.slice(0, GIFT_RESULTS_LIMIT)");
-    expect(gifts).toContain('data-testid="gift-results-summary"');
-    expect(gifts).toContain('data-testid="gift-results-grid"');
-    expect(gifts).not.toContain('id="gift-products"');
-    expect(gifts).not.toContain("CommerceSectionHeader");
+    expect(gifts).toContain('permanentRedirect("/search")');
+    expect(gifts).not.toContain("ProductCard");
   });
 
   it("uses task-first intros outside home and about instead of full commerce heroes", () => {
@@ -100,7 +94,6 @@ describe("public structure enforcement", () => {
 
   it("keeps PLP results ahead of supporting controls and editorial content", () => {
     const category = read("src/app/category/[slug]/page.tsx");
-    const gifts = read("src/app/gifts/page.tsx");
     const search = read("src/app/search/page.tsx");
     const searchControls = read(
       "src/app/search/_components/search-controls.tsx",
@@ -113,9 +106,6 @@ describe("public structure enforcement", () => {
     expect(category).toContain('className="hidden"');
     expect(category).not.toContain("קו על הצוואר");
     expect(category).not.toContain("משנה חולצה לבנה");
-    expect(indexOf(gifts, 'data-testid="gift-results-grid"')).toBeLessThan(
-      indexOf(gifts, 'data-testid="gift-discovery-chips"'),
-    );
     expect(
       indexOf(search, 'data-testid="search-results-summary"'),
     ).toBeLessThan(indexOf(search, 'data-testid="search-controls-panel"'));

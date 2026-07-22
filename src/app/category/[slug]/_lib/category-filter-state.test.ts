@@ -22,7 +22,6 @@ describe("getCategoryRouteState", () => {
       facets: {
         collections: ["classic"],
         colors: [],
-        giftTags: [],
         materials: ["gold"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],
@@ -69,7 +68,6 @@ describe("getCategoryRouteState", () => {
       facets: {
         collections: ["classic"],
         colors: [],
-        giftTags: [],
         materials: ["gold", "silver"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],
@@ -114,7 +112,6 @@ describe("getCategoryRouteState", () => {
       facets: {
         collections: ["classic"],
         colors: [],
-        giftTags: [],
         materials: ["gold"],
         priceRange: { max: 900, min: 900 },
         stones: ["diamond"],
@@ -167,7 +164,6 @@ describe("getCategoryRouteState", () => {
       facets: {
         collections: ["classic"],
         colors: [],
-        giftTags: [],
         materials: ["gold", "silver"],
         priceRange: { max: 1300, min: 900 },
         stones: ["diamond"],

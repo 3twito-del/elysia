@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -19,6 +20,14 @@ import {
 import { signIn, signOut } from "~/server/auth";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import {
+  GUEST_ORDER_ACCESS_COOKIE,
+  GUEST_ORDER_ACCESS_MAX_AGE_SECONDS,
+  requestGuestOrderAccess,
+  requestGuestOrderAccessSchema,
+  verifyGuestOrderAccess,
+  verifyGuestOrderAccessSchema,
+} from "~/server/services/guest-order-access";
 import { BUSINESS_EVENTS, createOutboxEvent } from "~/server/services/outbox";
 import {
   customerAddressInputSchema,
@@ -58,6 +67,89 @@ export type GuestWishlistMergeState = AccountActionState & {
   mergedCount?: number;
   requestedCount?: number;
 };
+
+export type GuestOrderAccessState = {
+  ok?: boolean;
+  message?: string;
+  challengeId?: string;
+  developmentCode?: string;
+};
+
+export async function requestGuestOrderAccessAction(
+  _state: GuestOrderAccessState,
+  formData: FormData,
+): Promise<GuestOrderAccessState> {
+  const parsed = requestGuestOrderAccessSchema.safeParse({
+    orderNumber: getFormString(formData, "orderNumber"),
+    identifier: getFormString(formData, "identifier"),
+  });
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message: "יש להזין מספר הזמנה ואימייל או טלפון תקינים.",
+    };
+  }
+
+  try {
+    await assertRateLimit({
+      key: createRateLimitKey(
+        "guest-order:request",
+        `${parsed.data.orderNumber}:${parsed.data.identifier}`,
+      ),
+      limit: 4,
+      windowMs: 10 * 60_000,
+    });
+    return await requestGuestOrderAccess(parsed.data);
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        rateLimitMessage(error) ??
+        (error instanceof TRPCError
+          ? error.message
+          : "לא ניתן לשלוח קוד כרגע. נסי שוב בעוד דקה."),
+    };
+  }
+}
+
+export async function verifyGuestOrderAccessAction(
+  _state: GuestOrderAccessState,
+  formData: FormData,
+): Promise<GuestOrderAccessState> {
+  const parsed = verifyGuestOrderAccessSchema.safeParse({
+    challengeId: getFormString(formData, "challengeId"),
+    code: getFormString(formData, "code"),
+  });
+  if (!parsed.success)
+    return { ok: false, message: "יש להזין קוד בן שש ספרות." };
+
+  try {
+    await assertRateLimit({
+      key: createRateLimitKey("guest-order:verify", parsed.data.challengeId),
+      limit: 6,
+      windowMs: 10 * 60_000,
+    });
+    const result = await verifyGuestOrderAccess(parsed.data);
+    (await cookies()).set(GUEST_ORDER_ACCESS_COOKIE, result.token, {
+      httpOnly: true,
+      maxAge: GUEST_ORDER_ACCESS_MAX_AGE_SECONDS,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/account",
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      message:
+        rateLimitMessage(error) ??
+        (error instanceof TRPCError
+          ? error.message
+          : "לא הצלחנו לאמת את הקוד."),
+    };
+  }
+
+  redirect("/account#guest-order");
+}
 
 const guestWishlistMergeInputSchema = z
   .array(z.string().trim().min(1).max(120))

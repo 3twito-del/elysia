@@ -28,7 +28,7 @@ import {
 export const metadata: Metadata = {
   title: "שירות לקוחות",
   description:
-    "שירות הלקוחות של Elysia להזמנות, מידות, מתנות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
+    "שירות הלקוחות של Elysia להזמנות, מידות, התאמות, החזרות, פרטיות ונגישות, עם מענה עד יום עסקים.",
 };
 
 export const dynamic = "force-dynamic";
@@ -37,7 +37,7 @@ const serviceTracks = [
   {
     icon: MessageSquareText,
     title: "שאלה על מוצר",
-    text: "שאלות על התאמה, מתנה או מידה.",
+    text: "שאלות על התאמה, חומר או מידה.",
   },
   {
     icon: Wrench,
@@ -118,7 +118,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
       <SiteHeader />
 
       <CompactPageIntro
-        description="מענה לכל שאלה על הזמנות, מידות, מתנות, החלפות ואחריות."
+        description="מענה לכל שאלה על הזמנות, מידות, התאמות, החלפות ואחריות."
         eyebrow="שירות"
         title="שירות לקוחות"
         variant="content"
@@ -259,7 +259,7 @@ export default async function ServicePage({ searchParams }: ServicePageProps) {
               <div className="grid gap-2 sm:grid-cols-2">
                 {profile.topics.slice(0, 6).map((topic) => (
                   <Link
-                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-md border p-3 text-sm transition"
+                    className="border-border rounded-md border p-3 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
                     href={`/service?topic=${topic.slug}#service-form`}
                     key={topic.slug}
                   >
@@ -326,7 +326,7 @@ function ServicePriorityTriage() {
 
           return (
             <Link
-              className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] grid min-h-28 rounded-md border p-3 text-sm transition"
+              className="border-border grid min-h-28 rounded-md border p-3 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
               href={action.href}
               key={action.href}
             >

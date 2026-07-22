@@ -72,8 +72,8 @@ const staticPublicRoutes = [
   "/account",
   "/account/invoices",
   "/account/service",
+  "/elys-ai",
   "/ai",
-  "/ai?tab=gifts",
   "/stylist",
   "/size-guide",
   "/size-guide?kind=ring",
@@ -203,12 +203,11 @@ export function getQaRouteInventory({
     entries.push(
       routeEntry({
         includeInPerformance: isPerformanceRoute(route),
-        kind:
-          route.startsWith("/account")
-            ? "account"
-            : route === "/offline"
-              ? "pwa"
-              : "public",
+        kind: route.startsWith("/account")
+          ? "account"
+          : route === "/offline"
+            ? "pwa"
+            : "public",
         path: route,
         source: "static-public",
         template: stripQuery(route),

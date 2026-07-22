@@ -12,7 +12,6 @@ import { getPublicProductCommerceStatus } from "~/lib/commerce-labels";
 import { formatInlinePrice } from "~/lib/format";
 import { resolveSemanticSearchIntent } from "~/server/ai/search-intent";
 import {
-  filterCatalogProducts,
   getCatalogCategories,
   getCatalogFacets,
   listCatalogProducts,
@@ -54,7 +53,6 @@ export type ProductSearchInput = {
   material?: string;
   stone?: string;
   style?: string;
-  gift?: string;
   color?: string;
   collection?: string;
   maxPrice?: number;
@@ -754,7 +752,6 @@ function isDefaultCatalogBrowse(input: ProductSearchInput) {
     !input.material &&
     !input.stone &&
     !input.style &&
-    !input.gift &&
     !input.color &&
     !input.collection &&
     !input.maxPrice &&
@@ -934,7 +931,6 @@ async function buildLocalFacets(input: ProductSearchInput) {
     stoneProducts,
     collectionProducts,
     styleProducts,
-    giftProducts,
     colorProducts,
     facets,
   ] = await Promise.all([
@@ -944,7 +940,6 @@ async function buildLocalFacets(input: ProductSearchInput) {
     searchCatalogProducts({ ...input, stone: undefined }),
     searchCatalogProducts({ ...input, collection: undefined }),
     searchCatalogProducts({ ...input, style: undefined }),
-    searchCatalogProducts({ ...input, gift: undefined }),
     searchCatalogProducts({ ...input, color: undefined }),
     getCatalogFacets(),
   ]);
@@ -995,15 +990,6 @@ async function buildLocalFacets(input: ProductSearchInput) {
       })),
     },
     {
-      field: "gift",
-      values: facets.giftTags.map((gift) => ({
-        value: gift,
-        count: giftProducts.filter(
-          (product) => filterCatalogProducts([product], { gift }).length > 0,
-        ).length,
-      })),
-    },
-    {
       field: "color",
       values: facets.colors.map((color) => ({
         value: color,
@@ -1022,7 +1008,7 @@ async function buildLocalFacets(input: ProductSearchInput) {
 }
 
 function hasDerivedFacetFilter(input: ProductSearchInput) {
-  return [input.style, input.gift, input.color].some((value) => Boolean(value));
+  return [input.style, input.color].some((value) => Boolean(value));
 }
 
 function getKeywordScore(product: CatalogProduct, query?: string) {

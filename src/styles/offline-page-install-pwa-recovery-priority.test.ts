@@ -7,9 +7,7 @@ const root = process.cwd();
 
 describe("offline page install and PWA recovery priority", () => {
   it("keeps benchmark support evidence available", () => {
-    const benchmark = read(
-      "docs/QA_EVIDENCE.md",
-    );
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("I-037");
     expect(benchmark).toContain("Weighted Score`: 12.0");
@@ -24,16 +22,13 @@ describe("offline page install and PWA recovery priority", () => {
     expect(offlinePage).toContain('data-testid="offline-install-context"');
     expect(offlinePage).toContain('data-testid="offline-recovery-actions"');
     expect(offlinePage).toContain('href="/search"');
-    expect(offlinePage).toContain('href="/gifts"');
+    expect(offlinePage).not.toContain('href="/gifts"');
     expect(offlinePage).toContain('href="/size-guide"');
     expect(offlinePage).toContain('href="/service"');
     expect(offlinePage).toContain('href="/"');
     expect(offlinePage).not.toContain('href="/checkout"');
 
     expect(indexOf(offlinePage, 'href="/search"')).toBeLessThan(
-      indexOf(offlinePage, 'href="/gifts"'),
-    );
-    expect(indexOf(offlinePage, 'href="/gifts"')).toBeLessThan(
       indexOf(offlinePage, 'href="/size-guide"'),
     );
     expect(indexOf(offlinePage, 'href="/size-guide"')).toBeLessThan(
@@ -49,10 +44,8 @@ describe("offline page install and PWA recovery priority", () => {
 
     expect(
       indexOf(manifest, 'url: "/search?source=pwa-shortcut"'),
-    ).toBeLessThan(indexOf(manifest, 'url: "/gifts?source=pwa-shortcut"'));
-    expect(indexOf(manifest, 'url: "/gifts?source=pwa-shortcut"')).toBeLessThan(
-      indexOf(manifest, 'url: "/size-guide?source=pwa-shortcut"'),
-    );
+    ).toBeLessThan(indexOf(manifest, 'url: "/size-guide?source=pwa-shortcut"'));
+    expect(manifest).not.toContain('url: "/gifts?source=pwa-shortcut"');
     expect(
       indexOf(manifest, 'url: "/size-guide?source=pwa-shortcut"'),
     ).toBeLessThan(indexOf(manifest, 'url: "/service?source=pwa-shortcut"'));

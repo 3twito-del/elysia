@@ -1,11 +1,8 @@
 import type { CatalogProduct } from "~/server/services/catalog";
 
 // C-06 product relationship modeling: four source-based relationship kinds,
-// tried in priority order and capped at MAX_RAILS. "sets" and "complements"
-// both key off shared collection membership -- the only difference is
-// whether the candidate is in the same category (a matching pair, e.g. two
-// rings from "Venus") or a different one (a companion piece meant to be worn
-// together, e.g. a ring + earrings from "Venus"). "category" (sameFamily)
+// tried in priority order and capped at MAX_RAILS. "complements" keys off
+// shared collection membership across categories. "category" (sameFamily)
 // and "material" (alternatives) are unchanged. Popularity is used only as an
 // in-rail sort tiebreaker (scoreRecommendation below), never to decide rail
 // membership -- so labels stay honestly source-based, not implied
@@ -14,7 +11,7 @@ export type ProductRecommendationRail = {
   cardContextLabel: string;
   continuationHref: string;
   continuationLabel: string;
-  id: "sets" | "complements" | "category" | "material" | "popular";
+  id: "complements" | "category" | "material" | "popular";
   products: CatalogProduct[];
   reason: string;
   title: string;
@@ -38,24 +35,6 @@ export function getProductRecommendationRails({
   const usedSlugs = new Set<string>();
   const rails: ProductRecommendationRail[] = [];
 
-  addRail({
-    candidates,
-    id: "sets",
-    maxProductsPerRail,
-    predicate: (candidate) =>
-      candidate.collections.includes(product.collection) &&
-      candidate.categorySlug === product.categorySlug,
-    product,
-    rails,
-    cardContextLabel: "סט מאותה קולקציה",
-    continuationHref: createSearchContinuationHref({
-      collection: product.collection,
-    }),
-    continuationLabel: `המשך בקולקציית ${product.collection}`,
-    reason: `פריטים תואמים מאותה קטגוריה וקולקציה, להשלמת סט.`,
-    title: `סטים מקולקציית ${product.collection}`,
-    usedSlugs,
-  });
   if (rails.length < MAX_RAILS) {
     addRail({
       candidates,
@@ -81,8 +60,7 @@ export function getProductRecommendationRails({
       candidates,
       id: "category",
       maxProductsPerRail,
-      predicate: (candidate) =>
-        candidate.categorySlug === product.categorySlug,
+      predicate: (candidate) => candidate.categorySlug === product.categorySlug,
       product,
       rails,
       cardContextLabel: "אותה קטגוריה",

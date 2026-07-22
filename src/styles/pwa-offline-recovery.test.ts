@@ -11,7 +11,7 @@ describe("PWA offline recovery", () => {
     expect(offlinePage).toContain('data-testid="offline-recovery-actions"');
     expect(offlinePage).toContain('href="/"');
     expect(offlinePage).toContain('href="/search"');
-    expect(offlinePage).toContain('href="/gifts"');
+    expect(offlinePage).not.toContain('href="/gifts"');
     expect(offlinePage).toContain('href="/service"');
     expect(offlinePage).toContain('href="/size-guide"');
   });
@@ -21,13 +21,13 @@ describe("PWA offline recovery", () => {
     const serviceWorker = read("src/app/sw.ts");
 
     expect(manifest).toContain('url: "/search?source=pwa-shortcut"');
-    expect(manifest).toContain('url: "/gifts?source=pwa-shortcut"');
+    expect(manifest).not.toContain('url: "/gifts?source=pwa-shortcut"');
     expect(manifest).toContain('url: "/service?source=pwa-shortcut"');
     expect(manifest).toContain('url: "/size-guide?source=pwa-shortcut"');
     expect(manifest).not.toContain('url: "/checkout?source=pwa-shortcut"');
 
-    expect(serviceWorker).toContain("search|gifts");
-    expect(serviceWorker).toContain("service|ai");
+    expect(serviceWorker).toContain("search|branches");
+    expect(serviceWorker).toContain("service|elys-ai");
     expect(serviceWorker).toContain("size-guide|offline");
     expect(serviceWorker).toContain("checkout(?:\\/|$)");
   });

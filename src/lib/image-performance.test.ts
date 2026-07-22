@@ -67,7 +67,7 @@ describe("image performance guardrails", () => {
     expect(searchSource).toContain("imagePriority={index < 4}");
     expect(categorySource).not.toContain("priority: true");
     expect(categorySource).toContain("imagePriority={index === 0}");
-    expect(giftsSource).toContain("imagePriority={index === 0}");
+    expect(giftsSource).toContain('permanentRedirect("/search")');
     expect(gallerySource).toContain("priority={activeImageIndex === 0}");
   });
 

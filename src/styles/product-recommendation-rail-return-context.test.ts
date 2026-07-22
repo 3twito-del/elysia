@@ -7,9 +7,7 @@ const root = process.cwd();
 
 describe("product recommendation rail return context", () => {
   it("keeps benchmark support evidence available", () => {
-    const benchmark = read(
-      "docs/QA_EVIDENCE.md",
-    );
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("I-038");
     expect(benchmark).toContain("Weighted Score`: 16.5");
@@ -80,13 +78,8 @@ describe("product recommendation rail return context", () => {
     expect(recentlyViewed).toContain(
       "ui-equal-grid mt-5 grid gap-x-7 gap-y-10",
     );
-    expect(recentlyViewed).toContain(
-      'data-layout-equal-group="recently-viewed-products"',
-    );
-    expect(productPage).toContain("ui-equal-grid mt-5 grid gap-x-7 gap-y-10");
-    expect(productPage).toContain(
-      "data-layout-equal-group={`product-recommendation-${rail.id}`}",
-    );
+    expect(recentlyViewed).toContain("<ProductRail");
+    expect(productPage).toContain("<ProductRail");
     expect(recentlyViewed).not.toContain("max-w-[96rem]");
   });
 });

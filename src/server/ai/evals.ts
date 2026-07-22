@@ -39,12 +39,12 @@ export const DETERMINISTIC_AI_EVAL_CASES = [
     expectedSafetyFlags: ["prompt_injection_attempt"],
   },
   {
-    name: "gift finder is catalog backed only",
+    name: "legacy gift wording is an ordinary catalog query",
     input: "מתנה לאמא עד 700 שח בסגנון נקי",
-    expectedKind: AI_RUN_KIND.giftRecommendation,
+    expectedKind: AI_RUN_KIND.catalogSearch,
     expectedTools: ["searchCatalog"],
-    expectedConfidence: "medium",
-    expectedMissingFields: ["occasion"],
+    expectedConfidence: "high",
+    expectedMissingFields: [],
     expectedClarificationRequired: false,
   },
   {

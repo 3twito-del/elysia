@@ -52,8 +52,6 @@ export const cartCheckoutInputSchema = z
       phone: z.string().trim().min(7),
     }),
     shippingAddress: shippingAddressSchema.optional(),
-    giftWrap: z.boolean().default(false),
-    giftMessage: z.string().trim().max(500).optional(),
     couponCode: z.string().trim().max(64).optional(),
   })
   .superRefine(validateDeliveryAddressForSchema);
@@ -423,8 +421,8 @@ async function createCartCheckoutOrderInTransaction(
       data: {
         customerId: customer.id,
         status: "CONVERTED",
-        giftWrap: input.giftWrap,
-        giftMessage: input.giftMessage,
+        giftWrap: false,
+        giftMessage: null,
         couponCode: coupon?.code,
         mergeMetadata: {
           checkedOutAt: new Date().toISOString(),
@@ -442,8 +440,8 @@ async function createCartCheckoutOrderInTransaction(
       where: { id: cart.id },
       data: {
         customerId: customer.id,
-        giftWrap: input.giftWrap,
-        giftMessage: input.giftMessage,
+        giftWrap: false,
+        giftMessage: null,
         couponCode: coupon?.code,
         mergeMetadata: {
           localCheckoutCompletedAt: new Date().toISOString(),
@@ -657,8 +655,7 @@ async function resolveCoupon(
 
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message:
-        evaluation.message ?? "קוד ההטבה אינו תקף להזמנה הזו.",
+      message: evaluation.message ?? "קוד ההטבה אינו תקף להזמנה הזו.",
     });
   }
 
@@ -738,8 +735,7 @@ export async function getOrderConfirmationByOrderNumber(
       total: Number(order.total),
     },
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
-    estimatedDelivery:
-      "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
+    estimatedDelivery: "מסירה עד הבית לאחר השלמת התשלום, לפי מדיניות המשלוחים.",
     items: order.items.map((item) => ({
       lineTotal: Number(item.unitPrice) * item.quantity,
       name: item.name,

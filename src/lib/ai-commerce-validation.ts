@@ -25,13 +25,3 @@ export const orderSupportInputSchema = z.object({
   orderNumber: z.string().trim().min(3).max(64),
   email: z.string().trim().email().toLowerCase(),
 });
-
-export const recommendGiftInputSchema = z.object({
-  relation: z.string().trim().min(1, "יש להזין למי המתנה.").max(80),
-  occasion: z.string().trim().min(1, "יש להזין אירוע.").max(80),
-  budget: z
-    .number({ error: "יש להזין טווח מחיר תקין." })
-    .positive("יש להזין מחיר גדול מאפס.")
-    .max(1_000_000, "טווח המחיר גבוה מדי."),
-  style: z.array(z.string().trim().max(80)).max(12).default([]),
-});

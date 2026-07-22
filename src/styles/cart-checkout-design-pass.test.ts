@@ -41,7 +41,9 @@ describe("cart + checkout design pass (owner-selected DP 41-50)", () => {
     expect(checkoutStatus).toContain(
       '<AlertCircle aria-hidden="true" className="size-3.5 shrink-0" />',
     );
-    expect(checkoutStatus).toContain('className="text-destructive flex min-h-5 items-center gap-1 text-xs leading-5"');
+    expect(checkoutStatus).toContain(
+      'className="text-destructive flex min-h-5 items-center gap-1 text-xs leading-5"',
+    );
   });
 
   it("keeps the source-group cards uniform and shared (audit: already data-driven from one array)", () => {
@@ -69,18 +71,16 @@ describe("cart + checkout design pass (owner-selected DP 41-50)", () => {
   });
 
   it("trims the empty-cart explanation while keeping the two recovery CTAs required by the empty-state guardrail", () => {
-    expect(checkoutForm).not.toContain(
-      "אחרי הוספה לסל תראי כאן מוצר, כמות,",
-    );
+    expect(checkoutForm).not.toContain("אחרי הוספה לסל תראי כאן מוצר, כמות,");
     expect(checkoutForm).toContain("שלושה תכשיטים שנבחרים שוב ושוב.");
     expect(checkoutForm).toContain('href="/search"');
-    expect(checkoutForm).toContain('href="/gifts"');
+    expect(checkoutForm).not.toContain('href="/gifts"');
   });
 
   it("gives the payment button an internal spinner while submitting, without changing its width (already w-full)", () => {
-    expect(checkoutForm).toContain(
-      'createOrder.isPending ? "שולחים הזמנה" : localCheckoutButtonLabel',
-    );
+    expect(checkoutForm).toContain("createOrder.isPending");
+    expect(checkoutForm).toContain(' ? "שולחים הזמנה"');
+    expect(checkoutForm).toContain(": localCheckoutButtonLabel");
     expect(checkoutForm).toContain(
       '<Spinner aria-hidden="true" role="presentation" />',
     );

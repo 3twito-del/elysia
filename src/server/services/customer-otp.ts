@@ -12,6 +12,8 @@ import { env } from "~/env";
 import { notificationProvider } from "~/server/adapters/notifications";
 import { db } from "~/server/db";
 
+const CUSTOMER_SIGN_IN_OTP_PURPOSE = "CUSTOMER_SIGN_IN";
+
 const OTP_TTL_MINUTES = 10;
 const MAX_OTP_ATTEMPTS = 5;
 const OTP_RESEND_COOLDOWN_SECONDS = 60;
@@ -179,6 +181,7 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
     where: {
       identifier,
       channel: parsed.channel,
+      purpose: CUSTOMER_SIGN_IN_OTP_PURPOSE,
     },
     orderBy: { createdAt: "desc" },
     select: { createdAt: true },
@@ -203,6 +206,7 @@ export async function requestCustomerOtp(input: RequestCustomerOtpInput) {
       channel: parsed.channel,
       codeHash: hashOtp(identifier, code),
       expiresAt,
+      purpose: CUSTOMER_SIGN_IN_OTP_PURPOSE,
     },
   });
 
@@ -252,6 +256,7 @@ export async function verifyCustomerOtp(input: VerifyCustomerOtpInput) {
       where: {
         identifier,
         consumedAt: null,
+        purpose: CUSTOMER_SIGN_IN_OTP_PURPOSE,
       },
       orderBy: { createdAt: "desc" },
     });

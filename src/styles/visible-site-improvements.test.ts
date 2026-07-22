@@ -63,48 +63,32 @@ describe("visible site improvement affordances", () => {
     expect(loading).toContain("sm:aspect-[4/5]");
   });
 
-  it("keeps the gifts page discovery chips visible and routed to search", () => {
+  it("redirects the retired gifts experience to general search", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("giftBudgetChips");
-    expect(gifts).toContain("giftRecipientChips");
-    expect(gifts).toContain("giftOccasionChips");
-    expect(gifts).toContain('data-testid="gift-discovery-chips"');
-    expect(gifts).toContain("GiftChipGroup");
-    expect(gifts).toContain("/search?q=%D7%9E%D7%AA%D7%A0%D7%94");
+    expect(gifts).toContain('permanentRedirect("/search")');
+    expect(gifts).not.toContain("giftBudgetChips");
   });
 
-  it("keeps the gifts empty state from dead-ending shoppers", () => {
+  it("does not retain a gifts empty state", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("<EmptyState");
-    expect(gifts).toContain('testId="gifts-empty-state"');
-    expect(gifts).toContain('data-testid="gifts-empty-state-reset"');
-    expect(gifts).toContain('href="/gifts"');
-    expect(gifts).toContain("products.length > 0");
+    expect(gifts).not.toContain("<EmptyState");
+    expect(gifts).not.toContain('href="/gifts"');
   });
 
-  it("keeps gift product budget callouts visible when price data supports them", () => {
+  it("does not retain gift budget merchandising", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("giftBudgetThresholds");
-    expect(gifts).toContain("getGiftBudgetContextLabel(product)");
-    expect(gifts).toContain(
-      "contextLabel={getGiftBudgetContextLabel(product)}",
-    );
-    expect(gifts).toContain("product.price <= budget");
-    expect(gifts).toContain("formatInlinePrice(threshold)");
+    expect(gifts).not.toContain("giftBudgetThresholds");
+    expect(gifts).not.toContain("getGiftBudgetContextLabel");
   });
 
-  it("keeps gift bundle recommendations explicit and item-specific", () => {
+  it("does not retain gift bundle recommendations", () => {
     const gifts = read("src/app/gifts/page.tsx");
 
-    expect(gifts).toContain("getGiftBundlePairs(products)");
-    expect(gifts).toContain('data-testid="gift-bundle-recommendations"');
-    expect(gifts).toContain('data-testid="gift-bundle-pair"');
-    expect(gifts).toContain("products: [CatalogProduct, CatalogProduct]");
-    expect(gifts).toContain('contextLabel="מתאים לשילוב במתנה"');
-    expect(gifts).toContain("categoryProducts.length < 2");
+    expect(gifts).not.toContain("getGiftBundlePairs");
+    expect(gifts).not.toContain('data-testid="gift-bundle-recommendations"');
   });
 
   it("keeps the home mobile hero and account entry readable without blocking browsing", () => {
@@ -525,9 +509,7 @@ describe("visible site improvement affordances", () => {
     // *and* any slug already shown in the recommendation rails, via the tested
     // selectRecentlyViewedSlugs helper (was an inline slug !== currentSlug filter).
     expect(recentlyViewed).toContain("[currentSlug, ...(excludeSlugs ?? [])]");
-    expect(recentlyViewed).toContain(
-      'data-layout-equal-group="recently-viewed-products"',
-    );
+    expect(recentlyViewed).toContain("<ProductRail");
     expect(productCard).toContain("relative aspect-[5/4] overflow-hidden");
     expect(productCard).toContain("sm:aspect-[4/5]");
     expect(productCard).toContain('data-testid="product-card-image-skeleton"');
@@ -611,15 +593,19 @@ describe("visible site improvement affordances", () => {
     expect(checkoutForm).toContain('href: "/product/muse-pearl-earrings"');
     expect(checkoutForm).toContain('href: "/product/venus-line-ring"');
     expect(checkoutForm).toContain('href="/search"');
-    expect(checkoutForm).toContain('href="/gifts"');
+    expect(checkoutForm).not.toContain('href="/gifts"');
     expect(checkoutForm).toContain("checkout-boutique-panel");
     expect(checkoutForm).toContain("checkout-policy-notes");
     expect(checkoutForm).toContain(
       'data-testid="checkout-secure-payment-badge"',
     );
-    expect(checkoutForm).toContain('data-testid="checkout-gift-wrap-upsell"');
-    expect(checkoutForm).toContain('data-testid="checkout-order-note-hint"');
-    expect(checkoutForm).toContain(
+    expect(checkoutForm).not.toContain(
+      'data-testid="checkout-gift-wrap-upsell"',
+    );
+    expect(checkoutForm).not.toContain(
+      'data-testid="checkout-order-note-hint"',
+    );
+    expect(checkoutForm).not.toContain(
       'aria-describedby="checkout-order-note-hint"',
     );
   });

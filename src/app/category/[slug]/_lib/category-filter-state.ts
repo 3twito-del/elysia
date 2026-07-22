@@ -372,7 +372,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "טווח מחיר שמתאים למתנה או לעצמך.",
+      description: "טווח מחיר שמתאים לתקציב שלך.",
       title: "מחיר",
       options: priceOptions.map((price) => {
         const active = filters.maxPrice === price;
@@ -408,7 +408,7 @@ function getCategoryFilterSections({
       }),
     },
     {
-      description: "לפי רגע, מתנה או שימוש.",
+      description: "לפי רגע, אירוע או שימוש.",
       title: "אירוע",
       options: occasionOptions.map((occasion) => {
         const active = filters.occasion === occasion;

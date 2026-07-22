@@ -87,7 +87,6 @@ export type CatalogSearchInput = {
   material?: string;
   stone?: string;
   style?: string;
-  gift?: string;
   color?: string;
   maxPrice?: number;
   collection?: string;
@@ -99,7 +98,6 @@ export type CatalogFacets = {
   stones: string[];
   collections: string[];
   styles: string[];
-  giftTags: string[];
   colors: string[];
   priceRange: {
     min: number;

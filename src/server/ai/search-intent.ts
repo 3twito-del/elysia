@@ -157,7 +157,7 @@ function createSemanticIntentPrompt(
     "You parse ecommerce jewelry search intent for Elysia.",
     "The user can write in Hebrew or English. Return structured intent only.",
     "Return only fields grounded in the user query or explicit filters.",
-    "Hard filters must be exact values from the allowed lists. Soft signals may describe style, occasion, recipient, weight, gift intent, or usage.",
+    "Hard filters must be exact values from the allowed lists. Soft signals may describe style, occasion, recipient, weight, or usage.",
     "Never invent product names, prices, inventory, or unavailable facets.",
     `User query: ${JSON.stringify(input.query ?? "")}`,
     `Explicit filters: ${JSON.stringify({

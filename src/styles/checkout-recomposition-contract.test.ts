@@ -51,11 +51,11 @@ describe("checkout visual recomposition contract", () => {
     expect(countAttribute(checkoutForm, "id", "postalCode")).toBe(1);
     expect(countAttribute(checkoutForm, "id", "coupon")).toBe(1);
     expect(countAttribute(checkoutForm, "id", "checkout-order-note-hint")).toBe(
-      1,
+      0,
     );
     expect(
       countOccurrences(checkoutForm, 'data-testid="checkout-order-note-hint"'),
-    ).toBe(1);
+    ).toBe(0);
   });
 });
 

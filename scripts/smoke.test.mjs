@@ -19,7 +19,8 @@ describe("smoke checks", () => {
         "/branches",
         "/gifts",
         "/ai",
-        "/ai?tab=gifts",
+        "/elys-ai",
+        "/category/sets",
         "/stylist",
         "/search",
         "/search?q=venus",
@@ -52,7 +53,7 @@ describe("smoke checks", () => {
       expect.arrayContaining([
         'data-testid="home-commerce-shortcuts"',
         'href="/search"',
-        'href="/gifts"',
+        'href="/elys-ai"',
         'href="/size-guide"',
         'href="/service"',
       ]),

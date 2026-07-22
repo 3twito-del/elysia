@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
-  Gift,
   MessageCircle,
   RotateCcw,
   ShieldCheck,
@@ -22,6 +21,7 @@ import {
 } from "./_lib/product-recommendation-rails";
 import { CommerceSectionHeader } from "~/components/commerce-section-header";
 import { ProductCard } from "~/components/product-card";
+import { ProductRail } from "~/components/product-rail";
 import { SiteHeader } from "~/components/site-header";
 import { RevealSection } from "~/components/reveal";
 import { Badge } from "~/components/ui/badge";
@@ -131,7 +131,7 @@ export default async function ProductPage({
       : undefined;
   const productSale = getProductPageSale(product);
   const productSupportHref = createProductServiceHref({
-    message: "שאלת התאמה, מידה, חומר, מתנה או מסירה לפני הזמנה.",
+    message: "שאלת התאמה, מידה, חומר או מסירה לפני הזמנה.",
     productReference: `${publicProductName} (${product.sku})`,
   });
   const structuredData = buildProductStructuredData({
@@ -266,10 +266,7 @@ export default async function ProductPage({
                     {formatPrice(product.price)}
                   </span>
                 )}
-                <Badge
-                  className="product-card-status-badge"
-                  variant="outline"
-                >
+                <Badge className="product-card-status-badge" variant="outline">
                   {commerceStatus.label}
                 </Badge>
               </div>
@@ -345,22 +342,6 @@ export default async function ProductPage({
               </Link>
             </p>
 
-            <div
-              className="mt-4 hidden rounded-md border border-[var(--glass-border)] p-3 text-sm leading-6 sm:block"
-              data-testid="product-gift-ready-note"
-            >
-              <div className="flex gap-2">
-                <Gift aria-hidden="true" className="mt-1 size-4 shrink-0" />
-                <div>
-                  <p className="font-medium">מתאים גם כמתנה</p>
-                  <p className="text-muted-foreground mt-1">
-                    אפשר לבחור לפי אירוע, תקציב וסגנון, ולפנות לשירות אם צריך
-                    לוודא מידה או גוון לפני ההזמנה.
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <section
               aria-labelledby="product-specification-title"
               className="border-border mt-7 grid gap-4 border-y py-4"
@@ -392,7 +373,6 @@ export default async function ProductPage({
                 <p>{productSensitivityDisclaimer}</p>
               </div>
             </section>
-
           </div>
         </aside>
       </RevealSection>
@@ -412,10 +392,7 @@ export default async function ProductPage({
           />
 
           <div className="grid gap-8">
-            <div
-              className="grid gap-2"
-              data-testid="product-story"
-            >
+            <div className="grid gap-2" data-testid="product-story">
               <p className="text-muted-foreground text-xs font-medium tracking-normal uppercase">
                 הסיפור שמאחורי הפריט
               </p>
@@ -493,11 +470,6 @@ function getProductFaqItems(input: {
       question: "איך יודעים אם המידה מתאימה?",
       answer:
         "בדקי את מדריך המידות ואת פרטי המידה בעמוד. אם יש התלבטות, שלחי לנו שאלה עם שם המוצר.",
-    },
-    {
-      question: `${input.productName} מתאים למתנה?`,
-      answer:
-        "כן. מומלץ לבחור לפי סגנון, גוון ותקציב. אם המידה לא בטוחה, נוכל לעזור לפני הקנייה.",
     },
   ];
 
@@ -644,9 +616,10 @@ function ProductRecommendationRails({
                 </Link>
               </Button>
             </div>
-            <div
+            <ProductRail
+              ariaLabel={rail.title}
               className="ui-equal-grid mt-5 grid gap-x-7 gap-y-10 sm:grid-cols-2 lg:grid-cols-3"
-              data-layout-equal-group={`product-recommendation-${rail.id}`}
+              equalGroup={`product-recommendation-${rail.id}`}
             >
               {rail.products.slice(0, 3).map((recommended) => (
                 <ProductCard
@@ -655,7 +628,7 @@ function ProductRecommendationRails({
                   product={recommended}
                 />
               ))}
-            </div>
+            </ProductRail>
           </section>
         );
       })}

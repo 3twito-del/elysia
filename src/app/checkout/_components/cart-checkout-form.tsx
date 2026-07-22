@@ -13,7 +13,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   CheckCircle2,
-  Gift,
   MessageCircle,
   Minus,
   PackageCheck,
@@ -32,7 +31,6 @@ import { Label } from "~/components/ui/label";
 import { Separator } from "~/components/ui/separator";
 import { Spinner } from "~/components/ui/spinner";
 import { StatusMessage } from "~/components/ui/status-message";
-import { Textarea } from "~/components/ui/textarea";
 import {
   dispatchCartUpdated,
   getOrCreateCartSessionKey,
@@ -102,7 +100,7 @@ const checkoutEmptyRecommendedProducts = [
     price: 840,
   },
   {
-    badge: "מתנה",
+    badge: "בחירה עדינה",
     href: "/product/muse-pearl-earrings",
     image: "/brand/boutique/category-earrings.avif",
     material: "פנינה וציפוי זהב",
@@ -144,8 +142,8 @@ const checkoutProgressSteps = [
     value: "2",
   },
   {
-    detail: "אריזת מתנה או ברכה קצרה",
-    label: "מתנה",
+    detail: "הטבות וקוד קופון",
+    label: "הטבות",
     value: "3",
   },
   {
@@ -171,8 +169,6 @@ export function CartCheckoutForm() {
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [giftWrap, setGiftWrap] = useState(false);
-  const [giftMessage, setGiftMessage] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [offlineCouponQueued, setOfflineCouponQueued] = useState(false);
   const [legalAccepted, setLegalAccepted] = useState(false);
@@ -303,9 +299,7 @@ export function CartCheckoutForm() {
       // Ignore -- worst case we retry the lookup once more next mount.
     }
 
-    const frame = window.requestAnimationFrame(() =>
-      setRestoredOrderRef(null),
-    );
+    const frame = window.requestAnimationFrame(() => setRestoredOrderRef(null));
 
     return () => window.cancelAnimationFrame(frame);
   }, [orderConfirmationQuery.data, orderConfirmationQuery.isSuccess]);
@@ -708,13 +702,11 @@ export function CartCheckoutForm() {
       sessionKey
         ? {
             sessionKey,
-            giftWrap,
-            giftMessage: giftMessage || undefined,
             couponCode: couponCode || undefined,
             fulfillmentMethod: "DELIVERY" as const,
           }
         : null,
-    [couponCode, giftMessage, giftWrap, sessionKey],
+    [couponCode, sessionKey],
   );
 
   const mobileCheckoutBar = (
@@ -827,8 +819,6 @@ export function CartCheckoutForm() {
         street,
         postalCode: postalCode || undefined,
       },
-      giftWrap,
-      giftMessage: giftMessage || undefined,
       // UX17: send the server-confirmed applied coupon (what the displayed
       // totals were actually computed from), not the raw text box value --
       // typing a code without pressing "החילי" must not silently change
@@ -877,8 +867,8 @@ export function CartCheckoutForm() {
           </CardHeader>
           <CardContent className="grid gap-5 leading-7">
             <p className="text-muted-foreground">
-              מספר ההזמנה הוא {confirmationData.orderNumber}. התכשיטים נשמרו
-              עד לסיום חלון התשלום.
+              מספר ההזמנה הוא {confirmationData.orderNumber}. התכשיטים נשמרו עד
+              לסיום חלון התשלום.
             </p>
             <div className="glass-inset rounded-md border p-4 text-sm">
               <p className="font-medium">פרטי העסק</p>
@@ -894,8 +884,8 @@ export function CartCheckoutForm() {
                 <div>
                   <p className="font-medium">השלמת התשלום</p>
                   <p className="text-muted-foreground mt-1 text-sm leading-6">
-                    ההזמנה נשמרה אך טרם שולמה. יש להשלים תשלום מאובטח כדי
-                    לוודא את ההזמנה לפני שחלון השמירה יפוג.
+                    ההזמנה נשמרה אך טרם שולמה. יש להשלים תשלום מאובטח כדי לוודא
+                    את ההזמנה לפני שחלון השמירה יפוג.
                   </p>
                 </div>
                 {createPayment.error ? (
@@ -928,8 +918,8 @@ export function CartCheckoutForm() {
                 <div>
                   <p className="font-medium">פריטים נפרדים עדיין בסל</p>
                   <p className="text-muted-foreground mt-1 text-sm leading-6">
-                    {dropshipItems.length} פריטים נוספים בסל אינם חלק
-                    מההזמנה הזו ויושלמו בקופה נפרדת.
+                    {dropshipItems.length} פריטים נוספים בסל אינם חלק מההזמנה
+                    הזו ויושלמו בקופה נפרדת.
                   </p>
                 </div>
                 {createShopifyCheckoutErrorMessage ? (
@@ -1097,8 +1087,8 @@ export function CartCheckoutForm() {
             </div>
           ) : (
             <StatusMessage testId="checkout-supplier-only-message">
-              אין צורך בפרטי משלוח באתר עבור פריטים אלה. המעבר לקופה נפרדת
-              יפתח תשלום מאובטח ומשלוח.
+              אין צורך בפרטי משלוח באתר עבור פריטים אלה. המעבר לקופה נפרדת יפתח
+              תשלום מאובטח ומשלוח.
             </StatusMessage>
           )}
 
@@ -1487,8 +1477,7 @@ export function CartCheckoutForm() {
                 <CardHeader className="checkout-boutique-card-header">
                   <CardTitle className="flex items-center gap-2">
                     <CheckoutStepBadge value="3" />
-                    <Gift aria-hidden="true" className="size-5" />
-                    הטבות ומתנה
+                    הטבות
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-3">
@@ -1535,44 +1524,6 @@ export function CartCheckoutForm() {
                       {couponFeedbackMessage}
                     </StatusMessage>
                   ) : null}
-                  <label
-                    className="glass-inset flex min-h-11 items-center gap-3 rounded-md border px-3 text-sm"
-                    data-testid="checkout-gift-wrap-upsell"
-                  >
-                    <input
-                      checked={giftWrap}
-                      disabled={checkoutLocked}
-                      onChange={(event) =>
-                        setGiftWrap(event.currentTarget.checked)
-                      }
-                      type="checkbox"
-                    />
-                    <span>
-                      <span className="block font-medium">
-                        הוסיפי אריזת מתנה
-                      </span>
-                      <span className="text-muted-foreground block text-xs">
-                        נצרף אריזה נקייה וברכה קצרה אם תרצי.
-                      </span>
-                    </span>
-                  </label>
-                  <Textarea
-                    aria-describedby="checkout-order-note-hint"
-                    disabled={checkoutLocked}
-                    onChange={(event) =>
-                      setGiftMessage(event.currentTarget.value)
-                    }
-                    placeholder="ברכה"
-                    value={giftMessage}
-                  />
-                  <p
-                    className="text-muted-foreground text-xs leading-5"
-                    data-testid="checkout-order-note-hint"
-                    id="checkout-order-note-hint"
-                  >
-                    אפשר לציין ברכה, אריזה או העדפת משלוח. אין לכתוב פרטי
-                    אשראי, סיסמאות או מידע רגיש.
-                  </p>
                 </CardContent>
               </Card>
             </>
@@ -1957,7 +1908,9 @@ export function CartCheckoutForm() {
                       size="lg"
                       type="submit"
                     >
-                      {createOrder.isPending ? "שולחים הזמנה" : localCheckoutButtonLabel}
+                      {createOrder.isPending
+                        ? "שולחים הזמנה"
+                        : localCheckoutButtonLabel}
                       {createOrder.isPending ? (
                         <Spinner aria-hidden="true" role="presentation" />
                       ) : (
@@ -2043,9 +1996,7 @@ function CheckoutEmptyCartState() {
           <div className="checkout-empty-icon glass-inset mb-5 grid size-12 place-items-center rounded-md border">
             <ShoppingBag aria-hidden="true" className="size-5" />
           </div>
-          <p className="text-muted-foreground text-xs font-medium">
-            סל הקניות
-          </p>
+          <p className="text-muted-foreground text-xs font-medium">סל הקניות</p>
           <h2 className="mt-3 text-2xl font-semibold tracking-normal sm:text-3xl">
             התחילי מהנמכרים ביותר
           </h2>
@@ -2058,9 +2009,6 @@ function CheckoutEmptyCartState() {
                 התחילי מהנמכרים ביותר
                 <ShoppingBag aria-hidden="true" className="size-4" />
               </Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link href="/gifts">מצאי מתנה</Link>
             </Button>
           </div>
         </div>

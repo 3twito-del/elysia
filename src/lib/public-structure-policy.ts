@@ -43,7 +43,6 @@ export type PublicRouteStructureKey = keyof typeof routeStructurePolicy;
 
 const evidence = {
   baymardJewelry: "https://baymard.com/blog/jewelry-and-watches-2025-benchmark",
-  bulgariGifts: "https://www.bulgari.com/en-us/gifts",
   chopardRings: "https://www.chopard.com/en-us/jewellery-rings",
   tiffanyRings: "https://www.tiffany.com/jewelry/rings/",
   vanCleefRings:
@@ -65,28 +64,17 @@ export const publicStructurePolicy = {
   plpTitleControlsGridFirst: allow(
     32,
     [
-      evidence.bulgariGifts,
       evidence.tiffanyRings,
       evidence.vanCleefRings,
       evidence.chopardRings,
       evidence.mejuriRings,
       evidence.blueNileRings,
     ],
-    "PLP, search, and gifts routes prioritize title, count, filters/sort, and product grid before decorative content.",
-  ),
-  giftsAsProductListing: allow(
-    26,
-    [evidence.bulgariGifts, evidence.tiffanyRings, evidence.mejuriRings],
-    "Gift routes behave as product listings, not landing pages with a local jump button.",
+    "PLP and search routes prioritize title, count, filters/sort, and product grid before decorative content.",
   ),
   adjacentSamePageHeroCta: remove(
     3,
-    [
-      evidence.bulgariGifts,
-      evidence.tiffanyRings,
-      evidence.vanCleefRings,
-      evidence.mejuriRings,
-    ],
+    [evidence.tiffanyRings, evidence.vanCleefRings, evidence.mejuriRings],
     "Hero actions that only scroll to the next adjacent section are removed.",
   ),
   heroCtaToRealControl: allow(
@@ -134,13 +122,13 @@ export const publicStructurePolicy = {
 export const anchorCtaPolicy = {
   samePageHeroAnchor: remove(
     3,
-    [evidence.bulgariGifts, evidence.tiffanyRings, evidence.mejuriRings],
+    [evidence.tiffanyRings, evidence.mejuriRings],
     "Same-page anchor links are not allowed in public route heroes.",
   ),
   adjacentSectionJump: remove(
     3,
-    [evidence.bulgariGifts, evidence.vanCleefRings],
-    "Adjacent-section jumps such as gifts/results/products buttons are removed.",
+    [evidence.vanCleefRings],
+    "Adjacent-section jumps such as results/products buttons are removed.",
   ),
   crossRouteHeroAction: publicStructurePolicy.crossRouteHeroAction,
   realControlTrigger: publicStructurePolicy.heroCtaToRealControl,
@@ -156,11 +144,6 @@ export const routeStructurePolicy = {
     "home",
     publicStructurePolicy.homeBrandHeroThenCommerceEntry,
     "Brand hero, then immediate category/search/product entry.",
-  ),
-  "/gifts": route(
-    "plp",
-    publicStructurePolicy.giftsAsProductListing,
-    "Compact title/control strip and gift product grid.",
   ),
   "/category/[slug]": route(
     "plp",
@@ -197,15 +180,10 @@ export const routeStructurePolicy = {
     publicStructurePolicy.serviceAccountTaskFirst,
     "Order details and support actions first.",
   ),
-  "/ai": route(
+  "/elys-ai": route(
     "ai",
     publicStructurePolicy.serviceAccountTaskFirst,
-    "AI remains a demoted service capability, with tool tabs first.",
-  ),
-  "/stylist": route(
-    "ai",
-    publicStructurePolicy.serviceAccountTaskFirst,
-    "Stylist tool first, explanatory content second.",
+    "elys-ai conversation first, recommendations and privacy context second.",
   ),
   "/about": route(
     "content",

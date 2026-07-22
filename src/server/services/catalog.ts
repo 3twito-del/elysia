@@ -10,6 +10,10 @@ import {
   getPublicStoneName,
   getPublicVariantOptionName,
 } from "~/lib/product-display";
+import {
+  filterPublicCatalogItems,
+  isPublicCatalogCategory,
+} from "~/lib/public-catalog-visibility";
 import { db } from "~/server/db";
 import {
   CATALOG_CACHE_TAGS,
@@ -201,10 +205,15 @@ const getCatalogCategoriesCached = unstable_cache(
 );
 
 export const getCatalogCategories = cache(
-  async (): Promise<CatalogCategory[]> => getCatalogCategoriesCached(),
+  async (): Promise<CatalogCategory[]> =>
+    (await getCatalogCategoriesCached()).filter((category) =>
+      isPublicCatalogCategory(category.slug),
+    ),
 );
 
 export async function getCatalogCategoryBySlug(slug: string) {
+  if (!isPublicCatalogCategory(slug)) return null;
+
   const getCatalogCategoryBySlugCached = unstable_cache(
     async () => {
       return readCatalogData({
@@ -300,7 +309,10 @@ const getFeaturedCatalogProductsCached = unstable_cache(
 );
 
 export const getFeaturedCatalogProducts = cache(async (take = 4) =>
-  getFeaturedCatalogProductsCached(take),
+  filterPublicCatalogItems(await getFeaturedCatalogProductsCached(take)).slice(
+    0,
+    take,
+  ),
 );
 
 function selectFeaturedCatalogProducts(
@@ -333,6 +345,8 @@ function selectFeaturedCatalogProducts(
 }
 
 export async function listCatalogProducts(input: { category?: string } = {}) {
+  if (input.category && !isPublicCatalogCategory(input.category)) return [];
+
   const getCatalogProductsCached = unstable_cache(
     async () => {
       return readCatalogData({
@@ -368,7 +382,7 @@ export async function listCatalogProducts(input: { category?: string } = {}) {
     },
   );
 
-  return getCatalogProductsCached();
+  return filterPublicCatalogItems(await getCatalogProductsCached());
 }
 
 export const listCatalogProductsCachedRequest = cache(listCatalogProducts);
@@ -396,7 +410,11 @@ export async function getCatalogProductBySlug(slug: string) {
     },
   );
 
-  return getCatalogProductBySlugCached();
+  const product = await getCatalogProductBySlugCached();
+
+  return product && isPublicCatalogCategory(product.categorySlug)
+    ? product
+    : null;
 }
 
 export const getCatalogProductBySlugCachedRequest = cache(
@@ -450,7 +468,6 @@ export function getCatalogFacetsFromProducts(
     styles: getUniqueValues(
       products.flatMap((product) => getCatalogProductStyles(product)),
     ),
-    giftTags: getCatalogGiftFacetOptions(products),
     colors: getUniqueValues(
       products.flatMap((product) => getCatalogProductColors(product)),
     ),
@@ -493,9 +510,6 @@ export function filterCatalogProducts(
         : true,
     )
     .filter((product) =>
-      input.gift ? matchesCatalogGiftFacet(product, input.gift) : true,
-    )
-    .filter((product) =>
       input.color
         ? getCatalogProductColors(product).includes(input.color)
         : true,
@@ -513,12 +527,6 @@ export function filterCatalogProducts(
     );
 }
 
-const catalogGiftFacetLabels = {
-  gift: "מתאים למתנה",
-  under200: "עד 200 ₪",
-  pearl: "פנינים למתנה",
-} as const;
-
 function getCatalogProductStyles(product: CatalogProduct): string[] {
   return product.collections.length > 0
     ? product.collections
@@ -532,71 +540,6 @@ function getCatalogProductColors(product: CatalogProduct): string[] {
       .flatMap((variant) => [variant.metalColor, variant.stoneColor])
       .filter((value): value is string => Boolean(value)),
   ]);
-}
-
-function getCatalogGiftFacetOptions(products: CatalogProduct[]): string[] {
-  const options: string[] = [];
-
-  if (
-    products.some((product) =>
-      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift),
-    )
-  ) {
-    options.push(catalogGiftFacetLabels.gift);
-  }
-
-  if (
-    products.some((product) =>
-      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.under200),
-    )
-  ) {
-    options.push(catalogGiftFacetLabels.under200);
-  }
-
-  if (
-    products.some((product) =>
-      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.pearl),
-    )
-  ) {
-    options.push(catalogGiftFacetLabels.pearl);
-  }
-
-  return options;
-}
-
-function matchesCatalogGiftFacet(
-  product: CatalogProduct,
-  giftFacet: string,
-): boolean {
-  if (giftFacet === catalogGiftFacetLabels.under200) {
-    return product.price <= 200;
-  }
-
-  if (giftFacet === catalogGiftFacetLabels.pearl) {
-    const normalizedStone = normalizeCatalogFacetText(product.stone);
-
-    return (
-      matchesCatalogGiftFacet(product, catalogGiftFacetLabels.gift) &&
-      (normalizedStone.includes("פנינ") || normalizedStone.includes("pearl"))
-    );
-  }
-
-  if (giftFacet !== catalogGiftFacetLabels.gift) return false;
-
-  const searchable = [
-    product.description,
-    product.shortDescription,
-    ...product.tags,
-    ...product.collections,
-  ]
-    .map((value) => normalizeCatalogFacetText(value))
-    .join(" ");
-
-  return searchable.includes("מתנה") || searchable.includes("gift");
-}
-
-function normalizeCatalogFacetText(value?: string): string {
-  return value?.trim().toLowerCase() ?? "";
 }
 
 export function getCatalogAvailability(product: CatalogProduct) {
@@ -959,7 +902,10 @@ function isGeneratedCatalogDescription(description: string) {
 
 function getDisplayProductTags(tags: string[]) {
   return tags.filter(
-    (tag) => tag !== "בדיקות מבחר" && !hasPrivateCatalogCopy(tag),
+    (tag) =>
+      tag !== "בדיקות מבחר" &&
+      !/^(?:מתנה|למתנה|gift|present)$/iu.test(tag.trim()) &&
+      !hasPrivateCatalogCopy(tag),
   );
 }
 

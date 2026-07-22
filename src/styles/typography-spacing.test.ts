@@ -27,8 +27,10 @@ describe("public typography spacing guardrails", () => {
     expect(css).toContain("var(--font-rubik)");
     expect(css).toContain("--font-cormorant-garamond:");
     expect(css).toContain("--font-rounded-heading:");
-    expect(css).toContain('"Segoe UI Rounded"');
-    expect(css).toContain('"Varela Round"');
+    expect(css).not.toContain('"Segoe UI Rounded"');
+    expect(css).not.toContain('"Varela Round"');
+    expect(layout).toContain("@fontsource/rubik/400.css");
+    expect(layout).toContain("@fontsource/cormorant-garamond/500.css");
     expect(css).toContain("--font-latin-brand");
     expect(css).toContain("var(--font-rounded-heading);");
     expect(css).toContain('--font-sans:\n    "Rubik"');

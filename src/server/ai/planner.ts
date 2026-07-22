@@ -6,9 +6,6 @@ import { AI_RUN_KIND } from "~/server/ai/constants";
 import {
   catalogFollowUpTerms,
   catalogTerms,
-  giftOccasionTerms,
-  giftRecipientTerms,
-  giftTerms,
   orderIdentityTerms,
   orderReferenceTerms,
   orderSupportActionTerms,
@@ -63,7 +60,6 @@ export function createAiPlanningContext(
   const tryOnIntent =
     hasAny(normalized, tryOnTerms) ||
     (!styleProfileIntent && hasTryOnSizeIntent(normalized));
-  const giftIntent = hasAny(normalized, giftTerms);
   const catalogIntent =
     hasCatalogIntent(normalized) ||
     (hasCatalogIntent(normalizedContext) &&
@@ -73,7 +69,6 @@ export function createAiPlanningContext(
   if (orderSupportIntent) signals.add("order_support");
   if (tryOnIntent) signals.add("try_on");
   if (styleProfileIntent) signals.add("style_profile");
-  if (giftIntent) signals.add("gift");
   if (catalogIntent) signals.add("catalog");
 
   if (orderSupportIntent) {
@@ -107,19 +102,6 @@ export function createAiPlanningContext(
       signals: [...signals],
       shouldUseCatalog: true,
       requiresApproval: true,
-      safetyFlags,
-      catalogHints,
-      normalized,
-      normalizedContext,
-    });
-  }
-
-  if (giftIntent) {
-    return createPlanningResult({
-      kind: AI_RUN_KIND.giftRecommendation,
-      signals: [...signals],
-      shouldUseCatalog: true,
-      requiresApproval: false,
       safetyFlags,
       catalogHints,
       normalized,
@@ -298,16 +280,6 @@ function getMissingFields(input: {
     return hasExplicitStyleProfileDetails(combined, input.catalogHints)
       ? []
       : ["stylePreferences"];
-  }
-
-  if (input.kind === AI_RUN_KIND.giftRecommendation) {
-    return [
-      input.catalogHints?.maxPrice || hasBudgetMention(combined)
-        ? null
-        : "budget",
-      hasAny(combined, giftRecipientTerms) ? null : "recipient",
-      hasAny(combined, giftOccasionTerms) ? null : "occasion",
-    ].filter((field): field is string => Boolean(field));
   }
 
   if (input.kind === AI_RUN_KIND.catalogSearch) {

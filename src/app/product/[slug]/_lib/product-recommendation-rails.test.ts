@@ -60,7 +60,7 @@ describe("product recommendation rails", () => {
     expect(rails.every((rail) => rail.reason.length > 0)).toBe(true);
   });
 
-  it("distinguishes sets (same collection + category) from complements (same collection, different category) (C-06)", () => {
+  it("keeps same-collection complements and category alternatives without a sets rail (C-06)", () => {
     const current = createProduct({
       categoryName: "Rings",
       categorySlug: "rings",
@@ -92,12 +92,12 @@ describe("product recommendation rails", () => {
       ],
     });
 
-    expect(rails.map((rail) => rail.id)).toEqual(["sets", "complements"]);
+    expect(rails.map((rail) => rail.id)).toEqual(["complements", "category"]);
     expect(rails[0]?.products.map((item) => item.slug)).toEqual([
-      "matching-set",
+      "companion-piece",
     ]);
     expect(rails[1]?.products.map((item) => item.slug)).toEqual([
-      "companion-piece",
+      "matching-set",
     ]);
   });
 

@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ChevronDown,
-  Gift,
-  PackageCheck,
-  Ruler,
-  Search,
-  Truck,
-} from "lucide-react";
+import { ChevronDown, PackageCheck, Ruler, Search, Truck } from "lucide-react";
 
 import { CompactPageIntro } from "~/components/compact-page-intro";
 import { LegalContactSection } from "~/components/legal-contact-section";
@@ -20,7 +13,7 @@ import { getPublicContactSettings } from "~/server/services/service";
 
 export const metadata: Metadata = {
   title: "שאלות ותשובות",
-  description: "שאלות ותשובות על תכשיטים, מידות, מסירה, החזרות ומתנות.",
+  description: "שאלות ותשובות על תכשיטים, מידות, מסירה והחזרות.",
 };
 
 export const dynamic = "force-dynamic";
@@ -47,21 +40,12 @@ const faqGroups = [
     ],
   },
   {
-    title: "מידות ומתנות",
+    title: "מידות והתאמה",
     icon: Ruler,
     items: [
       {
         question: "איך בוחרים מידת טבעת?",
         answer: "ניתן להיעזר במדריך המידות או לפנות לשירות.",
-      },
-      {
-        question: "האם אפשר לקבל עזרה בבחירת מתנה?",
-        answer:
-          "כן. אפשר להתחיל ממחיר, אירוע, חומר או סגנון, או לפנות לשירות עם שם התכשיט.",
-      },
-      {
-        question: "האם ניתן לצרף ברכה או אריזת מתנה?",
-        answer: "כאשר זמין, ניתן להוסיף ברכה או אריזה בהזמנה.",
       },
     ],
   },
@@ -94,7 +78,7 @@ export default async function FaqPage() {
 
       <main className="elysia-page">
         <CompactPageIntro
-          description="תשובות לשאלות נפוצות על מידות, מתנות, משלוחים והחזרות."
+          description="תשובות לשאלות נפוצות על מידות, משלוחים והחזרות."
           eyebrow="שירות"
           title="שאלות ותשובות"
           variant="content"
@@ -104,14 +88,10 @@ export default async function FaqPage() {
           className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:py-14"
           id="faq-shortcuts"
         >
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-6">
             <Link className="brand-surface interactive-lift p-5" href="/search">
               <Search className="size-5" aria-hidden="true" />
               <p className="mt-3 font-medium">חיפוש תכשיטים</p>
-            </Link>
-            <Link className="brand-surface interactive-lift p-5" href="/gifts">
-              <Gift className="size-5" aria-hidden="true" />
-              <p className="mt-3 font-medium">מתנות לפי תקציב</p>
             </Link>
           </div>
 
@@ -130,7 +110,7 @@ export default async function FaqPage() {
               <div className="flex flex-wrap gap-2">
                 {faqGroups.map((group, index) => (
                   <Link
-                    className="border-border hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)] rounded-full border px-3 py-1.5 text-sm transition"
+                    className="border-border rounded-full border px-3 py-1.5 text-sm transition hover:border-[var(--glass-border-hover)] hover:bg-[var(--glass-hover-overlay)]"
                     href={`#faq-group-${index + 1}`}
                     key={group.title}
                   >

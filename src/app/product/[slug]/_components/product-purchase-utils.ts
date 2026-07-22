@@ -16,7 +16,7 @@ export type ProductPurchaseConfidenceItem = {
 };
 
 export type ProductBeforeOrderSummaryItem = {
-  key: "delivery" | "returns" | "warranty" | "care" | "gift";
+  key: "delivery" | "returns" | "warranty" | "care" | "service";
   label: string;
   value: string;
 };
@@ -29,10 +29,9 @@ export type ProductServiceReason = ReturnType<
 // reason. Left unmapped where no topic fits honestly — "made-to-order" and
 // "availability" don't have a dedicated topic, so the topic selector keeps
 // its normal default rather than being forced into a wrong bucket.
-const serviceReasonTopicSlug: Partial<Record<ProductServiceReason, string>> =
-  {
-    consultation: "sizing",
-  };
+const serviceReasonTopicSlug: Partial<Record<ProductServiceReason, string>> = {
+  consultation: "sizing",
+};
 
 const serviceReasonMessagePrefill: Partial<
   Record<ProductServiceReason, (productReference: string) => string>
@@ -275,10 +274,10 @@ export function getBeforeOrderSummaryItems(input: {
         "מומלץ להסיר לפני מים, שינה, ספורט, בושם וחומרי ניקוי.",
     },
     {
-      key: "gift",
-      label: "מתנה ושירות",
+      key: "service",
+      label: "התאמה ושירות",
       value:
-        "אפשר לפנות לשירות לפני ההזמנה כדי לוודא מידה, גוון, התאמה למתנה או אופן משלוח.",
+        "אפשר לפנות לשירות לפני ההזמנה כדי לוודא מידה, גוון, התאמה או אופן משלוח.",
     },
   ];
 }

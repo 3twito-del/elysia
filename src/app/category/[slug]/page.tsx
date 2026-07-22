@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import {
   ChevronLeft,
   Filter,
@@ -116,7 +116,7 @@ const categoryTrustSignals = [
   {
     icon: Truck,
     title: "משלוח ואריזה",
-    text: "פרטי משלוח, החלפה ואריזה למתנה מוצגים לפני התשלום.",
+    text: "פרטי משלוח, החלפה ואריזה מוצגים לפני התשלום.",
   },
   {
     icon: Headphones,
@@ -199,6 +199,8 @@ export default async function CategoryPage({
   searchParams,
 }: CategoryPageProps) {
   const { slug } = await params;
+  if (slug === "sets") permanentRedirect("/search");
+
   const query = await searchParams;
   const [categories, catalogProducts] = await Promise.all([
     getCatalogCategories(),

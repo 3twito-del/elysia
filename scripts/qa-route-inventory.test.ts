@@ -182,8 +182,6 @@ describe("QA route inventory", () => {
       "/category/necklaces",
       "/category/earrings",
       "/category/bracelets",
-      "/category/sets",
-      "/gifts",
     ]);
     expect(groups.commerceLinks.map((link) => link.href)).toEqual([
       "/checkout",

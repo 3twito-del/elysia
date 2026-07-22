@@ -145,7 +145,7 @@ export const messagesToMarkdown = (
 
 export const ConversationDownload = ({
   messages,
-  filename = "elysia-stylist-chat.md",
+  filename = "elys-ai-chat.md",
   formatMessage = defaultFormatMessage,
   className,
   children,

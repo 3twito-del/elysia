@@ -42,8 +42,6 @@ export const removeCartItemInputSchema = z.object({
 
 export const updateCartOptionsInputSchema = z.object({
   sessionKey: cartSessionKeySchema,
-  giftWrap: z.boolean().optional(),
-  giftMessage: z.string().trim().max(500).optional(),
   couponCode: z.string().trim().max(64).optional(),
   fulfillmentMethod: z.enum(["DELIVERY", "PICKUP"]).default("DELIVERY"),
 });
@@ -272,8 +270,6 @@ export async function updateCartOptions(
   const updated = await db.cart.update({
     where: { id: cart.id },
     data: {
-      giftWrap: parsed.giftWrap,
-      giftMessage: parsed.giftMessage,
       couponCode: parsed.couponCode?.toUpperCase(),
     },
     include: cartInclude,

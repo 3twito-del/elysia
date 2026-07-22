@@ -29,7 +29,7 @@ export function ThemeToggle({ className, style }: ThemeToggleProps) {
     <button
       aria-pressed={isDark}
       className={cn(
-        "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-10 grid-cols-[auto_1fr_auto] items-center gap-2 border-b border-[var(--glass-border)] px-2 text-xs transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
         className,
       )}
       data-testid="mobile-nav-theme-toggle"
@@ -45,7 +45,7 @@ export function ThemeToggle({ className, style }: ThemeToggleProps) {
       <span>מצב לילה</span>
       <span
         aria-hidden="true"
-        className="border-[var(--glass-border)] text-muted-foreground rounded-full border px-2 py-0.5 text-[0.68rem]"
+        className="text-muted-foreground rounded-full border border-[var(--glass-border)] px-1.5 py-px text-[0.62rem]"
       >
         {isDark ? "כהה" : "בהיר"}
       </span>

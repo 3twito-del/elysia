@@ -7,14 +7,14 @@ import {
 } from "./planner";
 
 describe("AI planner", () => {
-  it("classifies gift requests as catalog-backed recommendations", () => {
+  it("classifies legacy gift wording as an ordinary catalog search", () => {
     const planning = createAiPlanningContext("מתנה לאמא עד 700 שח בסגנון עדין");
 
-    expect(planning.kind).toBe("gift_recommendation");
+    expect(planning.kind).toBe("catalog_search");
     expect(planning.shouldUseCatalog).toBe(true);
     expect(planning.requiresApproval).toBe(false);
-    expect(planning.confidence).toBe("medium");
-    expect(planning.missingFields).toEqual(["occasion"]);
+    expect(planning.confidence).toBe("high");
+    expect(planning.missingFields).toEqual([]);
     expect(planning.clarificationRequired).toBe(false);
   });
 

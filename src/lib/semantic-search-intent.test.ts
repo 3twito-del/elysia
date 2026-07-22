@@ -70,7 +70,7 @@ describe("semantic search intent", () => {
     ).toBe(false);
   });
 
-  it("keeps gift and recipient meaning for broad gift searches", () => {
+  it("treats legacy gift wording as ordinary recipient context", () => {
     const intent = resolveDeterministicSemanticSearchIntent(
       {
         query: "מתנה לאמא עד 700",
@@ -80,9 +80,8 @@ describe("semantic search intent", () => {
 
     expect(intent.hardFilters.maxPrice).toBe(700);
     expect(intent.recipient).toBe("אמא");
-    expect(intent.softSignals).toEqual(
-      expect.arrayContaining(["gift", "mother"]),
-    );
+    expect(intent.softSignals).toContain("mother");
+    expect(intent.softSignals).not.toContain("gift");
   });
 
   it("extracts English jewelry category material stone and price filters", () => {
@@ -147,10 +146,10 @@ describe("semantic search intent", () => {
       maxPrice: 1000,
       stone: "diamond",
     });
-    expect(intent.softSignals).toContain("gift");
+    expect(intent.softSignals).not.toContain("gift");
   });
 
-  it("detects sets as a first-class catalog category", () => {
+  it("does not add a gift signal to legacy set wording", () => {
     const intent = resolveDeterministicSemanticSearchIntent(
       {
         query: "סט תכשיטים למתנה",
@@ -159,6 +158,6 @@ describe("semantic search intent", () => {
     );
 
     expect(intent.hardFilters.category).toBe("sets");
-    expect(intent.softSignals).toContain("gift");
+    expect(intent.softSignals).not.toContain("gift");
   });
 });

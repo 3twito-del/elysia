@@ -67,8 +67,7 @@ export function SearchControls({
   // longer describes what submitting would return, so the submit button
   // stops claiming a specific (now-stale) count instead of showing a wrong
   // one.
-  const [filtersTouchedSinceOpen, setFiltersTouchedSinceOpen] =
-    useState(false);
+  const [filtersTouchedSinceOpen, setFiltersTouchedSinceOpen] = useState(false);
 
   useEffect(() => {
     const detailsElement = detailsRef.current;
@@ -166,7 +165,11 @@ export function SearchControls({
               ) : null}
             </summary>
             <div className="mt-3 grid items-end gap-3 lg:grid-cols-[repeat(5,minmax(8.5rem,1fr))]">
-              <FacetSearchFields facetCounts={facetCounts} facets={facets} input={input} />
+              <FacetSearchFields
+                facetCounts={facetCounts}
+                facets={facets}
+                input={input}
+              />
               <AvailabilityField input={input} />
               <PreservedModeInput input={input} />
               <PreservedViewInput viewMode={viewMode} />
@@ -197,7 +200,7 @@ export function SearchControls({
                 defaultValue={input.query}
                 name="q"
                 onKeyDown={closeSearchPanel}
-                placeholder="טבעת, פנינה, מתנה..."
+                placeholder="טבעת, פנינה, זהב..."
                 ref={mobileQueryInputRef}
               />
               {hasQuery ? (
@@ -364,7 +367,7 @@ function PrimarySearchFields({
             defaultValue={input.query}
             name="q"
             onKeyDown={onQueryKeyDown}
-            placeholder="טבעת, פנינה, מתנה..."
+            placeholder="טבעת, פנינה, זהב..."
             ref={queryInputRef}
           />
           {hasQuery ? <SearchClearQueryLink href={clearSearchHref} /> : null}
@@ -451,7 +454,6 @@ function FacetSearchFields({
 }) {
   const materialCounts = getFacetCountLookup(facetCounts, "material");
   const styleCounts = getFacetCountLookup(facetCounts, "style");
-  const giftCounts = getFacetCountLookup(facetCounts, "gift");
   const colorCounts = getFacetCountLookup(facetCounts, "color");
   const stoneCounts = getFacetCountLookup(facetCounts, "stone");
   const collectionCounts = getFacetCountLookup(facetCounts, "collection");
@@ -483,19 +485,6 @@ function FacetSearchFields({
         }))}
         placeholder="כל הסגנונות"
         value={input.style}
-      />
-      <SearchSelectField
-        key={`gift-${input.gift ?? ""}`}
-        label="מתנה"
-        name="gift"
-        onSelect={onFieldChange}
-        options={facets.giftTags.map((gift) => ({
-          count: giftCounts?.get(gift),
-          label: gift,
-          value: gift,
-        }))}
-        placeholder="כל המתנות"
-        value={input.gift}
       />
       <SearchSelectField
         key={`color-${input.color ?? ""}`}
@@ -853,7 +842,6 @@ function PreservedSearchInputs({
       <PreservedInput name="stone" value={input.stone} />
       <PreservedInput name="collection" value={input.collection} />
       <PreservedInput name="style" value={input.style} />
-      <PreservedInput name="gift" value={input.gift} />
       <PreservedInput name="color" value={input.color} />
       <PreservedInput name="maxPrice" value={input.maxPrice} />
       <PreservedInput

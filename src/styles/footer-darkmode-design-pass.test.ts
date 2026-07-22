@@ -51,7 +51,8 @@ describe("footer + dark-mode design pass (owner-selected DP 67-77)", () => {
 
   it("keeps the newsletter form a single shared, styled component across footer and home (audit: already unified)", () => {
     expect(newsletterForm).toContain('variant?: "default" | "footer"');
-    expect(homePage).toContain("<NewsletterForm />");
+    expect(homePage).not.toContain("<NewsletterForm />");
+    expect(siteFooter).toContain("<NewsletterForm");
   });
 
   it("keeps badges and skeletons on theme-aware tokens instead of hardcoded colors (audit: already correct)", () => {

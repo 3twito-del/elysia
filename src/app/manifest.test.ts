@@ -20,19 +20,14 @@ describe("PWA manifest", () => {
         expect.objectContaining({ purpose: "maskable", sizes: "512x512" }),
       ]),
     );
-    expect(data.shortcuts).toHaveLength(4);
+    expect(data.shortcuts).toHaveLength(3);
     expect(data.shortcuts?.map((shortcut) => shortcut.url)).toEqual([
       "/search?source=pwa-shortcut",
-      "/gifts?source=pwa-shortcut",
       "/size-guide?source=pwa-shortcut",
       "/service?source=pwa-shortcut",
     ]);
     expect(data.shortcuts).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          description: "פתיחת רעיונות למתנה",
-          url: "/gifts?source=pwa-shortcut",
-        }),
         expect.objectContaining({
           url: "/size-guide?source=pwa-shortcut",
         }),
@@ -43,6 +38,7 @@ describe("PWA manifest", () => {
       ]),
     );
     expect(JSON.stringify(data.shortcuts)).not.toContain("לשירות לשירות");
+    expect(JSON.stringify(data.shortcuts)).not.toContain("/gifts");
     expect(JSON.stringify(data.shortcuts)).not.toContain("/checkout");
     expect(data).not.toHaveProperty("file_handlers");
     expect(data).not.toHaveProperty("protocol_handlers");

@@ -107,6 +107,7 @@ export function ProductCard({
       data-product-card-density={isCompactDensity ? "compact" : "standard"}
       data-product-card-display={display}
       data-product-card-sale={sale ? "true" : "false"}
+      data-context-href={`/product/${product.slug}`}
       data-testid="product-card"
       dir="rtl"
     >
@@ -253,7 +254,7 @@ export function ProductCard({
 }
 
 type ProductCardBadgeModel = {
-  key: "gift" | "gold-plated" | "new" | "silver-925";
+  key: "new" | "gold-plated" | "silver-925";
   label: string;
 };
 
@@ -315,11 +316,6 @@ function getProductCardLabel(
   }
 
   const normalizedMaterial = normalizeProductCardText(product.material);
-  const normalizedTags = product.tags.map(normalizeProductCardText);
-  const normalizedCollections = product.collections.map(
-    normalizeProductCardText,
-  );
-
   if (
     normalizedMaterial.includes("ציפוי") ||
     normalizedMaterial.includes("gold plated") ||
@@ -334,18 +330,6 @@ function getProductCardLabel(
     normalizedMaterial.includes("925")
   ) {
     return { key: "silver-925", label: "כסף 925" };
-  }
-
-  if (
-    normalizedTags.some(
-      (tag) => tag.includes("מתנה") || tag.includes("gift"),
-    ) ||
-    normalizedCollections.some(
-      (collection) =>
-        collection.includes("מתנה") || collection.includes("gift"),
-    )
-  ) {
-    return { key: "gift", label: "מתנה" };
   }
 
   return null;
@@ -382,10 +366,6 @@ function getProductCardDescriptor(product: CatalogProduct) {
 
   if (product.categorySlug === "bracelets") {
     return "צמיד בקו נקי לפרק היד.";
-  }
-
-  if (product.categorySlug === "sets") {
-    return "סט תואם, מתאים גם למתנה.";
   }
 
   if (product.stone) {

@@ -7,9 +7,7 @@ const root = process.cwd();
 
 describe("checkout validation summary and payment confidence", () => {
   it("keeps benchmark support evidence available", () => {
-    const benchmark = read(
-      "docs/QA_EVIDENCE.md",
-    );
+    const benchmark = read("docs/QA_EVIDENCE.md");
 
     expect(benchmark).toContain("I-035");
     expect(benchmark).toContain("Weighted Score`: 16.5");
@@ -31,7 +29,9 @@ describe("checkout validation summary and payment confidence", () => {
     expect(checkoutForm).toContain(
       'data-testid="checkout-secure-payment-badge"',
     );
-    expect(checkoutForm).toContain('data-testid="checkout-gift-wrap-upsell"');
+    expect(checkoutForm).not.toContain(
+      'data-testid="checkout-gift-wrap-upsell"',
+    );
     expect(checkoutForm).toContain("checkoutPaymentConfidenceCopy");
     expect(checkoutForm).toContain("hasMixedSourceCart");
     expect(checkoutForm).toContain("hasDropshipItems && !hasOwnItems");
