@@ -1589,6 +1589,152 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect(page.locator("form.newsletter-form")).toHaveCount(0);
   });
 
+  test("keeps the desktop newsletter beneath the Elysia brand in a balanced two-column footer", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const footerPrimary = page.locator(".site-footer-primary");
+    const brandColumn = footerPrimary.locator(".site-footer-brand");
+
+    await expect(brandColumn.locator("form.newsletter-form")).toHaveCount(1);
+    expect(
+      await footerPrimary.evaluate(
+        (element) =>
+          getComputedStyle(element).gridTemplateColumns.split(" ").length,
+      ),
+    ).toBe(2);
+  });
+
+  test("lets the final jewellery finder fill its panel without an empty grid column", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const panel = page.locator(".storefront-final-panel");
+    const content = panel.locator(".storefront-final-primary");
+    const bounds = await panel.evaluate((element) => {
+      const panelRect = element.getBoundingClientRect();
+      const contentRect = element.firstElementChild?.getBoundingClientRect();
+
+      return {
+        contentLeft: contentRect?.left,
+        contentRight: contentRect?.right,
+        panelLeft: panelRect.left,
+        panelRight: panelRect.right,
+        tracks: getComputedStyle(element).gridTemplateColumns.split(" ").length,
+      };
+    });
+
+    await expect(content).toBeVisible();
+    expect(bounds.tracks).toBe(1);
+    expect(bounds.contentLeft).toBeCloseTo(bounds.panelLeft, 0);
+    expect(bounds.contentRight).toBeCloseTo(bounds.panelRight, 0);
+  });
+
+  test("keeps focused inputs one pixel wide with a neutral compact focus indicator", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const input = page.locator("#newsletter-email");
+    const resting = await input.evaluate((element) => {
+      const styles = getComputedStyle(element);
+
+      return {
+        background: styles.backgroundColor,
+        width: element.getBoundingClientRect().width,
+      };
+    });
+    await input.focus();
+    const focused = await input.evaluate((element) => {
+      const styles = getComputedStyle(element);
+      const parseColor = (value: string) => {
+        const channelPattern = /[\d.]+/g;
+        const channels: number[] = [];
+        let match = channelPattern.exec(value);
+
+        while (match) {
+          channels.push(Number(match[0]));
+          match = channelPattern.exec(value);
+        }
+
+        if (channels.length < 3) {
+          throw new Error(`Unable to parse focus color: ${value}`);
+        }
+
+        const channelScale = value.startsWith("color(srgb") ? 255 : 1;
+
+        return {
+          red: (channels[0] ?? 0) * channelScale,
+          green: (channels[1] ?? 0) * channelScale,
+          blue: (channels[2] ?? 0) * channelScale,
+          alpha: channels[3] ?? 1,
+        };
+      };
+      const background = parseColor(styles.backgroundColor);
+      const shadowColorValue = /rgba?\([^)]+\)|color\(srgb [^)]+\)/.exec(
+        styles.boxShadow,
+      )?.[0];
+
+      if (!shadowColorValue) {
+        throw new Error(`Unable to find focus color in: ${styles.boxShadow}`);
+      }
+
+      const shadowColor = parseColor(shadowColorValue);
+      const backgroundChannels = [
+        background.red,
+        background.green,
+        background.blue,
+      ];
+      const composite = [
+        shadowColor.red,
+        shadowColor.green,
+        shadowColor.blue,
+      ].map(
+        (channel, index) =>
+          channel * shadowColor.alpha +
+          (backgroundChannels[index] ?? 0) * (1 - shadowColor.alpha),
+      );
+      const luminanceWeights = [0.2126, 0.7152, 0.0722];
+      const luminance = (channels: number[]) =>
+        channels
+          .map((channel) => channel / 255)
+          .map((channel) =>
+            channel <= 0.04045
+              ? channel / 12.92
+              : ((channel + 0.055) / 1.055) ** 2.4,
+          )
+          .reduce(
+            (sum, channel, index) =>
+              sum + channel * (luminanceWeights[index] ?? 0),
+            0,
+          );
+      const ringLuminance = luminance(composite);
+      const backgroundLuminance = luminance(backgroundChannels);
+
+      return {
+        background: styles.backgroundColor,
+        borderWidth: styles.borderWidth,
+        boxShadow: styles.boxShadow,
+        contrast:
+          (Math.max(ringLuminance, backgroundLuminance) + 0.05) /
+          (Math.min(ringLuminance, backgroundLuminance) + 0.05),
+        width: element.getBoundingClientRect().width,
+      };
+    });
+
+    expect(focused.background).toBe(resting.background);
+    expect(focused.borderWidth).toBe("1px");
+    expect(focused.width).toBeCloseTo(resting.width, 1);
+    expect(focused.boxShadow).toContain("0px 0px 0px 2px");
+    expect(focused.boxShadow).not.toContain("138, 106, 63");
+    expect(focused.contrast).toBeGreaterThanOrEqual(3);
+  });
+
   test("keeps recommendation rails horizontal, RTL, touch-ready, and keyboard scrollable", async ({
     page,
   }) => {
@@ -1633,6 +1779,46 @@ test.describe("accessibility and responsive guardrails", () => {
     await expect
       .poll(() => rail.evaluate((element) => element.scrollLeft))
       .not.toBe(before.scrollLeft);
+  });
+
+  test("keeps recently viewed horizontal while letting scrolling settle naturally", async ({
+    page,
+  }) => {
+    await setCookieConsent(page, "all");
+    await page.goto("/search", { waitUntil: "domcontentloaded" });
+    const viewedSlugs = await page
+      .locator('[data-testid="product-card"] a[href^="/product/"]')
+      .evaluateAll((links) =>
+        links
+          .map((link) => link.getAttribute("href")?.split("/").pop())
+          .filter((slug): slug is string => Boolean(slug))
+          .slice(0, 4),
+      );
+    await page.evaluate(
+      ({ key, slugs }) => localStorage.setItem(key, JSON.stringify(slugs)),
+      { key: recentlyViewedStorageKey, slugs: viewedSlugs },
+    );
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+
+    const rail = page
+      .getByTestId("recently-viewed-products")
+      .locator(".product-horizontal-rail");
+    await expect(rail).toBeVisible();
+    expect(
+      await rail.evaluate((element) => {
+        const styles = getComputedStyle(element);
+
+        return {
+          overflowX: styles.overflowX,
+          paddingInline: styles.paddingInline,
+          snap: styles.scrollSnapType,
+        };
+      }),
+    ).toEqual({
+      overflowX: "auto",
+      paddingInline: "4px",
+      snap: "inline proximity",
+    });
   });
 
   for (const route of [...publicRoutes, "/admin/login"]) {

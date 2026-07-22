@@ -81,7 +81,7 @@ describe("luxury commerce UI hardening", () => {
     expect(footer).toContain("max-w-[92rem]");
     expect(footer).toContain("gap-14");
     expect(footer).toContain(
-      "lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.35fr)_minmax(18rem,0.85fr)]",
+      "lg:grid-cols-[minmax(22rem,0.85fr)_minmax(0,1.35fr)]",
     );
     expect(footer).toContain("site-footer-nav grid gap-0 md:grid-cols-2");
     expect(footer).toContain("md:gap-x-14 md:gap-y-12");

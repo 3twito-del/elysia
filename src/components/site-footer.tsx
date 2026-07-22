@@ -96,7 +96,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer elysia-section" dir="rtl">
       <div className="site-footer-inner mx-auto max-w-[92rem] px-[var(--ui-page-x)] pt-10 pb-[calc(4.75rem+env(safe-area-inset-bottom))] sm:px-[var(--ui-page-x-wide)] sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-24">
-        <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(17rem,0.8fr)_minmax(0,1.35fr)_minmax(18rem,0.85fr)] lg:gap-12 xl:gap-16">
+        <div className="site-footer-primary grid gap-14 lg:grid-cols-[minmax(22rem,0.85fr)_minmax(0,1.35fr)] lg:gap-16 xl:gap-24">
           <section
             aria-labelledby="footer-brand-title"
             className="site-footer-brand"
@@ -115,6 +115,27 @@ export function SiteFooter() {
               ב-Elysia תמצאי תכשיטי כסף 925 וציפוי זהב, לכל יום ולאירועים
               מיוחדים.
             </p>
+            {showNewsletter ? (
+              <section
+                aria-labelledby="footer-newsletter-title"
+                className="site-footer-newsletter mt-8 max-w-xl sm:mt-10"
+              >
+                <p
+                  className="site-footer-kicker text-xs font-medium tracking-normal"
+                  id="footer-newsletter-title"
+                >
+                  הרשמה לניוזלטר
+                </p>
+                <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
+                  עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
+                </p>
+                <NewsletterForm
+                  hintText="אפשר לבטל את ההרשמה בכל עת."
+                  submitLabel="הרשמה"
+                  variant="footer"
+                />
+              </section>
+            ) : null}
           </section>
 
           <nav
@@ -131,27 +152,6 @@ export function SiteFooter() {
               titleTestId="footer-policy-heading"
             />
           </nav>
-          {showNewsletter ? (
-            <section
-              aria-labelledby="footer-newsletter-title"
-              className="site-footer-newsletter max-w-xl lg:self-start"
-            >
-              <p
-                className="site-footer-kicker text-xs font-medium tracking-normal"
-                id="footer-newsletter-title"
-              >
-                הרשמה לניוזלטר
-              </p>
-              <p className="site-footer-newsletter-copy mt-4 hidden max-w-md text-sm leading-7 sm:block sm:leading-8">
-                עדכונים על קולקציות חדשות ופריטים נבחרים, ישירות למייל.
-              </p>
-              <NewsletterForm
-                hintText="אפשר לבטל את ההרשמה בכל עת."
-                submitLabel="הרשמה"
-                variant="footer"
-              />
-            </section>
-          ) : null}
         </div>
         <FooterTrustLayer />
         <SiteFooterDisclosures />

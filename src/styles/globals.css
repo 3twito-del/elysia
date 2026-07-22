@@ -3832,7 +3832,7 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
 
 @media (min-width: 1024px) {
   .storefront-final-panel {
-    grid-template-columns: minmax(0, 1.04fr) minmax(24rem, 0.72fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .storefront-final-updates {
@@ -4340,6 +4340,11 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
 .product-horizontal-rail > * {
   flex: 0 0 clamp(15rem, 72vw, 19rem);
   scroll-snap-align: start;
+}
+
+.recently-viewed-product-rail {
+  padding-inline: 0.25rem;
+  scroll-snap-type: inline proximity;
 }
 
 @media (min-width: 768px) {
@@ -7614,4 +7619,20 @@ html[data-accessibility-motion="reduce"]
   [data-slot="button"].product-primary-cta:not(:disabled):focus-visible,
 [data-slot="button"].product-primary-cta:not(:disabled):focus-visible {
   box-shadow: 0 0 0 3px var(--glass-focus) !important;
+}
+
+/* Text-entry focus stays neutral and compact. A one-pixel border plus a
+   two-pixel ink halo remains keyboard-visible without the bronze tint or the
+   heavy three-pixel expansion used by action controls. */
+:where(
+    [data-slot="input"],
+    [data-slot="textarea"]
+  ).elysia-control:focus-visible:not([aria-invalid="true"]),
+[data-slot="input-group"]:has(
+    [data-slot="input-group-control"]:focus-visible
+  ):not(:has([aria-invalid="true"])) {
+  border-color: var(--glass-border-strong) !important;
+  background: var(--glass-control-bg) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--foreground) 55%, transparent) !important;
+  outline: none !important;
 }

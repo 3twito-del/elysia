@@ -97,7 +97,7 @@ function RecentlyViewedProductsContent({
       />
       <ProductRail
         ariaLabel={heading}
-        className={gridClassName}
+        className={`recently-viewed-product-rail ${gridClassName ?? ""}`}
         equalGroup="recently-viewed-products"
       >
         {viewed.map((product) => (
