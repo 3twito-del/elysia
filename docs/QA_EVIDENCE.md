@@ -4842,7 +4842,7 @@ separate benchmark and data review.
 
 Status: active release evidence ledger.
 
-Last updated: 2026-07-14.
+Last updated: 2026-07-22.
 
 This ledger records the latest production deployment evidence that is safe to
 keep in the repository. It stores deployment URLs, aliases, command names, and
@@ -4857,6 +4857,33 @@ Related documents:
 - `scripts/smoke.mjs`
 
 ## Latest Production Evidence
+
+| Field               | Evidence |
+| ------------------- | -------- |
+| Evidence date       | 2026-07-22 |
+| Branch              | `main` |
+| Commit SHA          | `a46cc8c4191fcdf050646c2128f83d133e15783c` |
+| Release             | Storefront guest-first UX refresh, `elys-ai` rebrand, public gift/set removal, guest order-access OTP, typography refresh, and admin MFA lint cleanup |
+| Vercel project      | `ariel-twitos-projects/elysia` |
+| Deployment URL      | `https://elysia-i9ah0k7mk-ariel-twitos-projects.vercel.app` |
+| Deployment ID       | `dpl_3dFSa19pakBKpx5SqqJB7hni5iQC` |
+| Target              | Production |
+| Status              | Ready |
+| Created             | 2026-07-22 23:49:51 Asia/Jerusalem |
+| Production alias    | `https://elysia-jewellery.com` (confirmed via `vercel inspect`; points to this deployment) |
+| Additional aliases  | `https://elysia-ariel-twitos-projects.vercel.app`, `https://elysia-git-main-ariel-twitos-projects.vercel.app` |
+| Smoke command       | `$env:SMOKE_BASE_URL="https://elysia-jewellery.com"; pnpm smoke` |
+| Smoke result        | 33/35 PASS. The two failures are pre-existing: the missing `home-commerce-shortcuts` marker/link and the bare `/admin` redirect without an explicit `next` parameter. The prior `ai-gifts` failure is resolved. New `/elys-ai`, `/gifts`, `/ai`, `/stylist`, `/category/sets`, and `/account` checks pass. |
+| Health result       | PASS: `/api/health` returned 200 |
+| Redirect checks     | PASS: `/gifts` and `/category/sets` return 308 to `/search`; `/ai` and `/stylist` return 308 to `/elys-ai` |
+| Error log scan      | PASS: `vercel logs https://elysia-jewellery.com --since 10m --level error --json` returned no error entries |
+| Error-log window    | PENDING: immediate post-deploy window is clean; the required 60-minute observation window has not elapsed |
+| Local verification  | `pnpm verify:fast` PASS: lint, typecheck, 344 test files and 1,766 tests. `git diff --check` PASS. |
+| Gate exceptions     | `gate:coherence` remains blocked by pre-existing large-file/debt-marker/route-boundary violations present at baseline. `gate:quick` remains blocked by 262 pre-existing Prettier findings. Local `vercel build --prod` hit a Windows Prisma DLL lock held by the active development server; the Git-triggered Linux production build completed successfully instead. |
+| Runtime data caveat | Smoke uses public/logged-out routes and documented unauthenticated API expectations only |
+| Remaining risk      | Does not prove paid checkout, live supplier fulfillment, authenticated admin workflows, or the full 60-minute clean-log window. The two pre-existing smoke failures remain release debt. |
+
+## Previous Production Evidence
 
 | Field               | Evidence                                                                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
