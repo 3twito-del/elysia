@@ -3835,6 +3835,15 @@ html[data-accessibility-motion="reduce"] .about-timeline-flow::before {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .storefront-final-primary {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .storefront-final-primary .storefront-final-actions {
+    justify-content: center;
+  }
+
   .storefront-final-updates {
     align-content: center;
     border-top: 0;

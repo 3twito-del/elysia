@@ -41,9 +41,7 @@ describe("home design pass (owner-selected DP 1-10)", () => {
   });
 
   it("anchors a scrim layer to the hero copy corner for bright frames", () => {
-    expect(css).toContain(
-      ".home-cinematic-hero .storefront-hero-scrim::after",
-    );
+    expect(css).toContain(".home-cinematic-hero .storefront-hero-scrim::after");
     expect(css).toContain(
       '.home-cinematic-hero[data-hero-title-direction="rtl"]',
     );
@@ -60,6 +58,15 @@ describe("home design pass (owner-selected DP 1-10)", () => {
     expect(css).toContain("max-width: 26rem;");
     expect(actions).toContain(
       "תודה שהצטרפת! נעדכן אותך ראשונה על קולקציות ופריטים חדשים.",
+    );
+  });
+
+  it("centers the final CTA on desktop instead of leaving one side empty", () => {
+    expect(css).toContain(".storefront-final-primary {");
+    expect(css).toContain("justify-items: center;");
+    expect(css).toContain("text-align: center;");
+    expect(css).toContain(
+      ".storefront-final-primary .storefront-final-actions",
     );
   });
 

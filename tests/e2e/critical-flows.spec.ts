@@ -1615,23 +1615,38 @@ test.describe("accessibility and responsive guardrails", () => {
 
     const panel = page.locator(".storefront-final-panel");
     const content = panel.locator(".storefront-final-primary");
+    const title = panel.locator(".storefront-final-title");
     const bounds = await panel.evaluate((element) => {
       const panelRect = element.getBoundingClientRect();
       const contentRect = element.firstElementChild?.getBoundingClientRect();
+      const titleElement = element.querySelector<HTMLElement>(
+        ".storefront-final-title",
+      );
+      const titleRect = titleElement?.getBoundingClientRect();
 
       return {
         contentLeft: contentRect?.left,
         contentRight: contentRect?.right,
         panelLeft: panelRect.left,
         panelRight: panelRect.right,
+        titleCenter: titleRect
+          ? titleRect.left + titleRect.width / 2
+          : undefined,
+        panelCenter: panelRect.left + panelRect.width / 2,
+        titleTextAlign: titleElement
+          ? getComputedStyle(titleElement).textAlign
+          : undefined,
         tracks: getComputedStyle(element).gridTemplateColumns.split(" ").length,
       };
     });
 
     await expect(content).toBeVisible();
+    await expect(title).toBeVisible();
     expect(bounds.tracks).toBe(1);
     expect(bounds.contentLeft).toBeCloseTo(bounds.panelLeft, 0);
     expect(bounds.contentRight).toBeCloseTo(bounds.panelRight, 0);
+    expect(bounds.titleCenter).toBeCloseTo(bounds.panelCenter, 0);
+    expect(bounds.titleTextAlign).toBe("center");
   });
 
   test("keeps focused inputs one pixel wide with a neutral compact focus indicator", async ({
