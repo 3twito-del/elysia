@@ -104,6 +104,24 @@ test("supports reduced motion and keyboard selection in the RTL guide", async ({
   expect(transitionDuration).toBe("0s");
 });
 
+test("keeps all jewelry choices in one continuous row", async ({ page }) => {
+  await page.goto("/elys-ai", { waitUntil: "domcontentloaded" });
+  await waitForConcierge(page);
+
+  const choices = page.getByTestId("elys-ai-jewelry-options");
+  await expect(choices).toBeVisible();
+  await expect(choices.getByRole("button")).toHaveCount(6);
+
+  const rowOffsets = await choices
+    .getByRole("button")
+    .evaluateAll((buttons) =>
+      Array.from(
+        new Set(buttons.map((button) => (button as HTMLElement).offsetTop)),
+      ),
+    );
+  expect(rowOffsets).toHaveLength(1);
+});
+
 test("completes the guided concierge and sends an editable summary", async ({
   page,
 }) => {

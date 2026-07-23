@@ -340,7 +340,10 @@ function StepContent({
         description="אפשר לבחור יותר מסוג אחד. אם תרצי, נחבר ביניהם למראה שלם."
         title="אילו תכשיטים מעניינים אותך?"
       >
-        <OptionGrid>
+        <div
+          className="grid auto-cols-[minmax(9rem,1fr)] grid-flow-col gap-2 overflow-x-auto overscroll-x-contain pb-2 lg:auto-cols-fr"
+          data-testid="elys-ai-jewelry-options"
+        >
           {JEWELRY_TYPE_OPTIONS.map((option) => (
             <ChoiceButton
               key={option.value}
@@ -353,10 +356,7 @@ function StepContent({
               selected={preferences.jewelryTypes.includes(option.value)}
             />
           ))}
-        </OptionGrid>
-        <div className="flex flex-wrap gap-2">
           <ChoiceButton
-            className="min-w-40"
             label="בני לי שילוב"
             onClick={() =>
               onPreferencesChange({
@@ -367,7 +367,6 @@ function StepContent({
             selected={preferences.combination}
           />
           <ChoiceButton
-            className="min-w-40"
             label="ללא העדפה"
             onClick={() =>
               onPreferencesChange({
