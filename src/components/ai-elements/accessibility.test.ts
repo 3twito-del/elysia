@@ -50,7 +50,7 @@ describe("AI elements accessibility guardrails", () => {
   });
 
   it("keeps stylist action icons decorative", () => {
-    const source = readSource("src/app/stylist/_components/stylist-chat.tsx");
+    const source = readSource("src/app/elys-ai/_components/elys-ai-chat.tsx");
 
     expect(source).toContain('<Send aria-hidden="true" className="size-4" />');
     expect(source).toContain('<Check aria-hidden="true" className="size-4" />');

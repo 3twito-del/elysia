@@ -27,27 +27,41 @@ export function ThemeToggle({ className, style }: ThemeToggleProps) {
 
   return (
     <button
-      aria-pressed={isDark}
+      aria-checked={isDark}
+      aria-label={`מצב לילה: ${isDark ? "פעיל" : "כבוי"}`}
       className={cn(
-        "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-10 grid-cols-[auto_1fr_auto] items-center gap-2 border-b border-[var(--glass-border)] px-2 text-xs transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+        "mobile-nav-theme-switch mobile-nav-animated-item text-foreground flex min-h-12 w-full items-center gap-3 rounded-md px-2 text-right text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
         className,
       )}
       data-testid="mobile-nav-theme-toggle"
       onClick={() => writeStoredThemePreference(isDark ? "light" : "dark")}
+      role="switch"
       style={style}
       type="button"
     >
-      {isDark ? (
-        <Sun aria-hidden="true" className="size-4" />
-      ) : (
-        <Moon aria-hidden="true" className="size-4" />
-      )}
-      <span>מצב לילה</span>
       <span
         aria-hidden="true"
-        className="text-muted-foreground rounded-full border border-[var(--glass-border)] px-1.5 py-px text-[0.62rem]"
+        className="relative h-6 w-11 shrink-0 rounded-full border border-[var(--glass-border-strong)] bg-[var(--muted)] p-0.5 transition-colors"
       >
-        {isDark ? "כהה" : "בהיר"}
+        <span
+          className={cn(
+            "bg-background block size-5 rounded-full border border-[var(--glass-border)] shadow-sm transition-transform duration-200 motion-reduce:transition-none",
+            isDark && "-translate-x-5",
+          )}
+        />
+      </span>
+      <span className="grid flex-1 gap-0.5">
+        <span className="inline-flex items-center gap-2 font-medium">
+          {isDark ? (
+            <Sun aria-hidden="true" className="size-4" />
+          ) : (
+            <Moon aria-hidden="true" className="size-4" />
+          )}
+          מצב לילה
+        </span>
+        <span className="text-muted-foreground text-xs">
+          {isDark ? "פעיל" : "כבוי"}
+        </span>
       </span>
     </button>
   );

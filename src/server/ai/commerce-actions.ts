@@ -25,6 +25,11 @@ import {
   AI_RUN_KIND,
   AI_TOOL_WORKFLOW_MODEL,
 } from "~/server/ai/constants";
+import {
+  planCatalogSearches,
+  selectCatalogCombination,
+  selectDiverseCatalogProducts,
+} from "~/server/ai/catalog-combination";
 
 export {
   createTryOnSessionInputSchema,
@@ -72,6 +77,9 @@ export const orderSupportOutputSchema = z.object({
 export type SearchCatalogToolInput = z.infer<
   typeof searchCatalogToolInputSchema
 >;
+export type SearchCatalogToolOutput = z.infer<
+  typeof searchCatalogToolOutputSchema
+>;
 export type SaveStyleProfileInput = z.infer<typeof saveStyleProfileInputSchema>;
 export type CreateTryOnSessionInput = z.infer<
   typeof createTryOnSessionInputSchema
@@ -100,18 +108,39 @@ export async function getCustomerIdForAiSession(input: {
 
 export async function executeSearchCatalog(input: SearchCatalogToolInput) {
   const intent = resolveAiCatalogSearchIntent(input);
-  const searchResult = await searchProvider.searchProducts({
-    availableOnly: true,
-    category: intent.category ?? input.category,
-    material: intent.material ?? input.material,
-    maxPrice: intent.maxPrice ?? input.maxPrice,
-    mode: "semantic",
-    perPage: 8,
-    query: intent.originalQuery ?? intent.query ?? input.query,
-    stone: intent.stone ?? input.stone,
-  });
-  const results = searchResult.hits.slice(0, 4);
-
+  const plannedCategories = planCatalogSearches(input);
+  const categoriesToSearch =
+    plannedCategories.length > 0
+      ? plannedCategories
+      : [intent.category ?? input.category];
+  const searchResults = await Promise.all(
+    categoriesToSearch.map((category) =>
+      searchProvider.searchProducts({
+        availableOnly: true,
+        category,
+        material: intent.material ?? input.material,
+        maxPrice: intent.maxPrice ?? input.maxPrice,
+        mode: "semantic",
+        perPage: 8,
+        query: intent.originalQuery ?? intent.query ?? input.query,
+        stone: intent.stone ?? input.stone,
+      }),
+    ),
+  );
+  const requestedCategories = input.categories?.length ?? 0;
+  const results =
+    input.mode === "combination"
+      ? selectCatalogCombination(
+          searchResults.map((result) => result.hits),
+          {
+            limit: requestedCategories > 0 ? 4 : 3,
+            maxPrice: intent.maxPrice ?? input.maxPrice,
+          },
+        )
+      : selectDiverseCatalogProducts(
+          searchResults.map((result) => result.hits),
+          4,
+        );
   return results.map((product) => ({
     slug: product.slug,
     url: `/product/${product.slug}`,
@@ -120,7 +149,9 @@ export async function executeSearchCatalog(input: SearchCatalogToolInput) {
     formattedPrice: formatPrice(product.price),
     image: product.image,
     matchReason:
-      searchResult.hitMetaBySlug[product.slug]?.matchReason ??
+      searchResults
+        .map((result) => result.hitMetaBySlug[product.slug]?.matchReason)
+        .find((value): value is string => typeof value === "string") ??
       createAiMatchReason(product, intent),
     category: product.categoryName,
     material: product.material,

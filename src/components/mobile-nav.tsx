@@ -105,8 +105,7 @@ export function MobileNav({
       (item) => !serviceActions.some((action) => action.href === item.href),
     );
   const quickActionStartIndex = 2;
-  const themeToggleIndex = quickActionStartIndex + quickActions.length;
-  const spotlightKickerIndex = themeToggleIndex + 1;
+  const spotlightKickerIndex = quickActionStartIndex + quickActions.length;
   const spotlightActionStartIndex = spotlightKickerIndex + 1;
   const recentlyViewedIndex =
     spotlightActionStartIndex + spotlightActions.length;
@@ -182,7 +181,7 @@ export function MobileNav({
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="mobile-nav-panel mobile-nav-panel-luxury w-[min(100dvw,31rem)] overflow-y-auto p-0"
+        className="mobile-nav-panel mobile-nav-panel-luxury flex h-dvh max-h-dvh w-[min(100dvw,31rem)] flex-col overflow-hidden p-0"
         data-nav-variant="luxury-editorial"
         data-testid="mobile-nav-sheet"
         dir="rtl"
@@ -194,7 +193,7 @@ export function MobileNav({
           קישורי ניווט ראשיים לאתר Elysia.
         </SheetDescription>
 
-        <div className="mobile-nav-header border-b border-[var(--glass-border)] px-5 py-5 sm:px-7">
+        <div className="mobile-nav-header shrink-0 border-b border-[var(--glass-border)] px-5 py-5 sm:px-7">
           <div className="flex min-h-11 items-center justify-between gap-4">
             <SheetClose asChild>
               <Button
@@ -229,80 +228,107 @@ export function MobileNav({
           </p>
         </div>
 
-        <div className="mobile-nav-luxury-body grid gap-8 px-5 py-6 sm:px-7">
-          <nav
-            aria-label="קיצורי שירות"
-            className="mobile-nav-quick-list grid border-y border-[var(--glass-border)]"
-          >
-            {quickActions.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = currentPathname === item.href;
-
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-                    isActive && "text-foreground font-semibold",
-                  )}
-                  href={item.href}
-                  key={item.href}
-                  onClick={closeNav}
-                  prefetch={false}
-                  style={getMobileNavStaggerStyle(
-                    quickActionStartIndex + index,
-                  )}
-                >
-                  <Icon aria-hidden="true" className="size-4" />
-                  <span>{item.label}</span>
-                  <ArrowLeft
-                    aria-hidden="true"
-                    className="mobile-nav-feature-arrow size-4"
-                  />
-                </Link>
-              );
-            })}
-            <ThemeToggle style={getMobileNavStaggerStyle(themeToggleIndex)} />
-          </nav>
-
-          <nav
-            aria-label="מסלולים מהירים"
-            className="mobile-nav-feature-list grid gap-0"
-          >
-            <p
-              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(spotlightKickerIndex)}
+        <div className="mobile-nav-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mobile-nav-luxury-body grid gap-8 px-5 py-6 sm:px-7">
+            <nav
+              aria-label="קיצורי שירות"
+              className="mobile-nav-quick-list grid border-y border-[var(--glass-border)]"
             >
-              קישורים מהירים
-            </p>
-            {spotlightActions.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = currentPathname === item.href;
+              {quickActions.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = currentPathname === item.href;
 
-              return (
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "mobile-nav-quick-action mobile-nav-animated-item text-muted-foreground hover:text-foreground grid min-h-[3.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 text-sm transition-colors outline-none last:border-b-0 focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                      isActive && "text-foreground font-semibold",
+                    )}
+                    href={item.href}
+                    key={item.href}
+                    onClick={closeNav}
+                    prefetch={false}
+                    style={getMobileNavStaggerStyle(
+                      quickActionStartIndex + index,
+                    )}
+                  >
+                    <Icon aria-hidden="true" className="size-4" />
+                    <span>{item.label}</span>
+                    <ArrowLeft
+                      aria-hidden="true"
+                      className="mobile-nav-feature-arrow size-4"
+                    />
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <nav
+              aria-label="מסלולים מהירים"
+              className="mobile-nav-feature-list grid gap-0"
+            >
+              <p
+                className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
+                style={getMobileNavStaggerStyle(spotlightKickerIndex)}
+              >
+                קישורים מהירים
+              </p>
+              {spotlightActions.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = currentPathname === item.href;
+
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                      isActive && "text-foreground font-semibold",
+                    )}
+                    href={item.href}
+                    key={item.href}
+                    onClick={closeNav}
+                    prefetch={false}
+                    style={getMobileNavStaggerStyle(
+                      spotlightActionStartIndex + index,
+                    )}
+                  >
+                    <span className="mobile-nav-feature-icon grid size-9 place-items-center">
+                      <Icon aria-hidden="true" className="size-4" />
+                    </span>
+                    <span className="grid min-w-0 gap-0.5">
+                      <span className="truncate text-[0.95rem] font-medium">
+                        {item.label}
+                      </span>
+                      <span className="text-muted-foreground truncate text-xs">
+                        {item.description}
+                      </span>
+                    </span>
+                    <ArrowLeft
+                      aria-hidden="true"
+                      className="mobile-nav-feature-arrow size-4"
+                    />
+                  </Link>
+                );
+              })}
+              {recentlyViewedProductHref ? (
                 <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-                    isActive && "text-foreground font-semibold",
-                  )}
-                  href={item.href}
-                  key={item.href}
+                  className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
+                  data-testid="mobile-nav-recently-viewed-shortcut"
+                  href={recentlyViewedProductHref}
                   onClick={closeNav}
                   prefetch={false}
-                  style={getMobileNavStaggerStyle(
-                    spotlightActionStartIndex + index,
-                  )}
+                  style={getMobileNavStaggerStyle(recentlyViewedIndex)}
                 >
                   <span className="mobile-nav-feature-icon grid size-9 place-items-center">
-                    <Icon aria-hidden="true" className="size-4" />
+                    <History aria-hidden="true" className="size-4" />
                   </span>
                   <span className="grid min-w-0 gap-0.5">
                     <span className="truncate text-[0.95rem] font-medium">
-                      {item.label}
+                      נצפה לאחרונה
                     </span>
                     <span className="text-muted-foreground truncate text-xs">
-                      {item.description}
+                      חזרה למוצר האחרון שצפית בו
                     </span>
                   </span>
                   <ArrowLeft
@@ -310,150 +336,133 @@ export function MobileNav({
                     className="mobile-nav-feature-arrow size-4"
                   />
                 </Link>
-              );
-            })}
-            {recentlyViewedProductHref ? (
-              <Link
-                className="mobile-nav-feature-link mobile-nav-animated-item group/nav-feature grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-[var(--glass-border)] px-2 py-3 outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]"
-                data-testid="mobile-nav-recently-viewed-shortcut"
-                href={recentlyViewedProductHref}
-                onClick={closeNav}
-                prefetch={false}
-                style={getMobileNavStaggerStyle(recentlyViewedIndex)}
+              ) : null}
+            </nav>
+
+            <Separator
+              className="mobile-nav-animated-item"
+              style={getMobileNavStaggerStyle(separatorIndex)}
+            />
+
+            <nav
+              aria-label="ניווט קטגוריות"
+              className="mobile-nav-section grid gap-0"
+            >
+              <p
+                className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
+                style={getMobileNavStaggerStyle(catalogKickerIndex)}
               >
-                <span className="mobile-nav-feature-icon grid size-9 place-items-center">
-                  <History aria-hidden="true" className="size-4" />
-                </span>
-                <span className="grid min-w-0 gap-0.5">
-                  <span className="truncate text-[0.95rem] font-medium">
-                    נצפה לאחרונה
-                  </span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    חזרה למוצר האחרון שצפית בו
-                  </span>
-                </span>
-                <ArrowLeft
-                  aria-hidden="true"
-                  className="mobile-nav-feature-arrow size-4"
-                />
-              </Link>
-            ) : null}
-          </nav>
+                קטגוריות
+              </p>
+              {catalogItems.map((item, index) => {
+                const isActive =
+                  currentPathname === item.href ||
+                  currentPathname.startsWith(`${item.href}/`);
 
-          <Separator
-            className="mobile-nav-animated-item"
-            style={getMobileNavStaggerStyle(separatorIndex)}
-          />
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                      isActive &&
+                        "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
+                    )}
+                    data-testid="mobile-nav-link"
+                    href={item.href}
+                    key={item.href}
+                    onFocus={
+                      item.href.startsWith("/category/")
+                        ? () => onCategoryIntent?.(item.href)
+                        : undefined
+                    }
+                    onClick={closeNav}
+                    onPointerEnter={
+                      item.href.startsWith("/category/")
+                        ? () => onCategoryIntent?.(item.href)
+                        : undefined
+                    }
+                    prefetch={false}
+                    style={getMobileNavStaggerStyle(catalogStartIndex + index)}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
 
-          <nav
-            aria-label="ניווט קטגוריות"
-            className="mobile-nav-section grid gap-0"
-          >
-            <p
-              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(catalogKickerIndex)}
+            <Separator
+              className="mobile-nav-animated-item"
+              data-testid="mobile-nav-catalog-service-separator"
+              style={getMobileNavStaggerStyle(catalogServiceSeparatorIndex)}
+            />
+
+            <nav
+              aria-label="ניווט עזרה ומידע"
+              className="mobile-nav-section grid gap-0"
             >
-              קטגוריות
-            </p>
-            {catalogItems.map((item, index) => {
-              const isActive =
-                currentPathname === item.href ||
-                currentPathname.startsWith(`${item.href}/`);
+              <p
+                className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
+                style={getMobileNavStaggerStyle(serviceKickerIndex)}
+              >
+                עזרה ומידע
+              </p>
+              {serviceActions.map((item, index) => {
+                const Icon = item.icon;
+                const isActive = currentPathname === item.href;
 
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-                    isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
-                  )}
-                  data-testid="mobile-nav-link"
-                  href={item.href}
-                  key={item.href}
-                  onFocus={
-                    item.href.startsWith("/category/")
-                      ? () => onCategoryIntent?.(item.href)
-                      : undefined
-                  }
-                  onClick={closeNav}
-                  onPointerEnter={
-                    item.href.startsWith("/category/")
-                      ? () => onCategoryIntent?.(item.href)
-                      : undefined
-                  }
-                  prefetch={false}
-                  style={getMobileNavStaggerStyle(catalogStartIndex + index)}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center gap-2 border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                      isActive &&
+                        "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
+                    )}
+                    data-testid="mobile-nav-link"
+                    href={item.href}
+                    key={item.href}
+                    onClick={closeNav}
+                    prefetch={false}
+                    style={getMobileNavStaggerStyle(serviceStartIndex + index)}
+                  >
+                    <Icon aria-hidden="true" className="size-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {editorialItems.map((item, index) => {
+                const isActive = currentPathname === item.href;
 
-          <Separator
-            className="mobile-nav-animated-item"
-            data-testid="mobile-nav-catalog-service-separator"
-            style={getMobileNavStaggerStyle(catalogServiceSeparatorIndex)}
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
+                      isActive &&
+                        "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
+                    )}
+                    data-testid="mobile-nav-link"
+                    href={item.href}
+                    key={item.href}
+                    onClick={closeNav}
+                    prefetch={false}
+                    style={getMobileNavStaggerStyle(
+                      editorialStartIndex + index,
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </div>
+        <div className="mobile-nav-theme-footer bg-background shrink-0 border-t border-[var(--glass-border)] px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-7">
+          <ThemeToggle
+            style={getMobileNavStaggerStyle(
+              editorialStartIndex + editorialItems.length,
+            )}
           />
-
-          <nav
-            aria-label="ניווט עזרה ומידע"
-            className="mobile-nav-section grid gap-0"
-          >
-            <p
-              className="mobile-nav-section-kicker text-muted-foreground mobile-nav-animated-item text-xs font-medium"
-              style={getMobileNavStaggerStyle(serviceKickerIndex)}
-            >
-              עזרה ומידע
-            </p>
-            {serviceActions.map((item, index) => {
-              const Icon = item.icon;
-              const isActive = currentPathname === item.href;
-
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center gap-2 border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-                    isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
-                  )}
-                  data-testid="mobile-nav-link"
-                  href={item.href}
-                  key={item.href}
-                  onClick={closeNav}
-                  prefetch={false}
-                  style={getMobileNavStaggerStyle(serviceStartIndex + index)}
-                >
-                  <Icon aria-hidden="true" className="size-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
-            {editorialItems.map((item, index) => {
-              const isActive = currentPathname === item.href;
-
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "mobile-nav-link mobile-nav-animated-item text-muted-foreground hover:text-foreground relative inline-flex min-h-[3.05rem] items-center border-b border-[var(--glass-border)] px-2 text-[1.08rem] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-[var(--glass-focus)]",
-                    isActive &&
-                      "text-foreground after:bg-foreground font-semibold after:absolute after:inset-x-0 after:bottom-0 after:h-px after:content-['']",
-                  )}
-                  data-testid="mobile-nav-link"
-                  href={item.href}
-                  key={item.href}
-                  onClick={closeNav}
-                  prefetch={false}
-                  style={getMobileNavStaggerStyle(editorialStartIndex + index)}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
         </div>
       </SheetContent>
     </Sheet>

@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-const allowedAiElementConsumers = ["src/app/ai/", "src/app/stylist/"] as const;
+const allowedAiElementConsumers = ["src/app/ai/", "src/app/elys-ai/"] as const;
 
 describe("AI bundle boundary", () => {
   it("keeps AI Elements imports out of primary commerce routes", () => {

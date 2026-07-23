@@ -15,6 +15,7 @@ import {
   searchCatalogToolOutputSchema,
   type AiActionContext,
   type SearchCatalogToolInput,
+  type SearchCatalogToolOutput,
 } from "~/server/ai/commerce-actions";
 import { traceAiToolCall } from "~/server/ai/audit";
 import {
@@ -29,7 +30,7 @@ export type AiCommerceToolContext = AiActionContext &
 
 export function createAiCommerceTools(context: AiCommerceToolContext) {
   return {
-    searchCatalog: tool({
+    searchCatalog: tool<SearchCatalogToolInput, SearchCatalogToolOutput>({
       description:
         "Search the real Elysia jewelry catalog by need, style, category, material, stone, or budget. Use before every product recommendation.",
       inputSchema: searchCatalogToolInputSchema,
@@ -153,6 +154,8 @@ export function applyCatalogPlanningHints(
     ...input,
     query: mergeSearchQueries(hints.query, input.query),
     category: hints.category ?? input.category,
+    categories: hints.categories ?? input.categories,
+    mode: hints.mode ?? input.mode,
     material: hints.material ?? input.material,
     stone: hints.stone ?? input.stone,
     maxPrice: hints.maxPrice ?? input.maxPrice,

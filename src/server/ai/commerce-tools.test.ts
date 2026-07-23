@@ -5,6 +5,7 @@ import {
   createTryOnSessionOutputSchema,
   orderSupportOutputSchema,
   saveStyleProfileOutputSchema,
+  searchCatalogToolInputSchema,
   searchCatalogToolOutputSchema,
 } from "~/server/ai/commerce-actions";
 
@@ -34,6 +35,31 @@ describe("AI commerce tools", () => {
     ).toEqual({
       query: "טבעת אירוסין",
       stone: "יהלום",
+    });
+  });
+
+  it("accepts multi-category combination searches and merges their hints", () => {
+    expect(
+      searchCatalogToolInputSchema.parse({
+        categories: ["rings", "earrings"],
+        mode: "combination",
+        maxPrice: 1_200,
+      }),
+    ).toEqual({
+      categories: ["rings", "earrings"],
+      mode: "combination",
+      maxPrice: 1_200,
+    });
+
+    expect(
+      applyCatalogPlanningHints(
+        { category: "rings" },
+        { categories: ["rings", "necklaces"], mode: "combination" },
+      ),
+    ).toMatchObject({
+      category: "rings",
+      categories: ["rings", "necklaces"],
+      mode: "combination",
     });
   });
 

@@ -2,6 +2,7 @@ import {
   resolveAiCatalogSearchIntent,
   type AiCatalogToolInput,
 } from "~/lib/ai-catalog-intent";
+import { detectPublicAiJewelryCategories } from "~/lib/ai-jewelry-categories";
 import { AI_RUN_KIND } from "~/server/ai/constants";
 import {
   catalogFollowUpTerms,
@@ -186,9 +187,15 @@ function createCatalogPlanningHints(input: {
   });
   const contextQuery = buildCatalogContextQuery(input);
   const contextIntent = resolveAiCatalogSearchIntent({ query: contextQuery });
+  const categories = detectPublicAiJewelryCategories(contextQuery);
+  const mode = /(?:שילוב|combination|combine)/iu.test(contextQuery)
+    ? "combination"
+    : undefined;
   const hints: AiCatalogToolInput = {
     query: trimToUndefined(contextQuery),
     category: latestIntent.category ?? contextIntent.category,
+    categories: categories.length > 1 || mode ? categories : undefined,
+    mode,
     material: latestIntent.material ?? contextIntent.material,
     maxPrice: latestIntent.maxPrice ?? contextIntent.maxPrice,
   };

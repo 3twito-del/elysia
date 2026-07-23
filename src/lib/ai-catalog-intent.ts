@@ -1,8 +1,16 @@
 import { formatPrice } from "./format";
+import {
+  PUBLIC_AI_JEWELRY_CATEGORIES,
+  detectPublicAiJewelryCategories,
+  isPublicAiJewelryCategory,
+  type PublicAiJewelryCategory,
+} from "./ai-jewelry-categories";
 
 export type AiCatalogToolInput = {
   query?: string;
   category?: string;
+  categories?: PublicAiJewelryCategory[];
+  mode?: "single" | "combination";
   material?: string;
   stone?: string;
   maxPrice?: number;
@@ -27,24 +35,10 @@ type ProductForMatchReason = {
   price?: number;
 };
 
-const categoryAliases = [
-  {
-    slug: "earrings",
-    terms: ["earrings", "earring", "עגילים", "עגיל"],
-  },
-  {
-    slug: "necklaces",
-    terms: ["necklaces", "necklace", "chain", "שרשראות", "שרשרת", "תליון"],
-  },
-  {
-    slug: "rings",
-    terms: ["rings", "ring", "טבעות", "טבעת", "אירוסין"],
-  },
-  {
-    slug: "bracelets",
-    terms: ["bracelets", "bracelet", "צמידים", "צמיד"],
-  },
-] as const;
+const categoryAliases = PUBLIC_AI_JEWELRY_CATEGORIES.map((category) => ({
+  slug: category.value,
+  terms: category.terms,
+}));
 
 const materialAliases = [
   {
@@ -194,10 +188,8 @@ function normalizeCategory(value?: string) {
   const normalized = normalizeText(value);
   if (!normalized) return undefined;
 
-  return categoryAliases.find(({ slug, terms }) => {
-    if (normalized === slug) return true;
-    return terms.some((term) => normalized.includes(normalizeText(term)));
-  })?.slug;
+  if (isPublicAiJewelryCategory(normalized)) return normalized;
+  return detectPublicAiJewelryCategories(normalized)[0];
 }
 
 function detectCategory(query?: string) {
@@ -219,17 +211,25 @@ function detectMaterial(query?: string) {
 }
 
 function detectMaxPrice(query?: string) {
-  const normalized = normalizeText(query);
+  const normalized = (query ?? "")
+    .toLowerCase()
+    .replace(/[״"׳']/g, "")
+    .replace(/[^\p{L}\p{N}\s₪,.-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (!normalized) return undefined;
 
-  const budgetPattern =
-    /(?:\u05E2\u05D3|\u05EA\u05E7\u05E6\u05D9\u05D1|\u05DE\u05E7\u05E1\u05D9\u05DE\u05D5\u05DD|max|under|below)\s*(\d{2,5})/;
-  const currencyPattern = /(\d{2,5})\s*(?:\u05E9\u05D7|₪|ils)/;
+  const amount = String.raw`(\d{1,3}(?:[,\s]\d{3})+|\d{2,6})`;
+  const budgetPattern = new RegExp(
+    String.raw`(?:עד|תקציב|מקסימום|max|under|below)(?:\s+\S+){0,3}?\s*${amount}`,
+    "u",
+  );
+  const currencyPattern = new RegExp(String.raw`${amount}\s*(?:שח|₪|ils)`, "u");
   const budgetMatch = budgetPattern.exec(normalized);
   const currencyMatch = currencyPattern.exec(normalized);
   const value = budgetMatch?.[1] ?? currencyMatch?.[1];
 
-  return value ? Number(value) : undefined;
+  return value ? Number(value.replace(/[,\s]/g, "")) : undefined;
 }
 
 function buildFocusedQuery(

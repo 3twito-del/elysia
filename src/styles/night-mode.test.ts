@@ -41,7 +41,9 @@ describe("storefront night mode", () => {
     expect(layout).toContain('localStorage.getItem("elysia.theme-preference")');
     expect(layout).toContain('location.pathname.indexOf("/admin")!==0');
     expect(layout).toContain("<ThemeSync />");
-    expect(preference).toContain('window.location.pathname.startsWith("/admin")');
+    expect(preference).toContain(
+      'window.location.pathname.startsWith("/admin")',
+    );
     expect(preference).toContain('root.classList.toggle("dark", isDark)');
     expect(preference).toContain('meta[name="theme-color"]');
   });
@@ -53,9 +55,11 @@ describe("storefront night mode", () => {
 
     expect(header).not.toContain("ThemeToggle");
     expect(mobileNav).toContain("<ThemeToggle");
-    expect(toggle).toContain("aria-pressed={isDark}");
-    expect(toggle).toContain("mobile-nav-quick-action");
-    expect(toggle).toContain("border-b border-[var(--glass-border)]");
+    expect(mobileNav).toContain("mobile-nav-theme-footer");
+    expect(mobileNav).toContain("mobile-nav-scroll-region");
+    expect(toggle).toContain('role="switch"');
+    expect(toggle).toContain("aria-checked={isDark}");
+    expect(toggle).toContain("mobile-nav-theme-switch");
     expect(toggle).toContain("useSyncExternalStore");
   });
 });

@@ -1,8 +1,4 @@
-import { LockKeyhole } from "lucide-react";
-
-import { DeferredStylistChat } from "~/app/stylist/_components/deferred-stylist-chat";
-import { CompactPageIntro } from "~/components/compact-page-intro";
-import { RevealSection } from "~/components/reveal";
+import { ElysAiConcierge } from "~/app/elys-ai/_components/elys-ai-concierge";
 import { SiteHeader } from "~/components/site-header";
 
 export const metadata = {
@@ -13,31 +9,26 @@ export const metadata = {
 
 export default function ElysAiPage() {
   return (
-    <main className="elysia-page min-h-screen">
+    <main className="elysia-page elys-ai-page min-h-screen overflow-x-clip">
       <SiteHeader />
-      <CompactPageIntro
-        description="ספרי ל־elys-ai מה הסגנון, האירוע, המחיר או המידה שחשובים לך, וקבלי הצעות מתוך הפריטים הזמינים."
-        eyebrow="העוזרת החכמה של Elysia"
+      <section
+        className="mx-auto grid max-w-5xl gap-5 px-[var(--ui-page-x)] pt-12 pb-8 text-center sm:pt-16 lg:px-[var(--ui-page-x-wide)] lg:pt-20"
         id="page-hero"
-        title="elys-ai"
-        variant="content"
-      />
-      <RevealSection
-        className="mx-auto grid max-w-6xl gap-5 px-[var(--ui-page-x)] py-[var(--ui-section-y-tight)] lg:grid-cols-[minmax(0,1fr)_17rem] lg:px-[var(--ui-page-x-wide)]"
-        id="elys-ai-chat"
       >
-        <section className="min-w-0" aria-label="שיחה עם elys-ai">
-          <DeferredStylistChat compact />
-        </section>
-        <aside className="grid content-start gap-4">
-          <section className="flex gap-3 border-y border-[var(--glass-border)] py-4 text-xs leading-6">
-            <LockKeyhole aria-hidden="true" className="mt-1 size-4 shrink-0" />
-            <p className="text-muted-foreground">
-              אין צורך בחשבון. אל תשלחי בשיחה פרטי תשלום או מידע אישי רגיש.
-            </p>
-          </section>
-        </aside>
-      </RevealSection>
+        <span className="text-muted-foreground text-xs font-medium uppercase">
+          Elysia personal concierge
+        </span>
+        <h1 className="text-4xl font-semibold sm:text-6xl">
+          בחירה אישית, בקצב שלך
+        </h1>
+        <p className="text-muted-foreground mx-auto max-w-2xl text-base leading-8 sm:text-lg">
+          elys-ai מחברת בין הסגנון, האירוע והתקציב שלך לבין תכשיטים זמינים
+          מהקולקציה — בלי צורך בחשבון.
+        </p>
+      </section>
+      <div className="mx-auto max-w-6xl px-[var(--ui-page-x)] pb-[var(--ui-section-y)] lg:px-[var(--ui-page-x-wide)]">
+        <ElysAiConcierge />
+      </div>
     </main>
   );
 }

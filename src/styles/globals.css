@@ -7144,6 +7144,7 @@ html[data-public-floating-bar-visible="true"] .public-motion-content {
   .sheet-overlay,
   .mobile-nav-panel,
   .mobile-nav-animated-item,
+  .mobile-nav-theme-switch *,
   .mobile-nav-close svg,
   .kinetic-image-layer,
   .category-loading-progress,

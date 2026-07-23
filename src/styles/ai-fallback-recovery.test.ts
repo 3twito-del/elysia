@@ -21,7 +21,7 @@ describe("AI fallback recovery UI", () => {
   });
 
   it("uses the shared fallback in the elys-ai chat", () => {
-    const stylistChat = read("src/app/stylist/_components/stylist-chat.tsx");
+    const stylistChat = read("src/app/elys-ai/_components/elys-ai-chat.tsx");
 
     expect(stylistChat).toContain("AiFallbackRecovery");
     expect(stylistChat).toContain('source="elys-ai"');

@@ -1,8 +1,15 @@
 import { z } from "zod";
 
+import { PUBLIC_AI_JEWELRY_CATEGORY_VALUES } from "~/lib/ai-jewelry-categories";
+
 export const searchCatalogToolInputSchema = z.object({
   query: z.string().trim().max(160).optional(),
   category: z.string().trim().max(80).optional(),
+  categories: z
+    .array(z.enum(PUBLIC_AI_JEWELRY_CATEGORY_VALUES))
+    .max(4)
+    .optional(),
+  mode: z.enum(["single", "combination"]).optional(),
   material: z.string().trim().max(80).optional(),
   stone: z.string().trim().max(80).optional(),
   maxPrice: z.number().positive().max(1_000_000).optional(),

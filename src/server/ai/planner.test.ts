@@ -103,6 +103,20 @@ describe("AI planner", () => {
     });
   });
 
+  it("recognizes a guided combination request with several categories", () => {
+    const planning = createAiPlanningContext({
+      latestUserText:
+        "בני לי שילוב מתכשיטים רגילים זמינים. סוגי תכשיטים: טבעות ושרשראות. תקציב כולל לכל הפריטים: עד 1,500 ₪.",
+      recentUserTexts: [],
+    });
+
+    expect(planning.catalogHints).toMatchObject({
+      categories: ["rings", "necklaces"],
+      mode: "combination",
+      maxPrice: 1_500,
+    });
+  });
+
   it("uses recent order context for short support follow-ups", () => {
     const planning = createAiPlanningContext({
       latestUserText: "איפה זה עומד?",
