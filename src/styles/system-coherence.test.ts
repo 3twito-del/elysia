@@ -83,6 +83,19 @@ describe("Elysia system coherence", () => {
     expect(command).toContain("elysia-panel popup-surface");
   });
 
+  it("keeps one global label-to-control spacing rhythm without doubling field gaps", () => {
+    const css = read("src/styles/globals.css");
+
+    expect(css).toContain('[data-slot="label"]:has(');
+    expect(css).toContain("margin-block-end: 0.5rem;");
+    expect(css).toContain('[class~="gap-2"]');
+    expect(css).toContain('[class~="gap-3"]');
+    expect(css).not.toContain('[class*="gap-"]');
+    expect(css).toContain('[data-slot="input"]:not(');
+    expect(css).toContain('[type="checkbox"]');
+    expect(css).toContain("margin-block-end: 0;");
+  });
+
   it("marks public, commerce, product, and admin shells with the unified system", () => {
     const reveal = read("src/components/reveal.tsx");
     const hero = read("src/components/commerce-page-hero.tsx");

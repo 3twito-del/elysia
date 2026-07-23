@@ -7645,3 +7645,44 @@ html[data-accessibility-motion="reduce"]
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--foreground) 55%, transparent) !important;
   outline: none !important;
 }
+
+/* Shared field rhythm: labels that directly precede a text-entry control keep
+   one readable beat, while field wrappers with an explicit gap remain the
+   single source of spacing. Checkbox/radio labels are intentionally excluded. */
+[data-slot="label"]:has(
+  + :where(
+    [data-slot="input"]:not([type="checkbox"], [type="radio"], [type="hidden"]),
+    [data-slot="textarea"],
+    [data-slot="select-trigger"],
+    [data-slot="input-group"],
+    input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+    textarea,
+    select
+  )
+) {
+  margin-block-end: 0.5rem;
+}
+
+:where(
+    [class~="gap-2"],
+    [class~="gap-3"],
+    [class~="gap-y-2"],
+    [class~="gap-y-3"]
+  )
+  > [data-slot="label"]:has(
+    + :where(
+      [data-slot="input"]:not(
+        [type="checkbox"],
+        [type="radio"],
+        [type="hidden"]
+      ),
+      [data-slot="textarea"],
+      [data-slot="select-trigger"],
+      [data-slot="input-group"],
+      input:not([type="checkbox"], [type="radio"], [type="hidden"]),
+      textarea,
+      select
+    )
+  ) {
+  margin-block-end: 0;
+}

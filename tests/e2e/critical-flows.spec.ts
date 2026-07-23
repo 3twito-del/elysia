@@ -1751,6 +1751,69 @@ test.describe("accessibility and responsive guardrails", () => {
     expect(focused.contrast).toBeGreaterThanOrEqual(3);
   });
 
+  test("keeps a global readable gap between labels and adjacent form controls", async ({
+    page,
+  }) => {
+    await page.goto("/account", { waitUntil: "domcontentloaded" });
+
+    const fieldPairs = page.locator(
+      '#guest-order [data-slot="label"]:has(+ [data-slot="input"])',
+    );
+    await expect(fieldPairs).toHaveCount(2);
+
+    const gaps = await fieldPairs.evaluateAll((labels) =>
+      labels.map((label) => {
+        const control = label.nextElementSibling;
+
+        if (!(control instanceof HTMLElement)) {
+          throw new Error("Expected an adjacent form control");
+        }
+
+        return (
+          control.getBoundingClientRect().top -
+          label.getBoundingClientRect().bottom
+        );
+      }),
+    );
+
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(8);
+
+    const globalCases = await page.evaluate(() => {
+      const createPair = ({
+        controlType = "text",
+        wrapperClass,
+      }: {
+        controlType?: string;
+        wrapperClass?: string;
+      }) => {
+        const wrapper = document.createElement("div");
+        if (wrapperClass) wrapper.className = wrapperClass;
+        const label = document.createElement("label");
+        label.dataset.slot = "label";
+        label.textContent = "בדיקת שדה";
+        const control = document.createElement("input");
+        control.dataset.slot = "input";
+        control.type = controlType;
+        wrapper.append(label, control);
+        document.body.append(wrapper);
+        const gap =
+          control.getBoundingClientRect().top -
+          label.getBoundingClientRect().bottom;
+        const margin = getComputedStyle(label).marginBlockEnd;
+        wrapper.remove();
+        return { gap, margin };
+      };
+
+      return {
+        checkbox: createPair({ controlType: "checkbox" }),
+        explicitGap: createPair({ wrapperClass: "grid gap-2" }),
+      };
+    });
+
+    expect(globalCases.checkbox.margin).toBe("0px");
+    expect(globalCases.explicitGap.gap).toBeCloseTo(8, 0);
+  });
+
   test("keeps recommendation rails horizontal, RTL, touch-ready, and keyboard scrollable", async ({
     page,
   }) => {
